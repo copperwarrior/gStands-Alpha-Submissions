@@ -79,7 +79,7 @@ function ENT:Think()
 					local Ent = tr.Entity
 					dmgInfo = DamageInfo()
 					dmgInfo:SetAttacker(self.Owner or self)
-					dmgInfo:SetDamage(35)
+					dmgInfo:SetDamage(GetConVar("gstands_the_sun_laser_first"):GetInt())
 					dmgInfo:SetInflictor( self.wep)
 					Ent:TakeDamageInfo(dmgInfo)
 					if Ent:IsPlayer() then
@@ -113,7 +113,7 @@ function ENT:Think()
 					local Ent = tr.Entity
 					dmgInfo = DamageInfo()
 					dmgInfo:SetAttacker(self.Owner or self)
-					dmgInfo:SetDamage(10 * mult)
+					dmgInfo:SetDamage(GetConVar("gstands_the_sun_laser"):GetInt() * mult)
 					dmgInfo:SetInflictor( self or self )
 					Ent:TakeDamageInfo(dmgInfo)
 					Ent:Ignite(7 * mult, 15)
