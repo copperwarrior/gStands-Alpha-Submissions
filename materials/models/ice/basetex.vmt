@@ -1,0 +1,10 @@
+"Refract"
+{
+	"$normalmap" "dev/water_normal"
+	"$model" 1
+	"$refractamount" 0
+	"$refracttinttexture" "models/ice/baseTex"
+	"$refracttint" "[1.5 1.5 1.5]"
+	"$bluramount" 2
+
+}

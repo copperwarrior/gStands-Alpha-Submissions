@@ -1,0 +1,10 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/emporer/emperor_sheet2"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "models/emporer/emperor_sheet_bump"
+	"$envmaptint" "[ 0.5 0.5  0.5]"
+	"$envmapcontrast" "1"
+	"$envmapsaturation" "1"
+	"$normalmapalphaenvmapmask" "1"
+}

@@ -1,0 +1,22 @@
+"refract"
+{
+"$model" 1
+	"$normalmap" "dev/water_normal"
+	"$dudvmap" "dev/water_dudv"
+	"$vertexcolor" "1"
+	"$refracttinttexture" "models/yellowtemperance/justgoo"
+"$refracttint" "[1 1 1]"
+"$refractamount" "1"
+"$bluramount" 500
+"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" .01
+			"texturescrollangle" 15.00
+		}
+	}
+
+
+}

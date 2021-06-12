@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/GStands/Stands/TheFool/TheFool_Violet_diff"
+	"$bumpmap" 	"models/GStands/Stands/TheFool/TheFool_normal"
+
+	"$phong" "1"
+	"$phongalbedotint" "1"
+	"$phongexponent" "50"
+        "$phongboost"	"0"
+	"$phongfresnelranges"	"[1 2 4]"
+	"$halflambert" "1"
+
+	"$alphatest" "1"
+}

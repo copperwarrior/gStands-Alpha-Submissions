@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/gstands/stands/foolsand/foolsandparticle"
+	"$translucent" 1
+	"$vertexalpha" 1
+	"$vertexcolor" "1"
+}

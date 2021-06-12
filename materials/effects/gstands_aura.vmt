@@ -1,0 +1,12 @@
+"Refract"
+{
+ 	"$model" 1
+    	"$nocull" "1"
+	"$normalmap" "effects/flat_normal"
+	"$additive" "1"
+	"$vertexcolor" 1
+	"$refractamount" 0
+	"$refracttint" "[0 0 0]"
+	"$bluramount" 0
+
+}

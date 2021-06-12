@@ -1,0 +1,26 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "effects/foolsand"
+	"$bumpmap" "effects/foolsandbump"
+	"$model" 1
+    	"$nocull" "1"
+
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetextureTransform"
+			"texturescrollrate" 0.01
+			"texturescrollangle" 30
+		}
+		"TextureScoll"
+		{	
+			"texturescrollvar" "bumpTransform"
+			"texturescrollrate" -1
+			"texturescrollangle" 0
+		}
+		
+	}
+
+
+}

@@ -1,0 +1,30 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/gstands/stands/foolsand/foolsand_lightblue"
+	"$bumpmap" "models/gstands/stands/foolsand/foolsand_norm"
+	"$phong" "0"
+        	"$phongboost"	"1"
+	"$phongfresnelranges"	"[1 2 4]"
+	"$phongexponenttexture" "models/gstands/stands/foolsand/foolsand_exp"
+	"$phongalbedotint" 1
+	"$model" 1
+
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetextureTransform"
+			"texturescrollrate" 0.05
+			"texturescrollangle" 90
+		}
+		"TextureScoll"
+		{	
+			"texturescrollvar" "bumpTransform"
+			"texturescrollrate" 0.05
+			"texturescrollangle" 90
+		}
+		
+	}
+
+
+}

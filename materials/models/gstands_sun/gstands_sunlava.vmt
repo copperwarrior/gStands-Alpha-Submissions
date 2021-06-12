@@ -1,0 +1,24 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/gstands_sun/sunlava"
+	"$bumpmap" "models/heg/flat_normal"
+	"$phongexponenttexture" "models/heg/exp"
+	"$phongexponent" "5"
+	"$phongalbedotint" "1"
+	"$phong" "1"
+	"$rimlight" "1"
+	"$rimlightboost" "100"
+	"$rimlightexponent" "1"
+	"$selfillum" "1"
+	"$selfillummask" "models/heg/flat_normal"
+Proxies 
+{ 
+"TextureScroll" 
+{ 
+"texturescrollvar" "$basetexturetransform" 
+"texturescrollrate" 0.05
+"texturescrollangle" 90
+}
+}
+}
+

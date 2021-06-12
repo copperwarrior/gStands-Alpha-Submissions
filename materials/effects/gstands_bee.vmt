@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "effects/gstands_bee.vtf"
+	"$translucent" "1"
+	"$vertexcolor" "1"
+}

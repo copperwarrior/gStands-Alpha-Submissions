@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models\GStands\Stands\Geb/geb_Alpha"
+	"$bumpmap"	"models\GStands\Stands\Geb/geb_normal"
+
+	"$alphatest" 1
+        "$alphatestreference" .5
+        "$allowalphatocoverage" 1
+
+	"$model" 1
+}

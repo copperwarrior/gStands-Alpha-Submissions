@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "vgui/entities/gstands_atum"
+	"$translucent" 1
+}

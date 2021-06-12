@@ -1,0 +1,6 @@
+"eyes"
+{
+	"$basetexture" "models/empress/eyetex"
+	"$iris" "models/empress/iris2"
+	"$halflambert" 1
+}

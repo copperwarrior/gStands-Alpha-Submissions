@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "effects/gstands_htentp_"
+	"$translucent" 1
+	"$vertexalpha" 1
+}

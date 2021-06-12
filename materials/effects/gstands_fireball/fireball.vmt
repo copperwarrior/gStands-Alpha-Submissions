@@ -1,0 +1,10 @@
+"Spritecard"
+{
+	"srgb?$overbrightfactor" "5"
+	"$basetexture" "effects/gstands_fireball/flame"
+	"$translucent" "1"
+	"$additive" "1"
+	"$vertexcolor" "1"
+
+}	
+

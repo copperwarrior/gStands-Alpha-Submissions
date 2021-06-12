@@ -1,0 +1,12 @@
+"Spritecard"
+{
+	"$basetexture" "effects/gstands_fireball/flame"
+	"$translucent" "1"
+		"$vertexcolor" "1"
+	"$additive" "1"
+	<dx90
+	{   
+		// help fill rate on low end
+		$maxsize ".15"
+	}
+}	

@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "Models/props_mining/winch_cable01"
+
+	"$surfaceprop"	"metal"
+
+}

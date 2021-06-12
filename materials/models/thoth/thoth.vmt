@@ -1,0 +1,10 @@
+VertexLitGeneric
+{
+    "$basetexture" "models/thoth/thoth"
+    "$halflambert" "0"
+    "$nodecal" "1"
+    "$model" "1"
+    "$nocull" "1"
+
+
+}

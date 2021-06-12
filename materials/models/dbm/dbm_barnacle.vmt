@@ -1,0 +1,16 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/dbm/dbm_barnacle"
+	"$bumpmap" "models/dbm/flat_normal"
+	"$halflambert" "1"
+	"$phong" "1"
+	"$phongboost"	"1"
+	"$phongexponent" "1"
+	"$phongfresnelranges"	"[1 1 1]"
+	"$phongexponenttexture" "models/dbm/exp"
+	"$phongalbedotint" "1"
+"$rimlight" "1"
+    "$rimlightexponent" "500"
+    "$rimlightboost" "-5"
+    "$rimlightmask" "0"
+}

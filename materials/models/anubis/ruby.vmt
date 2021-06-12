@@ -1,0 +1,26 @@
+"VertexlitGeneric"
+{
+	"$baseTexture" "models/anubis/ruby"
+	"$bumpmap" "models/anubis/flat_normal" 
+
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost" "1"
+	"$phongfresnelranges"	"[4 1 .25]"
+	"$basemapalphaphongmask" "1"
+
+	">=DX90"
+	{
+		"$envmap" "models/anubis/rubycubemap"
+	}
+	"<DX90"
+	{
+		"$envmap" "models/anubis/rubycubemap"
+	}
+
+	"$envmaptint" "[1.5 .2 .2]"
+
+	"$rimlight" "1"												// To enable rim lighting (requires phong)
+	"$rimlightexponent" "4"										// Exponent for phong component of rim lighting	
+	"$rimlightboost" "2"										// Boost for ambient cube component of rim lighting
+}

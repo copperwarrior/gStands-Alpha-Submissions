@@ -1,0 +1,30 @@
+
+"VertexlitGeneric"
+{
+	"$basetexture" "models/d13/water"
+	"$bumpmap" "models/d13/water_normal"
+	"$phong" "1"
+	"$phongboost"	"5"
+	"$phongexponent" "1"
+	"$phongfresnelranges"	"[1 1 1]"
+	"$phongalbedotint" "1"
+	"$phongexponenttexture" "models/d13/exp"
+	"$bumpscale" 5
+	"Proxies"
+	{
+			"TextureScroll" 
+		{ 
+			"texturescrollvar" "$basetexturetransform" 
+			"texturescrollrate" "0.05"
+			"texturescrollangle" "-90"
+		}
+	"AnimatedTexture" 
+		{ 
+			"animatedtexturevar" "$bumpmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" "30"
+		}
+
+	}
+
+}

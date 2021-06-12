@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "vgui/entities/gstands_death"
+	"$translucent" 1
+}

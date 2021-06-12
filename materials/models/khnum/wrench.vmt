@@ -1,0 +1,16 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/khnum/wrench"
+	"$bumpmap" "models/khnum/wrench_nrm"
+	"$phongwarptexture" "models/khnum/exp"
+	
+	"$alphatest" "1"
+    "$halflambert" "1"
+	
+		"$phongalbedotint"	"1"
+    "$phongboost"	  "1"	
+	"$phongexponent"	"13"
+	"$phong"	"1"
+	"$phongfresnelranges"	"[1 1.25 1.65]"
+
+}

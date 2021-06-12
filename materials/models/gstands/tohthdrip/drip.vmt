@@ -1,0 +1,15 @@
+VertexlitGeneric
+{
+	$basetexture "models/gstands/tohthdrip/drip_d"
+	$bumpmap "models/gstands/tohthdrip/drip_n"
+
+	$phong 1
+	$phongboost 0.03
+	$phongexponent 1
+	$phongfresnelranges "[2 3 4]"
+	$phongtint "[0.925 0.925 0.9]"
+
+	$rimlight 1
+	$rimlightexponent 50
+	$rimlightboost 0.2
+}

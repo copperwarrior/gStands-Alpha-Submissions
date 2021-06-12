@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "effects/gstands_cream_void"
+	"$bumpmap" "effects/gstands_cream_void_bump"
+	"$additive" 1
+	"$translucent" 1
+}

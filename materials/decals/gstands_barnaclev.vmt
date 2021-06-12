@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "decals/gstands_barnacle"
+	"$translucent" 1
+}

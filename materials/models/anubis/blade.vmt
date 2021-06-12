@@ -1,0 +1,26 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/anubis/basetex"
+	"$bumpmap" "models/anubis/basetex_n" 
+
+
+	"$phong" "1"
+	"$phongexponent" "200"
+	"$phongboost" "100"
+	"$phongfresnelranges"	"[.25 1 4]"
+	"$basemapalphaphongmask" "1"
+	"$phongwarptexture" "models/anubis/ice_player_warp"
+	"$lightwarptexture" "models/anubis/ice_player_lightwarp"
+
+	"$envmap" "models/anubis/cubemapper"
+	"$envmaptint" "[1.5 1.2 .2]"
+	"$envmapfresnel" "1.1"
+	"$envmapfresnelminmaxexp" "[0 1 2]"
+	"$normalmapalphaenvmapmask" "1"
+	"$fresnelreflection" 0
+	
+
+	"$rimlight" "1"
+	"$rimlightexponent" "50"
+	"$rimlightboost" "15"
+}

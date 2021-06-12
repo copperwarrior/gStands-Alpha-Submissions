@@ -1,0 +1,20 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/hpworld/baseTexspec"
+	"$bumpmap" "models/hpworld/basebump"
+	"$translucent" "1"
+	"$additive" "1"
+	"$color2" "[0 0 0]"
+	"$phongexponenttexture" "models/hpworld/exp"
+	"$phongexponent" "9"
+	"$phongalbedotint" "1"
+	"$phong" "1"
+	"$phongboost" "0.5"
+	"$phongfresnelranges" "[2 2 2 2]"
+	
+	"$rimlight" "1"
+	"$rimlightexponent" "2"
+	"$rimlightboost" "2"
+	"$selfillum" "1"
+
+}

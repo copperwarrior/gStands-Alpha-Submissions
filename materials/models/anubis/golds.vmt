@@ -1,0 +1,31 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/anubis/basetex"
+	"$bumpmap" "models/anubis/basetex_n" 
+
+
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost" "1"
+	"$phongfresnelranges"	"[.25 1 4]"
+	"$basemapalphaphongmask" "1"
+
+	">=DX90"
+	{
+		"$envmap" "models/anubis/cubemap_gold001"
+	}
+	"<DX90"
+	{
+		"$envmap" "models/anubis/cubemap_gold001"
+	}
+
+	"$envmaptint" "[1.5 1.2 .2]"
+	"$envmapfresnel" "1.1"
+	"$envmapfresnelminmaxexp" "[0 1 2]"
+	"$normalmapalphaenvmapmask" "1"
+	"$fresnelreflection" 0
+
+	"$rimlight" "1"												// To enable rim lighting (requires phong)
+	"$rimlightexponent" "4"										// Exponent for phong component of rim lighting	
+	"$rimlightboost" "2"										// Boost for ambient cube component of rim lighting
+}

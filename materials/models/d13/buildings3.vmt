@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/d13/buildings3"
+	"$bumpmap" "models/d13/flat_normal"
+	"$bumpscale" "0.01"
+	"$halflambert" "0.1"
+
+	"$alphatest" "1"
+	"$phong" "1"
+	"$phongboost"	"3"
+	"$phongexponent" "4"
+	"$phongfresnelranges"	"[1 1 1]"
+	"$phongalbedotint" "1"
+	"$phongexponenttexture" "models/d13/exp"
+
+}

@@ -1,0 +1,13 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/empress/baseTex1"
+	"$nocull" "1"
+	"$bumpmap" "models/empress/basetex_n"
+	"$halflambert" "1"
+	"$phongexponenttexture" "models/empress/exp"
+	"$phong" "1"
+	"$phongboost"	"1"
+	"$phongexponent" "6"
+	"$phongfresnelranges"	"[1 1 1]"
+	"$phongalbedotint" "1"
+}

@@ -1,0 +1,17 @@
+"UnlitGeneric"
+{
+	"$basetexture" "effects/gstands_tgray_blurtrail"
+	"$translucent" 1
+	"$vertexalpha" 1
+"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetextureTransform"
+			"texturescrollrate" 0.05
+			"texturescrollangle" 90
+		}		
+	}
+
+
+}

@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	"$basetexture" "effects/gstands_temperance/watersplash_002b"
+	"$additive" 1
+    "$overbrightfactor" 1.0
+    "$translucent" 1
+    "$vertexalpha" 1
+    "$vertexcolor" 1
+}

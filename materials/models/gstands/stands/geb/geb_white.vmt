@@ -1,0 +1,19 @@
+"Refract"
+{
+	"$normalmap" "dev/water_normal"
+	"$model" 1
+	"$refractamount" 0.1
+	"$refracttinttexture" "models\GStands\Stands\Geb/Geb_white_Diff"
+	"$refracttint" "[1 1 0.95]"
+	"$bluramount" 1
+	"Proxies"
+	{
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$normalmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" 20.00
+		}
+	}
+
+}

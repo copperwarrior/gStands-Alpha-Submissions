@@ -1,0 +1,14 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/d13/cloud"
+	"$translucent" "1"
+"Proxies"
+	{
+			"TextureScroll" 
+		{ 
+			"texturescrollvar" "$basetexturetransform" 
+			"texturescrollrate" "0.01"
+			"texturescrollangle" "0"
+		}
+	}
+}

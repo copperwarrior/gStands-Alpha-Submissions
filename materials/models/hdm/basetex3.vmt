@@ -1,0 +1,14 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/hdm/basetex3"
+	"$bumpmap" "models/hdm/basetex_n"
+
+	"$phongexponenttexture" "models/heg/exp"
+	"$phongexponent" "5"
+	"$phongalbedotint" "1"
+	"$phong" "1"
+	"$phongboost" "1"
+	"$phongfresnelranges" "[2 2 2 2]"
+	"$selfillum" "1"
+
+}

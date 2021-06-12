@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "effects/gstands_fireball/fireball5.vtf"
+	"$translucent" "1"
+	"$additive" "1"
+	"$nocull" "1"
+	"$vertexcolor" "1"
+}

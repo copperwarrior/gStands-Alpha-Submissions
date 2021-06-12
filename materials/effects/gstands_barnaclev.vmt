@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "effects/gstands_barnacle"
+	"$bumpmap" "effects/gstands_barnacle_bump"
+	"$surfaceprop" "Rock"
+	"$translucent" 1
+}

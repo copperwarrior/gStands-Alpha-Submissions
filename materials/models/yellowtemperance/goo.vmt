@@ -1,0 +1,19 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/yellowtemperance/justgoo"
+	"$bumpmap" "dev/water_normal"
+	"$translucent" "1"
+	"$additive" 1
+
+"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" .01
+			"texturescrollangle" 15.00
+		}
+	}
+
+
+}

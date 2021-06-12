@@ -1,0 +1,16 @@
+"UnlitGeneric"
+{
+    "$basetexture" "models/hdm/mirror_cover"
+	"$translucent" "1"
+	"$additive" "1"
+Proxies 
+{
+	"TextureScroll" 
+		{ 
+		"textureScrollVar" $basetexturetransform
+		"texturescrollrate" 0.05
+		"texturescrollangle" 45
+		}
+	
+}
+}

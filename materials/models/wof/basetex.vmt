@@ -1,0 +1,23 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/wof/baseTex"
+	"$bumpmap" "models/wof/basebump"
+	"$nocull" "1"
+
+	"$blendtintbybasealpha" "1"
+	"$phongexponenttexture" "models/wof/exp"
+	"$phongexponent" "15"
+	"$phongalbedotint" "1"
+	"$phong" "1"
+	"$phongboost" "1"
+	"$phongfresnelranges" "[2 2 2 2]"
+
+proxies
+	{
+		Equals
+		{
+			srcVar1 "$color2"
+			resultVar "$phongtint"
+		}
+	}
+}

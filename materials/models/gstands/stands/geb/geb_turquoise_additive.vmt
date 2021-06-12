@@ -1,0 +1,26 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models\GStands\Stands\Geb/geb_turquoise_diff"
+	"$bumpmap" 	"dev/water_normal"
+
+	"$color2" "[ 0.25 0.25 0.25 ]"
+
+	"$phong" "1"
+	"$phongalbedotint" "1"
+	"$phongexponent" "50"
+        "$phongboost"	"1"
+	"$phongfresnelranges"	"[1 2 4]"
+	"$halflambert" "1"
+
+	"$additive" "1"
+
+	"Proxies"
+	{
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$bumpmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" 20.00
+		}
+	}
+}

@@ -1,0 +1,22 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/gstands_gold"
+	"$bumpmap" "models/death13/flat_normal"
+	"$envmap" "env_cubemap"
+
+	"$color" "[5 5 0]"
+	"$color2" "[10 10 0]"
+	"$phong" "1"
+	"$phongexponent" "1"
+	"$phongboost" "50"	
+	"$phongalbedotint" "1"
+	"$phongexponenttexture" "models/gstands_gold_exp"
+	"$envmapcontrast" "1"
+	"$envmaptint" "[1 1 0]"
+
+	"$rimlight" "1"		
+	"$rimlightexponent" "11"
+	"$rimlightboost" "5"
+
+
+}

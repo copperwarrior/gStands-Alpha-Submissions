@@ -1,0 +1,14 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/gstands_sun/blank"
+	"$bumpmap" "models/heg/flat_normal"
+	"$phongexponenttexture" "models/heg/exp"
+	"$phongalbedotint" "1"
+	"$phong" "1"
+	"$phongboost" "1"
+	"$rimlight" "1"
+	"$rimlightboost" "150"
+	"$rimlightexponent" "5"
+	"$additive" "1"
+}
+

@@ -1,0 +1,15 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "effects/gstands_slash"
+	"$translucent" "1"
+	"$surfaceprop" "Default"
+	"Proxies"
+	{
+		"AnimatedTexture"
+		{
+		"animatedTextureVar" "$basetexture"
+		"animatedTextureFrameNumVar" "$frame"
+		"animatedTextureFrameRate" "1"
+		}
+	}
+}
