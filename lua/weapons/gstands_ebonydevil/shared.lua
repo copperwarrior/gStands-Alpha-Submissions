@@ -130,7 +130,19 @@ function SWEP:SetWeaponHoldType( t )
 	
 end
 function SWEP:Initialize()
-	--Set the third person hold type to fists
+	timer.Simple(1, function() 
+		if IsValid(self.Owner) then
+			self.pcllife = CurTime() + 1
+		end
+	end)
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_ebony_devil_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_ebony_devil_heal"):GetInt())
+			end
+		end
+	end)
 end
 
 local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )

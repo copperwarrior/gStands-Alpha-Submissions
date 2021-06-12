@@ -138,14 +138,20 @@ end
 	
 	
 end
-
 function SWEP:Initialize()
 	--Set the third person hold type to fists
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_horus_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_horus_heal"):GetInt())
+			end
+		end
+	end)
 	if CLIENT then
 	end
 	self:DrawShadow(false)
 	self.CanZoom = false
-
 end
 
 local material = Material( "sprites/hud/v_crosshair1" )

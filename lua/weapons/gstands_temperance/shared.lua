@@ -32,6 +32,11 @@ SWEP.DrawCrosshair      = true
 SWEP.WorldModel = "models/yellowtemperance/yellowtemperance.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
+SWEP.StandModel 				= "models/yellowtemperance/yellowtemperance.mdl"
+SWEP.StandModelP 				= "models/yellowtemperance/yellowtemperance.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/yellowtemperance/yellowtemperance.mdl"
+end
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -198,6 +203,14 @@ function SWEP:SetWeaponHoldType( t )
     
 end
 function SWEP:Initialize()
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_yellow_temperence_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_yellow_temperence_heal"):GetInt())
+			end
+		end
+	end)
 end
 
 function SWEP:DrawWorldModel()
@@ -444,7 +457,7 @@ function SWEP:Think()
 			dmginfo:SetAttacker( attacker )
 			local mult = 1
 			dmginfo:SetInflictor( self )
-			dmginfo:SetDamage( 5 * mult )
+			dmginfo:SetDamage(GetConVar("gstands_temperance_slash"):GetInt() * mult)
 			
 			tr2.Entity:TakeDamageInfo( dmginfo )
 			if (tr2.Entity:IsPlayer() or tr2.Entity:IsNPC()) and CurTime() >= self.GooDelay then
@@ -497,7 +510,7 @@ function SWEP:Think()
 		dmginfo:SetAttacker( attacker )
 		local mult = 1
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage( 5 * mult )
+		dmginfo:SetDamage(GetConVar("gstands_temperance_slash"):GetInt() * mult)
 		
 		
 		for k,v in pairs(ents.FindInBox(self.Owner:LocalToWorld(mins),self.Owner:LocalToWorld(maxs))) do

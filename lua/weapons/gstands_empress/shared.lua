@@ -47,7 +47,11 @@ SWEP.Secondary.Ammo = "none"
 SWEP.DrawAmmo = false
 SWEP.HitDistance = 48
 SWEP.gStands_IsThirdPerson = true
-
+SWEP.StandModel 				= "models/empress/empress.mdl"
+SWEP.StandModelP 				= "models/empress/empress.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/empress/empress.mdl"
+end
 local PrevHealth = nil
 
 --Define swing and hit sounds. Might change these later.
@@ -56,7 +60,14 @@ local HitSound = Sound( "Flesh.ImpactHard" )
 local Deploy = Sound( "weapons/empress/deploy.wav" )
 
 function SWEP:Initialize()
-    --Set the third person hold type to fists
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_empress_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_empress_heal"):GetInt())
+			end
+		end
+	end)
     self:SetHoldType( "normal" )
 end
 

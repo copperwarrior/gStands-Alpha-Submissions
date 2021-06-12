@@ -153,17 +153,16 @@ local corner_left   = Material(base.."corner_left")
 local corner_right  = Material(base.."corner_right")
 
 function SWEP:DrawHUD()
-    if GetConVar("gstands_draw_hud"):GetBool() then
-		local color = Color(255,255,255,255)
-		if IsValid(self.Stand) then
-        color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+	--if IsValid(self.Stand) then
+		if GetConVar("gstands_draw_hud"):GetBool() then
+			local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+			local height = ScrH()
+			local width = ScrW()
+			local mult = ScrW() / 1920
+			local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+			gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
 		end
-        local height = ScrH()
-		local width = ScrW()
-		local mult = ScrW() / 1920
-		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-    end
+	--end
 end
 hook.Add( "HUDShouldDraw", "WofHud", function(elem)
     if GetConVar("gstands_draw_hud"):GetBool() and IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_wheel_of_fortune" and (((elem == "CHudWeaponSelection" ) and LocalPlayer().SPInZoom) or elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") then
@@ -269,7 +268,14 @@ function SWEP:UnDefineStand()
 	end
 end
 function SWEP:Initialize()
-	--Set the third person hold type to fists
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_wheel_of_fortune_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_wheel_of_fortune_heal"):GetInt())
+			end
+		end
+	end)
 end
 function SWEP:DrawWorldModel()
 	if IsValid(self.Owner) then
@@ -720,7 +726,7 @@ local dmginfo = DamageInfo()
 	local attacker = self.Owner
 	dmginfo:SetAttacker( attacker )
 	dmginfo:SetInflictor( self )
-	dmginfo:SetDamage( 5 * self:GetConfidence())
+	dmginfo:SetDamage( GetConVar("gstands_wheel_of_fortune_shoot"):GetInt() * self:GetConfidence())
 		local tr1 = util.TraceLine( {
 		start = pos1,
 		endpos = pos1 + (dir2 * 150000),

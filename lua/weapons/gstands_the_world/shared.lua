@@ -1,3 +1,4 @@
+--Send file to clients
 if SERVER then
 	AddCSLuaFile( "shared.lua" )
 end
@@ -117,52 +118,111 @@ function SWEP:CustomAmmoDisplay()
 end
 
 function SWEP:SetWeaponHoldType( t )
+
+	
+
 	t = string.lower( t )
+
 	local index = ActIndex[ t ]
+
+	
+
 	if ( index == nil ) then
+
 		Msg( "SWEP:SetWeaponHoldType - ActIndex[ \"" .. t .. "\" ] isn't set! (defaulting to normal)\n" )
+
 		t = "normal"
+
 		index = ActIndex[ t ]
+
 	end
+
 	if ( t == "stando" ) then
+
+		
+
 		self.ActivityTranslate = {}
+
 		self.ActivityTranslate[ ACT_MP_STAND_IDLE ]					= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("pose_standing_01"))
+
 		self.ActivityTranslate[ ACT_MP_WALK ]						= ACT_HL2MP_IDLE + 1
+
 		self.ActivityTranslate[ ACT_MP_RUN ]						= ACT_HL2MP_RUN_FAST
+
 		self.ActivityTranslate[ ACT_MP_CROUCH_IDLE ]				= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("pose_ducking_01"))
+
 		self.ActivityTranslate[ ACT_MP_CROUCHWALK ]					= index + 4
+
 		self.ActivityTranslate[ ACT_MP_ATTACK_STAND_PRIMARYFIRE ]	= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("taunt_zombie"))
+
 		self.ActivityTranslate[ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE ]	= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("taunt_zombie"))
+
 		self.ActivityTranslate[ ACT_MP_RELOAD_STAND ]				= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("taunt_zombie"))
+
 		self.ActivityTranslate[ ACT_MP_RELOAD_CROUCH ]				= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("taunt_zombie"))
+
 		self.ActivityTranslate[ ACT_MP_JUMP ]						= self.Owner:GetSequenceActivity(self.Owner:LookupSequence("jump_knife"))
+
 		self.ActivityTranslate[ ACT_RANGE_ATTACK1 ]					= index + 8
+
 		self.ActivityTranslate[ ACT_MP_SWIM ]						= index + 9
+
 		if self.Owner:GetModel() == "models/player/dio/dio.mdl" then
+
 			self.ActivityTranslate[ ACT_MP_STAND_IDLE ]					= ACT_VM_CRAWL
+
 			self.ActivityTranslate[ ACT_MP_ATTACK_STAND_PRIMARYFIRE ]	= ACT_VM_CRAWL_EMPTY
+
 			self.ActivityTranslate[ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE ]	= ACT_VM_CRAWL_EMPTY
+
 			self.ActivityTranslate[ ACT_MP_RELOAD_STAND ]				= ACT_VM_CRAWL_EMPTY
+
 			self.ActivityTranslate[ ACT_MP_RELOAD_CROUCH ]				= ACT_VM_CRAWL_EMPTY
+
 		end
+
 		else
+
 		self.ActivityTranslate = {}
-			self.ActivityTranslate[ ACT_MP_STAND_IDLE ]					= index
-			self.ActivityTranslate[ ACT_MP_WALK ]						= index + 1
-			self.ActivityTranslate[ ACT_MP_RUN ]						= index + 2
-			self.ActivityTranslate[ ACT_MP_CROUCH_IDLE ]				= index + 3
-			self.ActivityTranslate[ ACT_MP_CROUCHWALK ]					= index + 4
-			self.ActivityTranslate[ ACT_MP_ATTACK_STAND_PRIMARYFIRE ]	= index + 5
-			self.ActivityTranslate[ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE ]	= index + 5
-			self.ActivityTranslate[ ACT_MP_RELOAD_STAND ]				= index + 6
-			self.ActivityTranslate[ ACT_MP_RELOAD_CROUCH ]				= index + 6
-			self.ActivityTranslate[ ACT_MP_JUMP ]						= index + 7
-			self.ActivityTranslate[ ACT_RANGE_ATTACK1 ]					= index + 8
-			self.ActivityTranslate[ ACT_MP_SWIM ]						= index + 9
-		end
-	if ( t == "normal" ) then
-		self.ActivityTranslate[ ACT_MP_JUMP ] = ACT_HL2MP_JUMP_SLAM
+
+		self.ActivityTranslate[ ACT_MP_STAND_IDLE ]					= index
+
+		self.ActivityTranslate[ ACT_MP_WALK ]						= index + 1
+
+		self.ActivityTranslate[ ACT_MP_RUN ]						= index + 2
+
+		self.ActivityTranslate[ ACT_MP_CROUCH_IDLE ]				= index + 3
+
+		self.ActivityTranslate[ ACT_MP_CROUCHWALK ]					= index + 4
+
+		self.ActivityTranslate[ ACT_MP_ATTACK_STAND_PRIMARYFIRE ]	= index + 5
+
+		self.ActivityTranslate[ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE ]	= index + 5
+
+		self.ActivityTranslate[ ACT_MP_RELOAD_STAND ]				= index + 6
+
+		self.ActivityTranslate[ ACT_MP_RELOAD_CROUCH ]				= index + 6
+
+		self.ActivityTranslate[ ACT_MP_JUMP ]						= index + 7
+
+		self.ActivityTranslate[ ACT_RANGE_ATTACK1 ]					= index + 8
+
+		self.ActivityTranslate[ ACT_MP_SWIM ]						= index + 9
+
 	end
+
+	-- "normal" jump animation doesn't exist
+
+	if ( t == "normal" ) then
+
+		self.ActivityTranslate[ ACT_MP_JUMP ] = ACT_HL2MP_JUMP_SLAM
+
+	end
+
+	
+
+	
+
 end
 function SWEP:SetupDataTables()
 	self:NetworkVar( "Entity", 0, "Stand" )
@@ -192,26 +252,33 @@ if CLIENT then
 				local mult = ScrW() / 1920
 				local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
 				gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+				
 				surface.SetMaterial(generic_rect)
 				surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
+				
 				if !self:GetAMode() then
 					surface.SetMaterial(boxend)
 					else
 					surface.SetMaterial(boxdis)
 				end
 				surface.DrawTexturedRect(width - (192 * mult) - 135 * mult, height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
+				
 				if !self:GetAMode() then
 					surface.SetMaterial(boxdis)
 					else
 					surface.SetMaterial(boxend)
 				end
 				surface.DrawTexturedRect(width - (192 * mult), height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
+				
+				
+				
 				draw.TextShadow({
 					text = "#gstands.general.punch",
 					font = "gStandsFont",
 					pos = {width - 295 * mult, height - 295 * mult},
 					color = tcolor,
 				}, 2 * mult, 250)
+				
 				draw.TextShadow({
 					text = "#gstands.general.ability",
 					font = "gStandsFont",
@@ -225,12 +292,14 @@ if CLIENT then
 					pos = {width - 1500 * mult, height - 265 * mult},
 					color = nocompletegstands,
 				}, 2 * mult, 250)
+
 				draw.TextShadow({
 					text = "This Stand is incomplete!",
 					font = "gStandsFont",
 					pos = {width - 1550 * mult, height - 235 * mult},
 					color = nocompletegstands,
 				}, 2 * mult, 250)
+
 				draw.TextShadow({
 					text = self:Clip1().."/"..self:GetMaxClip1(),
 					font = "gStandsFontLarge",
@@ -238,6 +307,7 @@ if CLIENT then
 					color = tcolor,
 					xalign = TEXT_ALIGN_CENTER
 				}, 2 * mult, 250)
+				
 				surface.SetMaterial(cooldown_box)
 				if !IsValid(GetGlobalEntity("Time Stop")) then
 					surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), GetConVar( "gstands_the_world_next_timestop" ):GetFloat(), 0, 0, 40 * mult)))
@@ -271,6 +341,7 @@ function SWEP:DoDrawCrosshair(x,y)
 			mask = MASK_SHOT_HULL
 		} )
 		local pos = tr.HitPos
+		
 		local pos2d = pos:ToScreen()
 		if pos2d.visible then
 			surface.SetMaterial( material )
@@ -306,6 +377,7 @@ hook.Add( "PlayerDeath", "Ubiistvo4ElaCOrujiem", function( victim, inflictor, at
 		end
 	end
 end )
+
 function SetPain(time)
     Pain = time
 end
@@ -319,6 +391,7 @@ hook.Add( "EntityTakeDamage", "PainSoundTheWorld", function ( owner, dmginfo )
 		end
 	end
 end)
+
 if CLIENT then
 	net.Receive("world.PlaySound", 
 		function()
@@ -327,13 +400,13 @@ if CLIENT then
 				LocalPlayer():ChatPrint( "『The World!』" )   
 			end)
 			timer.Simple(2, function()
-				LocalPlayer():ChatPrint( "『Toki Wo Tomare!』" ) 
+				LocalPlayer():ChatPrint( "『Takiyo Tomaney!』" ) 
 				LocalPlayer():EmitSound(STEffect)
 			end)
 		end)
 		net.Receive("world.PlaySound2", 
 			function()
-				LocalPlayer():ChatPrint( "『Toki Wa Ugoki Dasu!』" )
+				LocalPlayer():ChatPrint( "『Tokiwa Mukidas』" )
 				LocalPlayer():EmitSound(StartTime) 
 			end)
 			net.Receive("world.Enter", function() 
@@ -371,6 +444,7 @@ if CLIENT then
 			end)
 
 end
+
 if SERVER then
 	util.AddNetworkString("world.PlaySound")
 	util.AddNetworkString("world.PlaySound2")

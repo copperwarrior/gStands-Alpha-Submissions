@@ -173,7 +173,14 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Bool",3,"InDoDoDo")
 end
 function SWEP:Initialize()
-    --Set the third person hold type to fists
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_justice_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_justice_heal"):GetInt())
+			end
+		end
+	end)
 end
 
 	local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )

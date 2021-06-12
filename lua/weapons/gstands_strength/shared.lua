@@ -34,6 +34,11 @@ SWEP.DrawCrosshair      = true
 SWEP.WorldModel = "models/player/whitesnake/disc.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
+SWEP.StandModel 				= "models/sun/gstands_sun.mdl"
+SWEP.StandModelP 				= "models/sun/gstands_sun.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/hdm/hdm.mdl"
+end
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -130,7 +135,14 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
-    --Set the third person hold type to fists
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_strength_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_strength_heal"):GetInt())
+			end
+		end
+	end)
 end
 
 function SWEP:DrawWorldModel()

@@ -32,6 +32,11 @@ SWEP.DrawCrosshair	  = true
 SWEP.WorldModel = "models/player/whitesnake/disc.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
+SWEP.StandModel 				= "models/sun/gstands_sun.mdl"
+SWEP.StandModelP 				= "models/sun/gstands_sun.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/sun/gstands_sun.mdl"
+end
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1

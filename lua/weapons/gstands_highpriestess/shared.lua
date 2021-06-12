@@ -137,7 +137,15 @@ local SwingSound = Sound( "WeaponFrag.Throw" )
 local HitSound = Sound( "Flesh.ImpactHard" )
 
 function SWEP:Initialize()
-	--Set the third person hold type to fists
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self.Owner:EmitStandSound(Transform)
+				self:GetOwner():SetHealth(GetConVar("gstands_high_priestess_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_high_priestess_heal"):GetInt())
+			end
+		end
+	end)
 end
 
 function SWEP:DrawWorldModel()
@@ -527,7 +535,7 @@ function SWEP:Bite()
 		
 		dmginfo:SetInflictor( self )
 		if !self.Stand:GetGround() then
-			dmginfo:SetDamage( 65 )
+			dmginfo:SetDamage(GetConVar("gstands_highpriestess_bite_damage"):GetInt())
 		else
 			dmginfo:SetDamage( 650 )
 			if tr.Entity:IsPlayer() or tr.Entity:IsStand() then

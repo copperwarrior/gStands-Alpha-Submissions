@@ -27,6 +27,7 @@ if CLIENT then
 	SWEP.Purpose = language.GetPhrase(SWEP.Purpose)
 	SWEP.Instructions = language.GetPhrase(SWEP.Instructions)
 end
+
 SWEP.SlotPos            = 2
 SWEP.DrawCrosshair      = true
 
@@ -49,6 +50,9 @@ SWEP.HitDistance = 74
 
 SWEP.StandModel = "models/d13/d13.mdl"
 SWEP.StandModelP = "models/d13/d13.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/hpworld2/hpworld2.mdl"
+end
 SWEP.gStands_IsThirdPerson = true
 
 local PrevHealth = nil
@@ -62,27 +66,8 @@ local Laugh = Sound("d13.laugh")
 local Shine = Sound("weapons/d13/shine.wav")
 local Romantic = Sound("weapons/d13/romantic-to-die.wav")
 local Throw = Sound("weapons/d13/throw.wav")
+local Taunt = Sound("weapons/d13/are-you-dumb-.wav")
 
-local material = Material( "sprites/hud/v_crosshair1" )
-function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Stand) then
-		local tr = util.TraceLine( {
-			start = self:GetStand():WorldSpaceCenter(),
-			endpos = self:GetStand():WorldSpaceCenter() + self.Owner:GetAimVector() * 1500,
-			filter = {self.Owner, self:GetStand()},
-			mask = MASK_SHOT_HULL
-		} )
-		local pos = tr.HitPos
-		
-		local pos2d = pos:ToScreen()
-		if pos2d.visible then
-			surface.SetMaterial( material	)
-			surface.SetDrawColor( gStands.GetStandColorTable(self:GetStand():GetModel(), self:GetStand():GetSkin()) )
-			surface.DrawTexturedRect( pos2d.x - 8, pos2d.y - 8, 16, 16 )
-		end
-		return true
-	end
-end
 hook.Add("PlayerSwitchWeapon", "SleptPlayersSwapNoThings", function(ply, owep, newep)
 	if IsFirstTimePredicted() and Dreamland and Dreamland:IsValid() and Dreamland.PositionInside and Dreamland:PositionInside(ply:GetPos()) then
 		return true
@@ -93,8 +78,8 @@ local function GetDreamland(ply)
 		if IsValid(Dreamland) then
 			return Dreamland
 		end
-		local DreamlandWidth = 8000
-		local DreamlandLength = 8000
+		local DreamlandWidth = 8500
+		local DreamlandLength = 8500
 		local DreamlandHeight = 4000
 		
 		local DreamlandBounds = Vector(-DreamlandWidth/2,-DreamlandLength/2,-DreamlandHeight/2)
@@ -144,7 +129,6 @@ local function GetDreamland(ply)
 		DreamlandRoom.Owner = ply
 		DreamlandRoom:Activate()
 		DreamlandRoom:AddWall(floor)
-		
 		Dreamland = DreamlandRoom
 		return Dreamland
 	end
@@ -193,12 +177,12 @@ function SWEP:InitDreamland()
 	local Dreamland = GetDreamland(self.Owner)
 	self:SetDream(Dreamland)
 	if !Dreamland:IsValid() then
-		self.Owner:ChatPrint("#gstands.d13.error")
+		self.Owner:ChatPrint("Карта слишком маленькая для Death 13!")
 		return
 	end
 end
 
-local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
+local pos, material, white = Vector( 0, 0, 0 ), Material( "vgui/hud/gstands_hud/crosshair" ), Color( 255, 255, 255, 255 )
 local base			= "vgui/hud/gstands_hud/"
 local armor_bar   	= Material(base.."armor_bar")
 local bar_border  	= Material(base.."bar_border")
@@ -220,7 +204,7 @@ local bones = {
 }
 function SWEP:DrawHUD()
 	if GetConVar("gstands_draw_hud"):GetBool() then
-		local color = gStands.GetStandColorTable(self:GetStand():GetModel(), self:GetStand():GetSkin())
+		local color = gStands.GetStandColorTable("models/d13/d13.mdl", "0")
 		local height = ScrH()
 		local width = ScrW()
 		local mult = ScrW() / 1920
@@ -233,7 +217,6 @@ hook.Add( "HUDShouldDraw", "DeathHud", function(elem)
 		return false
 	end
 end)
-
 function SWEP:SetupDataTables()
 	self:NetworkVar("Entity", 0, "Dream")
 	self:NetworkVar("Entity", 1, "Stand")
@@ -262,7 +245,7 @@ hook.Add("EntityTakeDamage", "Death13Knockouts", function(ent, dmg)
 			end
             if hit then
 				for k, ply in pairs( player.GetAll() ) do
-					ply:ChatPrintFormatted( "#gstands.d13.knockout", ent:Name() )
+					ply:ChatPrint( ent:Name().." потерял сознание!" )
 				end
 				ent:ScreenFade( SCREENFADE.IN , Color(255,255,255,255) , 0.3, 0.2 )
                 ent.d13rag = ents.Create("prop_ragdoll")
@@ -320,6 +303,14 @@ if SERVER then
     util.AddNetworkString("Death.RedownloadLightmaps")
 end
 function SWEP:Initialize()
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_death_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_death_heal"):GetInt())
+			end
+		end
+	end)
     --Set the third person hold type to fists
     self:SetHoldType( "fist" )
 end
@@ -365,10 +356,7 @@ end
 --Deploy starts up the stand
 function SWEP:Deploy()
     --As is standard with stand addons, set health to 1000
-    if self.Owner:Health() == 100  then
-        self.Owner:SetMaxHealth( self.Durability )
-        self.Owner:SetHealth( self.Durability )
-	end
+
 	if SERVER then
 		if GetConVar("gstands_deploy_sounds"):GetBool() then
 			self.Owner:EmitSound(Deploy)
@@ -386,6 +374,7 @@ function SWEP:Deploy()
 	end
     --Create some networked variables, solves some issues where multiple people had the same stand
     self.Owner:SetCanZoom(false)
+
 end
 
 function SWEP:Think()
@@ -414,17 +403,21 @@ function SWEP:Think()
 		Dreamland:EmitSound(Enter, 85, math.random(125, 200), 0.5)
 		Dreamland:EmitStandSound(Enter, 85, math.random(125, 200), 0.5)
 	end
+	self.TauntTimer = self.TauntTimer or CurTime()
+	if self.Owner:gStandsKeyDown("taunt") and CurTime() >= self.TauntTimer then
+		if SERVER then
+			self:GetStand():EmitStandSound(Taunt)
+		end
+		self.TauntTimer = CurTime() + 2
+	end
     if SERVER and self.Owner:KeyDown(IN_ATTACK2) and !self.Owner:gStandsKeyDown("modifierkey1") then
 		local notarg = { Dreamland, self:GetStand()  }
 		if notarg and Dreamland.walls then
 			table.Merge(notarg, Dreamland.walls)
-		end		
 			Dreamland.anim1act = self.anim1act or Dreamland:GetSequenceActivity(Dreamland:LookupSequence("cupspin"))
-			Dreamland.anim1 = self.anim1 or Dreamland:AddGesture( Dreamland.anim1act , false )
-			-- SWIMMING_FIST self.AnimSet[1]
-			Dreamland:SetLayerWeight(Dreamland.anim1, 1)
+			Dreamland.anim1 = self.anim1 or Dreamland:AddGesture( Dreamland.anim1act , true )
 			Dreamland:SetLayerPlaybackRate(Dreamland.anim1, 1)
-			Dreamland:SetLayerBlendOut(Dreamland.anim1, 0)
+		end
 		local trace = util.TraceHull( {
 			start = Dreamland:GetAttachment(1).Pos,
 			endpos = Dreamland:GetAttachment(1).Pos,
@@ -447,8 +440,6 @@ function SWEP:Think()
 			trace.Entity:TakeDamageInfo( dmginfo )
 			self.SpinDamageTimer = CurTime() + 0.1
 		end
-		elseif SERVER and Dreamland and Dreamland:IsValid() and Dreamland.anim1act then
-		Dreamland:RemoveGesture(Dreamland.anim1act)
 	end
 	if SERVER and self.Owner:gStandsKeyDown("modifierkey1") and self.Owner:KeyDown(IN_ATTACK2) then
 		for k,v in ipairs(player.GetAll()) do 
@@ -528,7 +519,7 @@ function SWEP:Think()
 		elseif SERVER and Dreamland and Dreamland:IsValid() and Dreamland.anim2act and CurTime() > self.HotDogDelay then
 		Dreamland:RemoveGesture(Dreamland.anim2act)
 	end
-	if SERVER and Dreamland.anim2act and Dreamland:IsPlayingGesture(Dreamland.anim2act) and Dreamland:GetLayerCycle(Dreamland.anim2) > 0.1 and Dreamland:GetLayerCycle(Dreamland.anim2) < 0.2 then
+	if SERVER and Dreamland and Dreamland:IsValid() and Dreamland.anim2act and Dreamland:IsPlayingGesture(Dreamland.anim2act) and Dreamland:GetLayerCycle(Dreamland.anim2) > 0.1 and Dreamland:GetLayerCycle(Dreamland.anim2) < 0.2 then
 		local tab = Dreamland:GetAttachment(2)
 		local cmins = Vector(-50,-300,-50)
 		local cmaxs = Vector(50,50,50)
@@ -598,10 +589,12 @@ function SWEP:PrimaryAttack()
 		self:GetStand().Timer = CurTime() + 0.2
 		timer.Simple(0.2, function() if IsValid(self:GetStand()) then self:GetStand():EmitStandSound(SwingSound) end end)
 		self:GetStand():EmitStandSound(Shine)
-	end
-	if SERVER and self.Owner:gStandsKeyDown("modifierkey1") and self:GetStand():GetModel() != "models/d13/balloon.mdl" then
-        self:SetNextPrimaryFire( CurTime() + 2 )
+	end 
+	self.Scythethrow = self.Scythethrow or CurTime()
+	if SERVER and self.Owner:gStandsKeyDown("modifierkey1") and self:GetStand():GetModel() != "models/d13/balloon.mdl" and CurTime() >= self.Scythethrow then
+        self:SetNextPrimaryFire( CurTime() + 1 )
         self:GetStand():ResetSequence(self:GetStand():LookupSequence("scythethrow"))
+		Dreamland:SetPlaybackRate(3)
         self:GetStand():ResetSequenceInfo()  
 		self:GetStand():SetCycle(0)  
 		timer.Simple(0.4, function() 
@@ -612,8 +605,12 @@ function SWEP:PrimaryAttack()
 				scythe:Spawn()
 			end 
 		end)
+		--timer.Simple(3,function()
+			--Dreamland:SetPlaybackRate(1)
+		--end)
         self:GetStand():EmitStandSound(Romantic)
         self:GetStand():EmitStandSound(Throw)
+		self.Scythethrow = CurTime() + 8
 	end
 end
 
@@ -636,6 +633,7 @@ end
 
 --Screw this entire section, it only works like 20% of the time. Basically, meant to catch every time the weapon is not in your hands in order to remove the stand.
 function SWEP:OnDrop()
+	self:GetOwner():SetModelScale(1)
 	if SERVER and self:GetStand():IsValid() then
 		self:GetStand():Remove()
 	end
@@ -648,6 +646,7 @@ function SWEP:OnDrop()
 end
 
 function SWEP:OnRemove()
+	self:GetOwner():SetModelScale(1)
 	if SERVER and self:GetStand():IsValid() then
 		self:GetStand():Remove()
 	end
@@ -655,7 +654,7 @@ function SWEP:OnRemove()
 		Dreamland:Remove()
 	end
 	self:SetInDoDoDo(false)
-	self.Owner:RemoveFlags(FL_ATCONTROLS)
+	--self.Owner:RemoveFlags(FL_ATCONTROLS)
 	return true
 end
 

@@ -28,7 +28,8 @@ if CLIENT then
 end
 SWEP.SlotPos            = 2
 SWEP.DrawCrosshair      = true
-
+SWEP.StandModel = "models/anubis/w_anubis.mdl"
+SWEP.StandModelP = "models/anubis/w_anubis.mdl"
 SWEP.WorldModel = "models/anubis/w_anubis.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
@@ -128,9 +129,56 @@ end
 function SWEP:SetupDataTables()
 		self:NetworkVar("Bool", 0, "Broken")
 end
+local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
+local base        	= "vgui/hud/gstands_hud/"
+local armor_bar   	= Material(base.."armor_bar")
+local bar_border  	= Material(base.."bar_border")
+local boxdis      	= Material(base.."boxdis")
+local boxend      	= Material(base.."boxend")
+local cooldown_box	= Material(base.."cooldown_box")
+local generic_rect	= Material(base.."generic_rect")
+local health_bar  	= Material(base.."health_bar")
+local pfpback     	= Material(base.."pfpback")
+local pfpfront    	= Material(base.."pfpfront")
+local corner_left  	= Material(base.."corner_left")
+local corner_right  = Material(base.."corner_right")
 
+function SWEP:DrawHUD()
+	local color = gStands.GetStandColorTable("models/anubis/anubis.mdl", "0")
+	local height = ScrH()
+	local width = ScrW()
+	local mult = ScrW() / 1920
+	local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+	gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+	local nocompletegstands = Color(255,0,0, 255)
+	draw.TextShadow({
+		text = "No Complete!",
+		font = "gStandsFont",
+		pos = {width - 1500 * mult, height - 265 * mult},
+		color = nocompletegstands,
+	}, 2 * mult, 250)
+
+	draw.TextShadow({
+		text = "This Stand is incomplete!",
+		font = "gStandsFont",
+		pos = {width - 1550 * mult, height - 235 * mult},
+		color = nocompletegstands,
+	}, 2 * mult, 250)
+end
+hook.Add( "HUDShouldDraw", "AnubisHud", function(elem)
+	if GetConVar("gstands_draw_hud"):GetBool() and IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_anubis" and (((elem == "CHudWeaponSelection" ) and LocalPlayer().SPInZoom) or elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") then
+		return false
+	end
+end)
 function SWEP:Initialize()
-    --Set the third person hold type to fists    
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_anubis_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_anubis_heal"):GetInt())
+			end
+		end
+	end)
 end
 
 function SWEP:ResetPhysAttributes()
@@ -306,11 +354,7 @@ function SWEP:Deploy()
 		end)
 	end
     --As is standard with stand addons, set health to 1000
-    if self.Owner:Health() == 100  then
-        self.Owner:SetMaxHealth( self.Durability )
-        self.Owner:SetHealth( self.Durability )
-	end
-    if SERVER then
+     if SERVER then
 		self:SetPhysAttributes()
 	end
     --Create some networked variables, solves some issues where multiple people had the same stand
@@ -319,6 +363,13 @@ function SWEP:Deploy()
 end
 
 function SWEP:Think()
+	self.TauntTimer = self.TauntTimer or CurTime()
+	if self.Owner:gStandsKeyDown("taunt") and CurTime() >= self.TauntTimer then
+		if SERVER then
+			self.Owner:EmitSound("weapons/anubis/taunt"..math.random(1, 4)..".wav", 75, 100 )
+		end
+		self.TauntTimer = CurTime() + 4
+	end
     if self:GetBroken() then
 		self.HitDistance = 48
 		self.WorldModel = "models/anubis/w_anubis_broken.mdl"

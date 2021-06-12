@@ -58,7 +58,7 @@ SWEP.Range = 2500
 SWEP.StandModel = "models/player/heg/heg.mdl"
 SWEP.StandModelP = "models/player/heg/heg.mdl"
 if CLIENT then
-	SWEP.StandModel = "models/player/heg.mdl"
+	SWEP.StandModel = "models/player/heg/heg.mdl"
 end
 SWEP.gStands_IsThirdPerson = true
 
@@ -153,11 +153,17 @@ function SWEP:SetWeaponHoldType( t )
 end
 
 function SWEP:Initialize()
-	
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_hierophant_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_hierophant_heal"):GetInt())
+			end
+		end
+	end)
 	if CLIENT then
 	end
 	self:DrawShadow(false)
-	
 end
 
 if CLIENT then
@@ -676,9 +682,11 @@ function SWEP:DePossess(soft)
 	if IsValid(self:GetPossessionTarget()) then
 		local ent = self:GetPossessionTarget()
 		self:SetPossessionTarget(NULL)
-		self.Stand:SetFrozen(false)
-		self.Stand:SetNoDraw(false)
-		self.Stand:SetNotSolid(false)
+		if IsValid(self.Stand) then
+			self.Stand:SetFrozen(false)
+			self.Stand:SetNoDraw(false)
+			self.Stand:SetNotSolid(false)
+		end
 		if !soft then
 			local dmginfo = DamageInfo()
 			local attacker = self.Owner
@@ -1013,9 +1021,7 @@ function SWEP:OnRemove()
 		self.BarrierAvg = Vector(0,0,0)
 	end
 	self:EndAttack()
-	if self.Owner and IsValid(self.Stand) then
-		self.Stand:Withdraw()
-	end
+
 	self:DePossess()
 	return true
 end

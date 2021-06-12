@@ -52,7 +52,7 @@ SWEP.LifeDetector				= NULL
 SWEP.StandModel 				= "models/player/mgr/mgr.mdl"
 SWEP.StandModelP 				= "models/player/mgr/mgr.mdl"
 if CLIENT then
-	SWEP.StandModel = "models/player/mgr.mdl"
+	SWEP.StandModel = "models/player/mgr/mgr.mdl"
 end
 SWEP.gStands_IsThirdPerson = true
 
@@ -282,6 +282,14 @@ function SWEP:DoDrawCrosshair(x,y)
 end
 
 function SWEP:Initialize()
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self:GetOwner():SetHealth(GetConVar("gstands_magicians_red_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_magicians_red_heal"):GetInt())
+			end
+		end
+	end)
 	self:DrawShadow(false)
 end
 
@@ -698,7 +706,7 @@ function SWEP:DonutPunch()
 		local dmginfo = DamageInfo()		
 		dmginfo:SetAttacker( self.Owner )
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage( 150 )
+		dmginfo:SetDamage(GetConVar("gstands_magicians_red_kick_damage"):GetInt())
 		dmginfo:SetDamageType(DMG_BURN)
 		
 		local vel = tr.Entity:GetAbsVelocity()
@@ -805,7 +813,7 @@ function SWEP:PrimaryAttack()
 						local dmg = DamageInfo()
 						dmg:SetAttacker(self.Owner)
 						dmg:SetInflictor(self)
-						dmg:SetDamage(10 * mult)
+						dmg:SetDamage(GetConVar("gstands_magicians_red_flame_tower_damage"):GetInt())
 						dmg:SetDamageType(DMG_BURN)
 						v:EmitSound("ambient/fire/mtov_flame2.wav", 75, 100)
 						v:TakeDamageInfo(dmg)
@@ -829,7 +837,7 @@ function SWEP:PrimaryAttack()
 							local dmg = DamageInfo()
 							dmg:SetAttacker(self.Owner)
 							dmg:SetInflictor(self)
-							dmg:SetDamage(10 * mult)
+							dmg:SetDamage(GetConVar("gstands_magicians_red_flame_tower_damage"):GetInt())
 							dmg:SetDamageType(DMG_BURN)
 							v:EmitSound("ambient/fire/mtov_flame2.wav", 75, 100)
 							v:TakeDamageInfo(dmg)

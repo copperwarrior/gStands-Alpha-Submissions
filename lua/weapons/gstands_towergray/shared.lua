@@ -32,6 +32,11 @@ SWEP.DrawCrosshair        	= true
 SWEP.WorldModel           	= "models/player/whitesnake/disc.mdl"
 SWEP.ViewModelFOV         	= 54
 SWEP.UseHands             	= true
+SWEP.StandModel 				= "models/tgray/tgray.mdl"
+SWEP.StandModelP 				= "models/tgray/tgray.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/tgray/tgray.mdl"
+end
 
 SWEP.Primary.ClipSize     	= -1
 SWEP.Primary.DefaultClip  	= -1
@@ -129,7 +134,15 @@ function SWEP:SetWeaponHoldType( t )
 	
 end
 function SWEP:Initialize()
-	
+	timer.Simple(0.1, function() 
+		if self:GetOwner() != nil then
+			if self:GetOwner():IsValid() and SERVER then
+				self.Owner:EmitStandSound("ambient/creatures/flies"..math.random(1,5)..".wav", 75, 65)
+				self:GetOwner():SetHealth(GetConVar("gstands_tower_of_gray_heal"):GetInt())
+				self:GetOwner():SetMaxHealth(GetConVar("gstands_tower_of_gray_heal"):GetInt())
+			end
+		end
+	end)
 	if CLIENT then
 	end
 	self:DrawShadow(false)
@@ -196,27 +209,24 @@ local bones = {
 	"ValveBiped.Bip01_Spine4"
 }
 function SWEP:DrawHUD()
-	if GetConVar("gstands_draw_hud"):GetBool() then
-		local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
-		local height = ScrH()
-		local width = ScrW()
-		local mult = ScrW() / 1920
-		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-		
-		surface.SetMaterial(generic_rect)
-		surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
-		
-		
-		draw.TextShadow({
-			text = self:GetTongues() - 1,
-			font = "gStandsFontLarge",
-			pos = {width - 160 * mult, height - 120 * mult},
-			color = tcolor,
-			xalign = TEXT_ALIGN_CENTER
-		}, 2 * mult, 250)
-		
-		
+	if IsValid(self.Stand) then
+		if GetConVar("gstands_draw_hud"):GetBool() then
+			local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+			local height = ScrH()
+			local width = ScrW()
+			local mult = ScrW() / 1920
+			local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+			gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+			surface.SetMaterial(generic_rect)
+			surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
+			draw.TextShadow({
+				text = self:GetTongues() - 1,
+				font = "gStandsFontLarge",
+				pos = {width - 160 * mult, height - 120 * mult},
+				color = tcolor,
+				xalign = TEXT_ALIGN_CENTER
+			}, 2 * mult, 250)
+		end
 	end
 end
 hook.Add( "HUDShouldDraw", "TowerOfGrayHud", function(elem)
@@ -363,21 +373,25 @@ function SWEP:Think()
 end
 
 function SWEP:PrimaryAttack()
-	ParticleEffectAttach("tgrayvomit", PATTACH_POINT_FOLLOW, self.Stand, self.Stand:LookupAttachment("tongue_a"))
-	self:SetHoldType("pistol")
-	self.Stand:SetBodygroup(1, 1)
-	self.Stand:ResetSequence("attack")
-	self.Stand:SetCycle(0)
-	timer.Simple(self.Stand:SequenceDuration("attack") - 0.1, function() if IsValid(self.Stand) then self.Stand:SetBodygroup(1, 0) self:SetHoldType("stando") end end)
-	self.GotTongue = false
-	timer.Create("TowerofGrayAttackLoop"..self:EntIndex()..self.Owner:GetName(), 0.01, 30, function() 
-		self.HitHead = false
-		self:DonutPunch()
-	end)
-	self:SetNextPrimaryFire(CurTime() + self.Stand:SequenceDuration("attack"))
-	if SERVER then
-		self.Stand:EmitSound( "physics/flesh/flesh_squishy_impact_hard"..math.random(1,5)..".wav", 75, 110, 0.5)
-		self.Stand:EmitSound( Tongue)
+	if IsValid(self.Stand) then
+		ParticleEffectAttach("tgrayvomit", PATTACH_POINT_FOLLOW, self.Stand, self.Stand:LookupAttachment("tongue_a"))
+		self:SetHoldType("pistol")
+		self.Stand:SetBodygroup(1, 1)
+		self.Stand:ResetSequence("attack")
+		self.Stand:SetCycle(0)
+		timer.Simple(self.Stand:SequenceDuration("attack") - 0.1, function() if IsValid(self.Stand) then self.Stand:SetBodygroup(1, 0) self:SetHoldType("stando") end end)
+		self.GotTongue = false
+		timer.Create("TowerofGrayAttackLoop"..self:EntIndex()..self.Owner:GetName(), 0.01, 30, function() 
+			if IsValid(self.Stand) then
+				self.HitHead = false
+				self:DonutPunch()
+			end
+		end)
+		self:SetNextPrimaryFire(CurTime() + self.Stand:SequenceDuration("attack"))
+		if SERVER and IsValid(self.Stand) then
+			self.Stand:EmitSound( "physics/flesh/flesh_squishy_impact_hard"..math.random(1,5)..".wav", 75, 110, 0.5)
+			self.Stand:EmitSound( Tongue)
+		end
 	end
 end
 
@@ -416,7 +430,7 @@ function SWEP:DonutPunch()
 			if ( !IsValid( attacker ) ) then attacker = self.Owner end
 			dmginfo:SetAttacker( attacker )
 			dmginfo:SetInflictor( self )
-			dmginfo:SetDamage( 15 * self.Power * self:GetTongues()/4 )
+			dmginfo:SetDamage(GetConVar("gstands_tower_gray_damage"):GetInt() * self:GetTongues()/4)
 			if tr.HitGroup == HITGROUP_HEAD then
 				dmginfo:SetDamage( 25 * self.Power * self:GetTongues()/4 )
 				self.HitHead = true
