@@ -1,7 +1,7 @@
 ENT.Type = "anim"
 ENT.Base = "base_anim"
 
-ENT.PrintName= "#gstands.names.d13"
+ENT.PrintName= "Death"
 ENT.Author= "Copper"
 ENT.Contact= ""
 ENT.Purpose= "Geb"
@@ -65,6 +65,7 @@ function ENT:Initialize()
 		self:SetSolid( SOLID_OBB )
 		self:SetMoveType( MOVETYPE_NOCLIP )
 		
+		
 		self:SetSolidFlags( FSOLID_NOT_STANDABLE )
 		self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	if SERVER then
@@ -84,7 +85,8 @@ function ENT:Initialize()
 			AddOriginToPVS( self:WorldSpaceCenter() )
 		end
 	end)
-	self:SetSkin(self.Owner:GetInfoNum("gstands_standskin_gstands_death", math.random(0, self:SkinCount() - 1)))
+	self:SetSkin(self.Owner:GetInfoNum("gstands_standskin_"..string.Replace(string.Replace("Death 13", " ", ""), "'",""), math.random(0, self:SkinCount() - 1)))
+
 end
 
 function ENT:Disable(silent)
@@ -136,23 +138,78 @@ function ENT:Think()
 			end
 		if self.Wep:GetInDoDoDo() then
 			self.Owner:AddFlags(FL_ATCONTROLS)
-			if self:GetPos().x > self.DefPos.x + 2700 or self:GetPos().x < self.DefPos.x - 800
-			or self:GetPos().y > self.DefPos.y + 1500 or self:GetPos().y < self.DefPos.y - 1500 
-			or self:GetPos().z > self.DefPos.z or self:GetPos().z < self.DefPos.z - 1950 then
-						self:SetPos(LerpVector(0.1, self:GetPos(), self.DefPos))
+			if self:GetModel() == "models/d13/d13.mdl" then
+				if self:GetPos().x > self.DefPos.x + 2700 or self:GetPos().x < self.DefPos.x - 800
+				or self:GetPos().y > self.DefPos.y + 1500 or self:GetPos().y < self.DefPos.y - 800
+				or self:GetPos().z > self.DefPos.z or self:GetPos().z < self.DefPos.z - 1600 then
+							self:SetPos(LerpVector(0.1, self:GetPos(), self.DefPos))
+				end
 			end
-			if self.Owner:KeyDown(IN_FORWARD) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
-				self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * 15))
+			if self:GetModel() == "models/d13/balloon.mdl" then
+				if self:GetPos().x > self.DefPos.x + 4700 or self:GetPos().x < self.DefPos.x - 1800
+				or self:GetPos().y > self.DefPos.y + 3500 or self:GetPos().y < self.DefPos.y - 1800
+				or self:GetPos().z > self.DefPos.z or self:GetPos().z < self.DefPos.z - 1600 then
+							self:SetPos(LerpVector(0.1, self:GetPos(), self.DefPos))
+				end
 			end
-			if self.Owner:KeyDown(IN_BACK) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
-			self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * 15))
-			end
-			if self.Owner:KeyDown(IN_MOVELEFT) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetRight() * 1) != CONTENTS_SOLID then
-			self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * 15))
-			end
-			if self.Owner:KeyDown(IN_MOVERIGHT) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetRight() * 1) != CONTENTS_SOLID then
-			self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * 15))
-				
+			if !self.Owner:KeyDown(IN_SPEED) then
+				if self:GetModel() == "models/d13/d13.mdl" then
+					if self.Owner:KeyDown(IN_FORWARD) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * 8))
+					end
+					if self.Owner:KeyDown(IN_BACK) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * 8))
+					end
+					if self.Owner:KeyDown(IN_MOVELEFT) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * 8))
+					end
+					if self.Owner:KeyDown(IN_MOVERIGHT) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * 8))
+					end
+				end
+				if self:GetModel() == "models/d13/balloon.mdl" then
+					if self.Owner:KeyDown(IN_FORWARD) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * 6.6))
+					end
+					if self.Owner:KeyDown(IN_BACK) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * 6.6))
+					end
+					if self.Owner:KeyDown(IN_MOVELEFT) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * 6.6))
+					end
+					if self.Owner:KeyDown(IN_MOVERIGHT) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * 6.6))
+					end
+				end
+			else
+				if self:GetModel() == "models/d13/d13.mdl" then
+					if self.Owner:KeyDown(IN_FORWARD) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * 17))
+					end
+					if self.Owner:KeyDown(IN_BACK) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * 17))
+					end
+					if self.Owner:KeyDown(IN_MOVELEFT) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * 17))
+					end
+					if self.Owner:KeyDown(IN_MOVERIGHT) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * 17))
+					end
+				end
+				if self:GetModel() == "models/d13/balloon.mdl" then
+					if self.Owner:KeyDown(IN_FORWARD) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * 15))
+					end
+					if self.Owner:KeyDown(IN_BACK) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * 15))
+					end
+					if self.Owner:KeyDown(IN_MOVELEFT) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * 15))
+					end
+					if self.Owner:KeyDown(IN_MOVERIGHT) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetRight() * 1) != CONTENTS_SOLID then
+						self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * 15))
+					end
+				end
 			end
 			if self.Owner:KeyDown(IN_DUCK) and self:GetModel() != "models/d13/balloon.mdl" then
 			self:SetModel("models/d13/balloon.mdl")
@@ -204,20 +261,20 @@ function ENT:DrawTranslucent()
 		local haloInfo = 
 		{
 			Ents = selfT,
-			Color = self.Color,
+			Color = gStands.GetStandColorTable(self:GetModel(), self:GetSkin()),
 			Hidden = when_hidden,
-			BlurX = math.sin(CurTime()) * 5,
-			BlurY = math.sin(CurTime()) * 5,
-			DrawPasses = 2,
-			Additive = true,
-			IgnoreZ = false
+			BlurX = 2,
+			BlurY = 2,
+			DrawPasses = 3,
+			Additive = false,
+			IgnoreZ = true
 		}
 		
 		self:DrawModel() -- Draws Model Client Side
-		
-		if GetConVar("gstands_draw_halos"):GetBool() and self:WaterLevel() < 1 and render.SupportsHDR and !LocalPlayer():IsWorldClicking() then
-		halo.Render(haloInfo)
-		end
+
+		--if self:GetModel() == "models/d13/d13.mdl" then
+			--halo.Render(haloInfo)
+		--end
 	end
 	elseif self.Aura and self.StandAura then
 		self.Aura:StopEmission()

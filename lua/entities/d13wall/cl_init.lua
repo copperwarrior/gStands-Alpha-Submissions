@@ -1,6 +1,7 @@
 include("shared.lua")
 
 local sunBlockerMat = Material("color")
+local FloorMaterial = Material("models/d13/groundtan")
 local balloon = Model("models/d13/balloon.mdl")
 function ENT:Initialize()
 	local bounds = self:GetWallBounds()
@@ -12,7 +13,13 @@ function ENT:Initialize()
 	render.FogStart(0)
 	render.FogEnd(5000)
 	render.FogMode(MATERIAL_FOG_LINEAR)
-	render.FogMaxDensity(0.3)
+	for k, ent in pairs(ents.GetAll()) do
+        if ent:GetClass() == "d13scythe"then
+            render.FogMaxDensity(5)
+        else
+            render.FogMaxDensity(0.3)
+        end
+    end
 	render.FogColor(clr.r, clr.g, clr.b )
 	return true
 	end
@@ -20,10 +27,6 @@ function ENT:Initialize()
 	
 end
 
-
-function ENT:OnRemove()
-hook.Remove("SetupWorldFog", "NightmareFog")
-end
 function ENT:GetDrawMesh()
 	if !self.mesh then
 		local bounds = self:GetWallBounds()
@@ -72,39 +75,19 @@ end
 
 
 
+
+--	self:SetMaterial("models/d13/water")
 local matScale = Vector(15,15,15)
+
 local matScaleSky = Vector(1500,1,1500)
 
-function ENT:Draw()
-	if self:GetDreamlandDimension():IsValid() and !self:GetDreamlandDimension():ShouldRenderInterior() then
-		return
-	end
-	local bounds = self:GetWallBounds()
-	bounds.z = bounds.z+1 --Fix a clipping error with the sun blocker
-	self.mater = self.mater or Material("models/d13/skytex")
-	render.SetMaterial(sunBlockerMat)
 
-		
-render.DrawQuad(self:LocalToWorld(Vector(-bounds.x,-bounds.y,bounds.z)),self:LocalToWorld(Vector(-bounds.x,bounds.y,bounds.z)),self:LocalToWorld(bounds),self:LocalToWorld(Vector(bounds.x,-bounds.y,bounds.z)),Color(229,183,83))
+
+
+
+
+function ENT:OnRemove()
+	hook.Remove("SetupWorldFog", "NightmareFog")
 end
-function ENT:Draw()
-	if self:GetDreamlandDimension():IsValid() and !self:GetDreamlandDimension():ShouldRenderInterior() then
-		return
-	end
-local mat = Matrix()
-	mat:Translate(self:GetPos())
-	mat:Rotate(self:GetAngles())
-	render.SetMaterial(sunBlockerMat)
-	cam.PushModelMatrix(mat)
-	self:GetDrawMesh():Draw() --Blocks the sun
-	cam.PopModelMatrix()
-	local bounds = self:GetWallBounds()
-	bounds.z = bounds.z+1 --Fix a clipping error with the sun blocker
-	self.mater = self.mater or Material("models/d13/skytex")
-	render.SetMaterial(sunBlockerMat)
 
-		
-render.DrawQuad(self:LocalToWorld(Vector(-bounds.x,-bounds.y,bounds.z)),self:LocalToWorld(Vector(-bounds.x,bounds.y,bounds.z)),self:LocalToWorld(bounds),self:LocalToWorld(Vector(bounds.x,-bounds.y,bounds.z)),Color(229,183,83))
-
-end
 

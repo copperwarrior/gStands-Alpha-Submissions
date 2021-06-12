@@ -217,7 +217,7 @@ function ENT:Slash(knockback, hand)
 		dmginfo:SetAttacker( attacker )
 		
 		dmginfo:SetInflictor( self.Owner:GetActiveWeapon() or self )
-		dmginfo:SetDamage( 85 )
+		dmginfo:SetDamage(GetConVar("gstands_the_fool_slash_punch"):GetInt())
 		tr.Entity:TakeDamageInfo( dmginfo )
 		
 		tr.Entity:SetVelocity( (self.Owner:GetAimVector() + Vector( 0, 0, 5 )) * (knockback ^ 2.2))
@@ -280,16 +280,18 @@ end
 
 hook.Add("SetupMove", "FoolFly", function(ply, mv)
 	if IsValid(ply) and IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "gstands_fool" then
-		local self = ply:GetActiveWeapon():GetStand()
-		if self:GetSequence() == self:LookupSequence("fly") then
-		local vel = 65--(mv:GetVelocity().x^2 + mv:GetVelocity().y^2 + math.Clamp( 0.3, -0.3, self:GetAngles():Forward().z))/38512
-		velf = self:GetForward()
-		local absoluteforward = Vector(velf.x, velf.y, 0)
-		velf.z = 5 + ( 5 * math.abs(velf:Dot(absoluteforward)))
-		velf.z = math.min(velf.z, 8.7)
+		if IsValid(ply:GetActiveWeapon()) then
+			local self = ply:GetActiveWeapon():GetStand()
+			if self:GetSequence() == self:LookupSequence("fly") then
+			local vel = 65
+			velf = self:GetForward()
+			local absoluteforward = Vector(velf.x, velf.y, 0)
+			velf.z = 5 + ( 5 * math.abs(velf:Dot(absoluteforward)))
+			velf.z = math.min(velf.z, 8.7)
 
-		velf = velf + mv:GetVelocity()
-			mv:SetVelocity(velf)
+			velf = velf + mv:GetVelocity()
+				mv:SetVelocity(velf)
+			end
 		end
 	end
 end)

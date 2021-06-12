@@ -90,7 +90,7 @@ if SERVER then
 					local Ent = tr.Entity
 					dmgInfo = DamageInfo()
 					dmgInfo:SetAttacker(self.Owner or self)
-					dmgInfo:SetDamage(1)
+					dmgInfo:SetDamage(GetConVar("gstands_dark_blue_moon_waterblast"):GetInt())
 					dmgInfo:SetInflictor( self.wep or self )
 					Ent:TakeDamageInfo(dmgInfo)
 					table.insert(self.targets, Ent)
@@ -133,7 +133,7 @@ if SERVER then
 			if tr.Hit and v:GetPos():Distance(self:GetPos()) < 500 then
 				dmgInfo = DamageInfo()
 				dmgInfo:SetAttacker(self.Owner or self)
-				dmgInfo:SetDamage(150)
+				dmgInfo:SetDamage(GetConVar("gstands_dark_blue_moon_waterblast_end"):GetInt())
 				dmgInfo:SetInflictor( self.wep or self )
 				v:TakeDamageInfo(dmgInfo)
 				v:EmitSound(WaterImpact)
