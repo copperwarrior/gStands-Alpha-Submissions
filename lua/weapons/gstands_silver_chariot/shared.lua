@@ -183,7 +183,16 @@ function SWEP:SetWeaponHoldType( t )
 	
 end
 function SWEP:Initialize()
-	
+	timer.Simple(0.1, function() 
+		if self:GetOwner():IsValid() then
+			if self:GetOwner() != nil then
+				if self:GetOwner():IsValid() and SERVER then
+					self:GetOwner():SetHealth(GetConVar("gstands_silver_chariot_heal"):GetInt())
+					self:GetOwner():SetMaxHealth(GetConVar("gstands_silver_chariot_heal"):GetInt())
+				end
+			end
+		end
+	end)
 	if CLIENT then
 	end
 	self:DrawShadow(false)
@@ -303,8 +312,8 @@ function SWEP:DrawHUD()
 			color = tcolor,
 			xalign = TEXT_ALIGN_RIGHT
 		}, 2 * mult, 250)
-		if IsValid(self:GetStand1()) then
-			surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 440 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap((CurTime() - self.StartCharge), 0, 3, 0, 40 * mult)))
+		if IsValid(self:GetStand2()) then
+			surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 440 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap((CurTime() ), 0, 3, 0, 40 * mult)))
 		end
 		surface.DrawTexturedRect(width - (64 * mult) - 32 * mult, height - (64 * mult) - 440 * mult, 64 * mult, 64 * mult)
 		
@@ -521,12 +530,14 @@ function SWEP:DefineImages()
 		} 
 		self.Stand.Image1 = self.Stand1
 		self.Stand.Image2 = self.Stand2
+		self.Stand:SetImage(self.Stand)
 		self.Stand1:SetImage(self.Stand)
 		self.Stand1.Image2 = self.Stand2
 		self.Stand2:SetImage(self.Stand)
 		self.Stand2.Image1 = self.Stand1
 		self.Stand:SetCenterImage(self.Stand1)
-		self.Stand2:SetCenterImage(self.Stand1)
+		self.Stand1:SetCenterImage(self.Stand2)
+		self.Stand2:SetCenterImage(self.Stand)
 		self.Stand:EmitStandSound(Afterimage)
 		self.Stand1:EmitStandSound(Afterimage2)
 		self.Stand2:EmitStandSound(Afterimage2)
@@ -710,6 +721,7 @@ function SWEP:Think()
 		if !self:GetAMode() and !self.Owner:gStandsKeyDown("modifierkey2") and self.Stand:GetBodygroup(2) == 1 and self.Owner:KeyReleased(IN_ATTACK2) and CurTime() >= self.SlashTimer then
 			
 			if CurTime() - self.StartCharge <= 0.2 then
+				
 				if SERVER then
 					self.Owner:EmitSound(LetsGo)
 				end
@@ -733,7 +745,14 @@ function SWEP:Think()
 					timer.Simple(0.8, function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Swoosh3) end end)
 					timer.Simple(1, function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Swoosh2) end end)
 				end
-				timer.Simple(self.Stand:SequenceDuration("slash"), function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Ting6) end self:SetHoldType("stando") end)
+				timer.Simple(self.Stand:SequenceDuration("slash"), function() 
+					if IsValid(self.Stand) then 
+						self.Stand:EmitStandSound(Ting6) 
+					end 
+					if IsValid(self.Stand) then
+						self:SetHoldType("stando") 
+					end
+				end)
 				
 				self.SlashTimer = CurTime() + self.Stand:SequenceDuration("slash") + 0.1
 				
@@ -756,7 +775,14 @@ function SWEP:Think()
 					self.Stand2:EmitStandSound(Dash)
 				end	
 				self.ChargeStarted = false
-				timer.Simple(self.Stand:SequenceDuration("stabonce"), function() self:SetHoldType("stando") self.Stand.SendForward = false self.Stand1.SendForward = false self.Stand2.SendForward = false end)
+				timer.Simple(self.Stand:SequenceDuration("stabonce"), function() 
+					if IsValid(self.Stand) then
+						self:SetHoldType("stando") 
+						self.Stand.SendForward = false 
+						self.Stand1.SendForward = false 
+						self.Stand2.SendForward = false 
+					end
+				end)
 				
 				local anim = "punch2"
 				self.SlashTimer = CurTime() + self.Stand:SequenceDuration("stabonce") + 0.1
@@ -770,7 +796,7 @@ function SWEP:Think()
 					self.Stand2.SendForward = true
 					self.Stand2.StandVelocity = self.Stand2:GetForward() * math.Clamp(0, 3, (CurTime() - self.StartCharge)) * 2
 				end
-				self.StartCharge = 0
+				self.StartCharge = 1
 			end
 		end
 		self.ThousandTimer = self.ThousandTimer or CurTime()
@@ -909,14 +935,22 @@ function SWEP:Think()
 	end
 	self.StandBlockTimer = self.StandBlockTimer or CurTime()
 	if SERVER and self.Owner:gStandsKeyDown("block") and CurTime() > self.StandBlockTimer and self.Armor then
-		self.Stand.HeadRotOffset = -5
-		self:SetHoldType("pistol")
-		self.Stand:ResetSequence(self.Stand:LookupSequence( "standblock" ))
-		self.Stand:SetCycle(0)
-		self.Stand:EmitStandSound(Swoosh1)
-		self.Stand:EmitStandSound(Schwing4)
-		timer.Simple(self.Stand:SequenceDuration("standblock"), function() self.Stand:EmitStandSound(Ting3) self:SetHoldType("stando") self.Stand.HeadRotOffset = -75 end)
-		self.StandBlockTimer = CurTime() + self.Stand:SequenceDuration("standblock") + 0.2
+		if IsValid(self.Stand) then
+			self.Stand.HeadRotOffset = -5
+			self:SetHoldType("pistol")
+			self.Stand:ResetSequence(self.Stand:LookupSequence( "standblock" ))
+			self.Stand:SetCycle(0)
+			self.Stand:EmitStandSound(Swoosh1)
+			self.Stand:EmitStandSound(Schwing4)
+			timer.Simple(self.Stand:SequenceDuration("standblock"), function() 
+				if IsValid(self.Stand) then
+					self.Stand:EmitStandSound(Ting3) 
+					self:SetHoldType("stando") 
+					self.Stand.HeadRotOffset = -75 
+				end
+			end)
+			self.StandBlockTimer = CurTime() + self.Stand:SequenceDuration("standblock") + 0.2
+		end
 	end
 end
 
@@ -1062,26 +1096,35 @@ function SWEP:SecondaryAttack()
 	
 	
 	if SERVER and (self:GetAMode()) and self.Armor and self.Stand:GetBodygroup(2) == 1 then
-		self:SetNextSecondaryFire( CurTime() + 5 )
-		self.Stand:RemoveAllGestures()
-		self.Stand.AnimSet = {
-			"STANDIDLE", 0,
-			"Shoot", 1,
-			"STANDIDLE", 0,
-			"IDLE_ALL_02", 0,
-			"FIST_BLOCK", 0,
-		}
-		timer.Simple(0.3, function() self.Stand:SetBodygroup(2, 0) self:ShootSword() end)
-		timer.Simple(0.25, function()
+		if IsValid(self.Stand) then 
+			self:SetNextSecondaryFire( CurTime() + 5 )
+			self.Stand:RemoveAllGestures()
 			self.Stand.AnimSet = {
 				"STANDIDLE", 0,
-				"Shoot", 0,
+				"Shoot", 1,
 				"STANDIDLE", 0,
 				"IDLE_ALL_02", 0,
 				"FIST_BLOCK", 0,
-			} 
-			self.Stand:RemoveAllGestures()
-		end)
+			}
+			timer.Simple(0.3, function() 
+				if IsValid(self.Stand) then 
+					self.Stand:SetBodygroup(2, 0) 
+					self:ShootSword() 
+				end
+			end)
+			timer.Simple(0.25, function()
+				if IsValid(self.Stand) then 
+					self.Stand.AnimSet = {
+						"STANDIDLE", 0,
+						"Shoot", 0,
+						"STANDIDLE", 0,
+						"IDLE_ALL_02", 0,
+						"FIST_BLOCK", 0,
+					} 
+					self.Stand:RemoveAllGestures()
+				end
+			end)
+		end
 		timer.Simple(5, function() if IsValid(self.Stand) and self.Stand:GetBodygroup(2) == 0 then self.Stand:SetBodygroup(2, 1) end end)
 	end
 	
@@ -1172,13 +1215,13 @@ function SWEP:Barrage()
 		
 		dmginfo:SetInflictor( self )
 		
-		dmginfo:SetDamage( 2 * self.Power )
+		dmginfo:SetDamage(GetConVar("gstands_silver_chariot_barrage_no_flame"):GetInt())
 		if tr.HitGroup == HITGROUP_HEAD then
 			dmginfo:AddDamage(5)
 		end
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage(15 * self.Power)
+			dmginfo:SetDamage(GetConVar("gstands_silver_chariot_barrage_flame"):GetInt())
 			tr.Entity:Ignite(1)
 		end
 		tr.Entity:TakeDamageInfo( dmginfo )
@@ -1213,13 +1256,13 @@ function SWEP:Barrage()
 		dmginfo:SetInflictor( self.Owner )
 		dmginfo:SetDamageType(DMG_SLASH)
 		
-		dmginfo:SetDamage( 2 * self.Power )
+		dmginfo:SetDamage(GetConVar("gstands_silver_chariot_barrage_no_flame"):GetInt())
 		if tr1.HitGroup == HITGROUP_HEAD then
 			dmginfo:AddDamage(5)
 		end
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage(15 * self.Power)
+			dmginfo:SetDamage(GetConVar("gstands_silver_chariot_barrage_flame"):GetInt())
 			tr.Entity:Ignite(1)
 		end
 		tr1.Entity:TakeDamageInfo( dmginfo )
@@ -1253,13 +1296,13 @@ function SWEP:Barrage()
 		dmginfo:SetInflictor( self.Owner )
 		dmginfo:SetDamageType(DMG_SLASH)
 		
-		dmginfo:SetDamage( 2 * self.Power )
+		dmginfo:SetDamage(GetConVar("gstands_silver_chariot_barrage_no_flame"):GetInt())
 		if tr2.HitGroup == HITGROUP_HEAD then
 			dmginfo:AddDamage(5)
 		end
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage(15 * self.Power)
+			dmginfo:SetDamage(GetConVar("gstands_silver_chariot_barrage_flame"):GetInt())
 			tr.Entity:Ignite(1)
 		end
 		tr2.Entity:TakeDamageInfo( dmginfo )
@@ -1511,11 +1554,11 @@ function SWEP:StabOnce(mult)
 		
 		dmginfo:SetInflictor( self.Owner )
 		
-		dmginfo:SetDamage( 65 * self.Power * mult)
+		dmginfo:SetDamage(GetConVar("gstands_silver_chriot_charge_dash_damage_not_flame"):GetInt() * mult)
 		dmginfo:SetDamageType(DMG_SLASH)
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage(70 * self.Power * mult)
+			dmginfo:SetDamage(GetConVar("gstands_silver_chriot_charge_dash_damage_flame"):GetInt() * mult)
 			tr.Entity:Ignite(5)
 		end
 		if tr.HitGroup == HITGROUP_HEAD then
@@ -1542,11 +1585,11 @@ function SWEP:StabOnce(mult)
 		
 		dmginfo:SetInflictor( self.Owner )
 		
-		dmginfo:SetDamage( 65 * self.Power * mult)
+		dmginfo:SetDamage(GetConVar("gstands_silver_chriot_charge_dash_damage_not_flame"):GetInt() * mult)
 		dmginfo:SetDamageType(DMG_SLASH)
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage(70 * self.Power * mult)
+			dmginfo:SetDamage(GetConVar("gstands_silver_chriot_charge_dash_damage_flame"):GetInt() * mult)
 			tr1.Entity:Ignite(5)
 		end
 		if tr1.HitGroup == HITGROUP_HEAD then
@@ -1571,11 +1614,11 @@ function SWEP:StabOnce(mult)
 		
 		dmginfo:SetInflictor( self.Owner )
 		
-		dmginfo:SetDamage( 65 * self.Power)
+		dmginfo:SetDamage(GetConVar("gstands_silver_chriot_charge_dash_damage_not_flame"):GetInt() * mult)
 		dmginfo:SetDamageType(DMG_SLASH)
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage(70 * self.Power)
+			dmginfo:SetDamage(GetConVar("gstands_silver_chriot_charge_dash_damage_flame"):GetInt() * mult)
 			tr2.Entity:Ignite(5)
 		end
 		if tr2.HitGroup == HITGROUP_HEAD then
@@ -1671,11 +1714,11 @@ function SWEP:SlashAttack(mult)
 		dmginfo:SetAttacker( attacker )
 		
 		dmginfo:SetInflictor( self.Owner )
-		dmginfo:SetDamage( 15 * self.Power * mult )
+		dmginfo:SetDamage(GetConVar("gstands_silver_chariot_slash_no_flame"):GetInt() * mult)
 		dmginfo:SetDamageType(DMG_SLASH)
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage( 20 * self.Power * mult )
+			dmginfo:SetDamage(GetConVar("gstands_silver_chariot_slash_flame"):GetInt() * mult)
 			tr.Entity:Ignite(5)
 		end
 		if tr.HitGroup == HITGROUP_HEAD then
@@ -1696,11 +1739,11 @@ function SWEP:SlashAttack(mult)
 		dmginfo:SetAttacker( attacker )
 		
 		dmginfo:SetInflictor( self.Owner )
-		dmginfo:SetDamage( 15 * self.Power * mult )
+		dmginfo:SetDamage(GetConVar("gstands_silver_chariot_slash_no_flame"):GetInt() * mult)
 		dmginfo:SetDamageType(DMG_SLASH)
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage( 20 * self.Power * mult )
+			dmginfo:SetDamage(GetConVar("gstands_silver_chariot_slash_flame"):GetInt() * mult)
 			tr1.Entity:Ignite(5)
 		end
 		if tr1.HitGroup == HITGROUP_HEAD then
@@ -1719,11 +1762,11 @@ function SWEP:SlashAttack(mult)
 		dmginfo:SetInflictor( self.Owner )
 		
 		local dist = tr.HitPos:Distance(self.Stand2:GetBonePosition(self.Stand2:LookupBone("ValveBiped.Bip01_R_Hand"))) 
-		dmginfo:SetDamage( 15 * self.Power * mult )
+		dmginfo:SetDamage(GetConVar("gstands_silver_chariot_slash_no_flame"):GetInt() * mult)
 		dmginfo:SetDamageType(DMG_SLASH)
 		if self:GetSwordFlame() then
 			dmginfo:SetDamageType(DMG_BURN)
-			dmginfo:SetDamage( 20 * self.Power * mult )
+			dmginfo:SetDamage(GetConVar("gstands_silver_chariot_slash_flame"):GetInt() * mult)
 			tr2.Entity:Ignite(5)
 		end
 		if tr2.HitGroup == HITGROUP_HEAD then
