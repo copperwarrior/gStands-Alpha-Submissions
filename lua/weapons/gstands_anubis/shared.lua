@@ -174,8 +174,8 @@ function SWEP:Initialize()
 	timer.Simple(0.1, function() 
 		if self:GetOwner() != nil then
 			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_anubis_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_anubis_heal"):GetInt())
+				self:GetOwner():SetHealth(1500)
+				self:GetOwner():SetMaxHealth(1500)
 			end
 		end
 	end)
