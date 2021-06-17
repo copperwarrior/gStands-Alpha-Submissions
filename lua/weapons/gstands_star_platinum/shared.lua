@@ -249,8 +249,8 @@ function SWEP:Initialize()
 	timer.Simple(0.1, function() 
 		if self:GetOwner() != nil then
 			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_star_platinum_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_star_platinum_heal"):GetInt())
+				self:GetOwner():SetHealth(1500)
+				self:GetOwner():SetMaxHealth(1500)
 			end
 		end
 	end)
@@ -635,16 +635,7 @@ function SWEP:DefineStand()
 
 end
 
-hook.Add( "EntityTakeDamage", "PainSoundStarPlatinum", function ( owner, dmginfo )
-	if SERVER then
-		if (not Pain or Pain <= CurTime()) then
-			if ( IsValid( owner ) && dmginfo:GetDamage() >= 10 && dmginfo:GetDamage() < 300 ) and owner:IsPlayer() and owner:HasWeapon("gstands_star_platinum") then
-				owner:EmitSound("weapons/platinum/pain/pain-0"..math.random(1, 2)..".wav", 75, 100 )
-				SetPain(CurTime()+3.8)
-			end
-		end
-	end
-end)
+
 
 
 function SWEP:Think()
@@ -982,6 +973,8 @@ function SWEP:Think()
 
 		self:StarFingerDMG()
 
+		self.Stand:SetPlaybackRate(0.87)
+
 	end
 
 	if SERVER and !self.FlexOverride then
@@ -1214,6 +1207,8 @@ function SWEP:StopTime()
 
 	if IsValid(self.Stand) then
 
+		self.Owner:SetRenderMode(RENDERGROUP_BOTH)
+
 		if GetConVar( "gstands_time_stop" ):GetInt() == 0 then
 
 			if SERVER then
@@ -1367,7 +1362,7 @@ function SWEP:StartTime()
 		end
 
 		
-		timer.Simple(1, function()
+		timer.Simple(0.1, function()
 			if SERVER and IsValid(self.Stand) then
 
 				local zawa = EffectData()
@@ -2519,7 +2514,7 @@ function SWEP:StarFinger()
 
 				self.Stand:SetCycle(0)
 
-				self.Stand:SetPlaybackRate(1)
+				self.Stand:SetPlaybackRate(0.7)
 			end
 
 		end

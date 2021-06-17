@@ -34,8 +34,8 @@ SWEP.DrawCrosshair      = true
 SWEP.WorldModel = "models/player/whitesnake/disc.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
-SWEP.StandModel 				= "models/sun/gstands_sun.mdl"
-SWEP.StandModelP 				= "models/sun/gstands_sun.mdl"
+SWEP.StandModel 				= "models/props_c17/oildrum001.mdl"
+SWEP.StandModelP 				= "models/props_c17/oildrum001.mdl"
 if CLIENT then
 	SWEP.StandModel = "models/hdm/hdm.mdl"
 end
@@ -135,14 +135,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_strength_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_strength_heal"):GetInt())
-			end
-		end
-	end)
+    --Set the third person hold type to fists
 end
 
 function SWEP:DrawWorldModel()
@@ -174,6 +167,20 @@ function SWEP:DrawHUD()
 		local mult = ScrW() / 1920
 		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
 		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+		local nocompletegstands = Color(255,0,0, 255)
+		draw.TextShadow({
+			text = "No Complete!",
+			font = "gStandsFont",
+			pos = {width - 1500 * mult, height - 265 * mult},
+			color = nocompletegstands,
+		}, 2 * mult, 250)
+
+		draw.TextShadow({
+			text = "This Stand is incomplete!",
+			font = "gStandsFont",
+			pos = {width - 1550 * mult, height - 235 * mult},
+			color = nocompletegstands,
+		}, 2 * mult, 250)
 	end
 end
 hook.Add( "HUDShouldDraw", "StrengthHud", function(elem)

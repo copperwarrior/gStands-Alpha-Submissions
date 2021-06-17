@@ -28,6 +28,11 @@ if CLIENT then
 end
 SWEP.SlotPos			  		= 2
 SWEP.DrawCrosshair				= true
+SWEP.StandModel 				= "models/hpworld/hpworld.mdl"
+SWEP.StandModelP 				= "models/hpworld/hpworld.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/hdm/hdm.mdl"
+end
 
 SWEP.WorldModel		   		= "models/hpworld/hpworld.mdl"
 SWEP.ViewModelFOV		 		= 54
@@ -45,11 +50,7 @@ SWEP.Secondary.Ammo	   		= "none"
 
 SWEP.DrawAmmo			 		= false
 SWEP.HitDistance		  		= 85
-SWEP.StandModel 				= "models/hpworld/hpworld.mdl"
-SWEP.StandModelP 				= "models/hpworld/hpworld.mdl"
-if CLIENT then
-	SWEP.StandModel = "models/hdm/hdm.mdl"
-end
+
 rtTex = "phoenix_storms/rt_camera"
 game.AddParticles("particles/hpurple.pcf")
 game.AddParticles("particles/auraeffect.pcf")
@@ -152,7 +153,7 @@ function SWEP:DrawHUD()
 		draw.TextShadow({
 			text = "#gstands.hp.hamon",
 			font = "gStandsFont",
-			pos = {width - 137 * mult, height - 190 * mult},
+			pos = {width - 175 * mult, height - 190 * mult},
 			color = tcolor,
 		}, 2 * mult, 250)
 		
@@ -235,14 +236,6 @@ function SWEP:SetWeaponHoldType( t )
 end
 
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_hermit_purple_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_hermit_purple_heal"):GetInt())
-			end
-		end
-	end)
 end
 
 function SWEP:SetupDataTables()
@@ -542,7 +535,7 @@ function SWEP:DonutPunch()
 		dmginfo:SetDamageType(DMG_SHOCK)
 		
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_hermit_purple_donut_punch"):GetInt())
+		dmginfo:SetDamage( 35 * self.Power )
 		self.Owner:EmitSound(mCrackle)
 		tr.Entity:EmitSound(Trail)
 		tr.Entity:EmitSound(Crackle)

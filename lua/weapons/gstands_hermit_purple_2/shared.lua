@@ -28,6 +28,11 @@ if CLIENT then
 end
 SWEP.SlotPos            = 2
 SWEP.DrawCrosshair      = true
+SWEP.StandModel 				= "models/hpworld/hpworld.mdl"
+SWEP.StandModelP 				= "models/hpworld/hpworld.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/hpworld2/hpworld2.mdl"
+end
 
 SWEP.WorldModel = "models/hpworld/hpworld.mdl"
 SWEP.ViewModelFOV = 54
@@ -42,11 +47,7 @@ SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = true
 SWEP.Secondary.Ammo = "none"
-SWEP.StandModel 				= "models/hpworld/hpworld.mdl"
-SWEP.StandModelP 				= "models/hpworld/hpworld.mdl"
-if CLIENT then
-	SWEP.StandModel = "models/hpworld2/hpworld2.mdl"
-end
+
 SWEP.DrawAmmo = false
 SWEP.HitDistance = 48
 
@@ -194,14 +195,6 @@ function SWEP:SetWeaponHoldType( t )
     
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_hermit_purple_two_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_hermit_purple_two_heal"):GetInt())
-			end
-		end
-	end)
 end
 
 function SWEP:SetupDataTables()

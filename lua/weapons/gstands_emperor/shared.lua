@@ -52,7 +52,7 @@ SWEP.StandModel = "models/emperor/models/emperor.mdl"
 SWEP.StandModelP = "models/emperor/models/emperor.mdl"
 
 game.AddParticles("particles/emperor.pcf")
-SWEP.RenderGroup = RENDERGROUP_TRANSLUCENT
+SWEP.RenderGroup = RENDERGROUP_BOTH
 PrecacheParticleSystem("emperor_muzzleflash")
 local thirdperson_offset = GetConVar("gstands_thirdperson_offset")
 function SWEP:CalcView( ply, pos, ang, fov )
@@ -183,30 +183,7 @@ hook.Add( "HUDShouldDraw", "EmperorHud", function(elem)
         return false
 	end
 end)
-local material = Material( "vgui/hud/gstands_hud/crosshair" )
-function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Owner) and IsValid(LocalPlayer()) then
-		local tr = util.TraceLine( {
-			start = self.Owner:EyePos(),
-			endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 1500,
-			filter = {self.Owner},
-			mask = MASK_SHOT_HULL
-		} )
-		local pos = tr.HitPos
-		
-		local pos2d = pos:ToScreen()
-		if pos2d.visible then
-			surface.SetMaterial( material )
-			local clr = (self.Color)
-			local h,s,v = ColorToHSV(clr)
-			h = h - 180
-			clr = HSVToColor(h,1,1)
-			surface.SetDrawColor( clr )
-			surface.DrawTexturedRect( pos2d.x - 16, pos2d.y - 16, 32, 32 )
-		end
-		return true
-	end
-end
+
 hook.Add("ShouldDrawLocalPlayer", "EmperorDrawLocalPlayer", function()
 	return InHudDrawEmperor
 end)
@@ -223,15 +200,7 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Entity", 4, "Stand") --Compatibility
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:EmitStandSound(SDeploy)
-				self:GetOwner():SetHealth(GetConVar("gstands_emperor_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_emperor_heal"):GetInt())
-			end
-		end
-	end)
+    --Set the third person hold type to fists
 end
 
 --Deploy starts up the stand

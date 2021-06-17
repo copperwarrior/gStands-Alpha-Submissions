@@ -26,16 +26,18 @@ if CLIENT then
 	SWEP.Purpose = language.GetPhrase(SWEP.Purpose)
 	SWEP.Instructions = language.GetPhrase(SWEP.Instructions)
 end
-
 SWEP.SlotPos            = 2
 SWEP.DrawCrosshair      = true
 
 SWEP.WorldModel = "models/sethan/w_sethax.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
+SWEP.StandModel = "models/sethan/w_sethax.mdl"
+SWEP.StandModelP = "models/sethan/w_sethax.mdl"
 if CLIENT then
 	SWEP.StandModel = "models/hdm/hdm.mdl"
 end
+
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true
@@ -138,64 +140,9 @@ function SWEP:SetWeaponHoldType( t )
 	
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_sethan_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_sethan_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 end
-
---Third Person View
-local thirdperson_offset = GetConVar("gstands_thirdperson_offset")
-function SWEP:CalcView( ply, pos, ang )
-if not self.gStands_IsThirdPerson or ply:GetViewEntity() ~= ply then return end
-
-	local convar = thirdperson_offset:GetString()
-	local strtab = string.Split(convar, ",")
-	local offset = Vector(strtab[1], strtab[2], strtab[3])
-	offset:Rotate(ang)
-
-	local trace = util.TraceHull( {
-		start = pos,
-		endpos = pos - ang:Forward() * 100,
-		filter = { ply:GetActiveWeapon(), ply, ply:GetVehicle() },
-		mins = Vector( -4, -4, -4 ),
-		maxs = Vector( 4, 4, 4 ),
-	} )
-
-
-	if ( trace.Hit ) then pos = trace.HitPos else pos = trace.HitPos end
-	return pos + offset,ang
-end
---Deploy starts up the stand
-function SWEP:Deploy()
-	self:SetHoldType( "stando" )
-	if SERVER then
-		if GetConVar("gstands_deploy_sounds"):GetBool() then
-			self.Owner:EmitStandSound(Deploy)
-		end
-	end
-	--As is standard with stand addons, set health to 1000
- 
-	
-	--Create some networked variables, solves some issues where multiple people had the same stand
-	self.Owner:SetCanZoom(false)
-	local hooktag = self.Owner:Name()
-	hook.Add("EntityTakeDamage", "SethanCutsDamage"..hooktag, function(targ, dmg)
-		if IsValid(self) and IsValid(self.Owner) then
-		
-			if table.HasValue(self.targets, dmg:GetAttacker()) then
-				dmg:SetDamage(dmg:GetDamage()*math.Clamp(dmg:GetAttacker():GetModelScale()/2,0,1))
-			end
-		else
-			hook.Remove("EntityTakeDamage", "SethanCutsDamage"..hooktag)
-		end
-	end)
-end
-local pos, material, white = Vector( 0, 0, 0 ), Material( "vgui/hud/gstands_hud/crosshair" ), Color( 255, 255, 255, 255 )
+local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
 local base			= "vgui/hud/gstands_hud/"
 local armor_bar   	= Material(base.."armor_bar")
 local bar_border  	= Material(base.."bar_border")
@@ -217,7 +164,7 @@ local bones = {
 }
 function SWEP:DrawHUD()
 	if GetConVar("gstands_draw_hud"):GetBool() then
-		local color = Color(255,255,255,255)
+		local color = gStands.GetStandColorTable("models/hdm/hdm.mdl", "0")
 		local height = ScrH()
 		local width = ScrW()
 		local mult = ScrW() / 1920
@@ -258,7 +205,7 @@ function SWEP:DoDrawCrosshair(x,y)
 		local pos2d = pos:ToScreen()
 		if pos2d.visible then
 			surface.SetMaterial( material )
-			local clr = (self.Color)
+			local clr = self.Color
 			local h,s,v = ColorToHSV(clr)
 			h = h - 180
 			clr = HSVToColor(h,1,1)
@@ -268,6 +215,58 @@ function SWEP:DoDrawCrosshair(x,y)
 		return true
 	end
 end
+--Third Person View
+local thirdperson_offset = GetConVar("gstands_thirdperson_offset")
+function SWEP:CalcView( ply, pos, ang )
+if not self.gStands_IsThirdPerson or ply:GetViewEntity() ~= ply then return end
+
+	local convar = thirdperson_offset:GetString()
+	local strtab = string.Split(convar, ",")
+	local offset = Vector(strtab[1], strtab[2], strtab[3])
+	offset:Rotate(ang)
+
+	local trace = util.TraceHull( {
+		start = pos,
+		endpos = pos - ang:Forward() * 100,
+		filter = { ply:GetActiveWeapon(), ply, ply:GetVehicle() },
+		mins = Vector( -4, -4, -4 ),
+		maxs = Vector( 4, 4, 4 ),
+	} )
+
+
+	if ( trace.Hit ) then pos = trace.HitPos else pos = trace.HitPos end
+	return pos + offset,ang
+end
+--Deploy starts up the stand
+function SWEP:Deploy()
+	self:SetHoldType( "stando" )
+	
+	if SERVER then
+		if GetConVar("gstands_deploy_sounds"):GetBool() then
+			self.Owner:EmitStandSound(Deploy)
+		end
+	end
+	--As is standard with stand addons, set health to 1000
+	if self.Owner:Health() == 100  then
+		self.Owner:SetMaxHealth( self.Durability )
+		self.Owner:SetHealth( self.Durability )
+	end
+	
+	--Create some networked variables, solves some issues where multiple people had the same stand
+	self.Owner:SetCanZoom(false)
+	local hooktag = self.Owner:Name()
+	hook.Add("EntityTakeDamage", "SethanCutsDamage"..hooktag, function(targ, dmg)
+		if IsValid(self) and IsValid(self.Owner) then
+		
+			if table.HasValue(self.targets, dmg:GetAttacker()) then
+				dmg:SetDamage(dmg:GetDamage()*math.Clamp(dmg:GetAttacker():GetModelScale()/2,0,1))
+			end
+		else
+			hook.Remove("EntityTakeDamage", "SethanCutsDamage"..hooktag)
+		end
+	end)
+end
+
 function SWEP:Think()
 	local curtime = CurTime()
 	self.Menacing = self.Menacing or CurTime()
@@ -391,7 +390,7 @@ function SWEP:SecondaryAttack()
 			dmginfo:SetAttacker( attacker )
 			
 			dmginfo:SetInflictor( self )
-			dmginfo:SetDamage(GetConVar("gstands_sethan_punch"):GetInt())
+			dmginfo:SetDamage( 16 * self.Power )
 			
 			tr.Entity:TakeDamageInfo( dmginfo )
 			if SERVER then

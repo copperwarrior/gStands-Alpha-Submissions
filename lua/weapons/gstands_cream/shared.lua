@@ -4,7 +4,7 @@ if SERVER then
 end
 if CLIENT then
 	SWEP.Slot      = 1
-end
+end	
 
 SWEP.Power = 2.5
 SWEP.Speed = 1.25
@@ -131,14 +131,7 @@ function SWEP:SetWeaponHoldType( t )
 	
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_cream_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_cream_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 	if CLIENT then
 	end
 	self:DrawShadow(false)
@@ -153,20 +146,95 @@ function SWEP:DrawWorldModel()
 	end
 end
 
+local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
+local base			= "vgui/hud/gstands_hud/"
+local armor_bar   	= Material(base.."armor_bar")
+local bar_border  	= Material(base.."bar_border")
+local boxdis	  	= Material(base.."boxdis")
+local boxend	  	= Material(base.."boxend")
+local cooldown_box	= Material(base.."cooldown_box")
+local generic_rect	= Material(base.."generic_rect")
+local health_bar  	= Material(base.."health_bar")
+local pfpback	 	= Material(base.."pfpback")
+local pfpfront		= Material(base.."pfpfront")
+local corner_left  	= Material(base.."corner_left")
+local corner_right  = Material(base.."corner_right")
+
+local bones = {
+	"ValveBiped.Bip01_Spine",
+	"ValveBiped.Bip01_Spine1",
+	"ValveBiped.Bip01_Spine2",
+	"ValveBiped.Bip01_Spine4"
+}
+function SWEP:DrawHUD()
+	if GetConVar("gstands_draw_hud"):GetBool() and IsValid(self.Stand) then
+		local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+		local height = ScrH()
+		local width = ScrW()
+		local mult = ScrW() / 1920
+		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+		if self:GetActive() then
+			surface.SetMaterial(boxdis)
+			else
+			surface.SetMaterial(boxend)
+		end
+		surface.DrawTexturedRect(width - (192 * mult) - 135 * mult, height - (192 * mult) - 10 * mult, 192 * mult, 192 * mult)
+		if self:GetActive() then
+			surface.SetMaterial(boxend)
+			else
+			surface.SetMaterial(boxdis)
+		end
+		surface.DrawTexturedRect(width - (192 * mult), height - (192 * mult) - 10 * mult, 192 * mult, 192 * mult)
+		draw.TextShadow({
+			text = "#gstands.general.punch",
+			font = "gStandsFont",
+			pos = {width - 295 * mult, height - 195 * mult},
+			color = tcolor,
+		}, 2 * mult, 250)
+		
+		draw.TextShadow({
+			text = "#gstands.general.ability",
+			font = "gStandsFont",
+			pos = {width - 165 * mult, height - 195 * mult},
+			color = tcolor,
+		}, 2 * mult, 350)
+		local nocompletegstands = Color(255,0,0, 255)
+		draw.TextShadow({
+			text = "No Complete!",
+			font = "gStandsFont",
+			pos = {width - 1500 * mult, height - 265 * mult},
+			color = nocompletegstands,
+		}, 2 * mult, 250)
+
+		draw.TextShadow({
+			text = "This Stand is incomplete!",
+			font = "gStandsFont",
+			pos = {width - 1550 * mult, height - 235 * mult},
+			color = nocompletegstands,
+		}, 2 * mult, 250)
+	end
+end
+hook.Add( "HUDShouldDraw", "CreamHud", function(elem)
+	if IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_cream" and (elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") and GetConVar("gstands_draw_hud"):GetBool() then
+		return false
+	end
+end)
 local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Owner) and IsValid(LocalPlayer()) then
 		local tr = util.TraceLine( {
-			start = self.Stand:GetEyePos(true),
-			endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,
-			filter = {self.Owner, self.Stand},
+			start = self.Owner:EyePos(),
+			endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 1500,
+			filter = {self.Owner},
 			mask = MASK_SHOT_HULL
 		} )
 		local pos = tr.HitPos
+		
 		local pos2d = pos:ToScreen()
 		if pos2d.visible then
 			surface.SetMaterial( material )
-			local clr = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+			local clr = self.Color
 			local h,s,v = ColorToHSV(clr)
 			h = h - 180
 			clr = HSVToColor(h,1,1)
@@ -205,72 +273,7 @@ if not self.gStands_IsThirdPerson or ply:GetViewEntity() ~= ply then return end	
 	end
 	return pos + offset,ang
 end
-local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
-local base        	= "vgui/hud/gstands_hud/"
-local armor_bar   	= Material(base.."armor_bar")
-local bar_border  	= Material(base.."bar_border")
-local boxdis      	= Material(base.."boxdis")
-local boxend      	= Material(base.."boxend")
-local cooldown_box	= Material(base.."cooldown_box")
-local generic_rect	= Material(base.."generic_rect")
-local health_bar  	= Material(base.."health_bar")
-local pfpback     	= Material(base.."pfpback")
-local pfpfront    	= Material(base.."pfpfront")
-local corner_left  	= Material(base.."corner_left")
-local corner_right  = Material(base.."corner_right")
-function SWEP:DrawHUD()
-	if IsValid(self.Stand) then
-		local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
-		local height = ScrH()
-		local width = ScrW()
-		local mult = ScrW() / 1920
-		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-		local nocompletegstands = Color(255,0,0, 255)
-		draw.TextShadow({
-			text = "No Complete!",
-			font = "gStandsFont",
-			pos = {width - 1500 * mult, height - 265 * mult},
-			color = nocompletegstands,
-		}, 2 * mult, 250)
 
-		draw.TextShadow({
-			text = "This Stand is incomplete!",
-			font = "gStandsFont",
-			pos = {width - 1550 * mult, height - 235 * mult},
-			color = nocompletegstands,
-		}, 2 * mult, 250)
-		if self:GetActive() then
-			surface.SetMaterial(boxdis)
-			else
-			surface.SetMaterial(boxend)
-		end
-		surface.DrawTexturedRect(width - (192 * mult) - 135 * mult, height - (192 * mult) - 10 * mult, 192 * mult, 192 * mult)
-		if self:GetActive() then
-			surface.SetMaterial(boxend)
-			else
-			surface.SetMaterial(boxdis)
-		end
-		surface.DrawTexturedRect(width - (192 * mult), height - (192 * mult) - 10 * mult, 192 * mult, 192 * mult)
-		draw.TextShadow({
-			text = "Обычный",
-			font = "gStandsFont",
-			pos = {width - 290 * mult, height - 190 * mult},
-			color = tcolor,
-		}, 2 * mult, 250)
-		draw.TextShadow({
-			text = "Особый",
-			font = "gStandsFont",
-			pos = {width - 145 * mult, height - 190 * mult},
-			color = tcolor,
-		}, 2 * mult, 250)
-	end
-end
-hook.Add( "HUDShouldDraw", "CreamHud", function(elem)
-	if GetConVar("gstands_draw_hud"):GetBool() and IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_cream" and (((elem == "CHudWeaponSelection" ) and LocalPlayer().SPInZoom) or elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") then
-		return false
-	end
-end)
 function SWEP:SetupDataTables()
 	self:NetworkVar("Entity", 0, "Stand")
 	self:NetworkVar("Bool", 0, "Active")
@@ -281,7 +284,10 @@ function SWEP:Deploy()
 	self:SetHoldType( "stando" )
 	
 	--As is standard with stand addons, set health to 1000
-
+	if self.Owner:Health() == 100  then
+		self.Owner:SetMaxHealth( self.Durability )
+		self.Owner:SetHealth( self.Durability )
+	end
 	
 	--Create the stand
 	self:DefineStand()

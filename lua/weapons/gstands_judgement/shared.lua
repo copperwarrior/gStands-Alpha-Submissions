@@ -72,7 +72,6 @@ local robo3 = Sound("weapons/jgm/robo/robo_3.wav")
 local robo4 = Sound("weapons/jgm/robo/robo_4.wav")
 local robo5 = Sound("weapons/jgm/robo/robo_5.wav")
 local laugh = Sound("jgm.laugh")
-local block = Sound("weapons/jgm/laugh/block1.wav")
 local ActIndex = {
 	[ "pistol" ]		= ACT_HL2MP_IDLE_PISTOL,
 	[ "smg" ]			= ACT_HL2MP_IDLE_SMG1,
@@ -197,7 +196,7 @@ end
 			draw.TextShadow({
 				text = "#gstands.jgm.benevolent",
 				font = "gStandsFont",
-				pos = {width - 163 * mult, height - 295 * mult},
+				pos = {width - 165 * mult, height - 295 * mult},
 				color = tcolor,
 			}, 2 * mult, 250)
 			
@@ -243,18 +242,12 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_judgement_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_judgement_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 	if CLIENT then
 	end
 	self:DrawShadow(false)
 	self.CanZoom = false
+
 end
 
 function SWEP:DrawWorldModel()
@@ -285,9 +278,9 @@ if not self.gStands_IsThirdPerson or ply:GetViewEntity() ~= ply then return end	
 	if ( trace.Hit ) then pos = trace.HitPos else pos = trace.HitPos end
 	return pos + offset,ang
 end
-local material = Material( "vgui/hud/gstands_hud/crosshair" )
+local material = Material( "sprites/hud/v_crosshair1" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Stand) then
 		local tr = util.TraceLine( {
 			start = self.Stand:GetEyePos(true),
 			endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,
@@ -295,16 +288,12 @@ function SWEP:DoDrawCrosshair(x,y)
 			mask = MASK_SHOT_HULL
 		} )
 		local pos = tr.HitPos
-		
+
 		local pos2d = pos:ToScreen()
 		if pos2d.visible then
 			surface.SetMaterial( material )
-			local clr = (self.Color)
-			local h,s,v = ColorToHSV(clr)
-			h = h - 180
-			clr = HSVToColor(h,1,1)
 			surface.SetDrawColor( gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin()) )
-			surface.DrawTexturedRect( pos2d.x - 16, pos2d.y - 16, 32, 32 )
+			surface.DrawTexturedRect( pos2d.x - 8, pos2d.y - 8, 16, 16 )
 		end
 		return true
 	end
@@ -372,7 +361,6 @@ function SWEP:Think()
 	if SERVER and self.Owner:gStandsKeyDown("block") then
 		self:SetHoldType("pistol")
 		if not self.BlockSet then
-			self.Stand:EmitStandSound(block)
 			self.Stand:ResetSequence(self.Stand:LookupSequence("standblock"))
 			self.Stand:SetCycle(0)
 			self.Stand:SetPlaybackRate(1)
@@ -447,7 +435,7 @@ function SWEP:SecondaryAttack()
 		self.Stand:ResetSequence(self.Stand:LookupSequence("attack2_start"))
         self.Stand:SetCycle( 0 )
 		self.Stand:EmitStandSound(robo4)
-		timer.Simple(self.Stand:SequenceDuration(), function() self:CheckGrab() timer.Simple(self.Stand:SequenceDuration(), function() self:SetHoldType("stando") end) end)
+		timer.Simple(self.Stand:SequenceDuration(), function() if IsValid(self.Stand) then self:CheckGrab() timer.Simple(self.Stand:SequenceDuration(), function() if IsValid(self.Stand) then self:SetHoldType("stando") end end) end end)
 		self:SetNextSecondaryFire(CurTime() + 2)
 	end
 end
@@ -477,7 +465,7 @@ function SWEP:DonutPunch()
         if ( !IsValid( attacker ) ) then attacker = self.Owner end
         dmginfo:SetAttacker( attacker )
         dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_judgement_donut_damage"):GetInt())
+        dmginfo:SetDamage( 25  * self.Power )
         dmginfo:SetReportedPosition( self.Stand:GetEyePos() )
         tr.Entity:TakeDamageInfo( dmginfo )
 		tr.Entity:SetVelocity((self.Owner:GetAimVector() + tr.Entity:GetUp()):GetNormalized() * 400)

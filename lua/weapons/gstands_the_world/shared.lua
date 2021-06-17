@@ -363,34 +363,14 @@ function SWEP:Initialize()
 	timer.Simple(0.1, function() 
 		if self:GetOwner() != nil then
 			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_the_world_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_the_world_heal"):GetInt())
+				self:GetOwner():SetHealth(1500)
+				self:GetOwner():SetMaxHealth(1500)
 			end
 		end
 	end)
 	self:DrawShadow(false)
 end
-hook.Add( "PlayerDeath", "Ubiistvo4ElaCOrujiem", function( victim, inflictor, attacker )
-	if attacker:HasWeapon("gstands_the_world") then
-		if victim:HasWeapon("gstands_star_platinum") or victim:HasWeapon("gstands_hierophant") or victim:HasWeapon("gstands_silver_chariot") or victim:HasWeapon("gstands_magicians_red") or victim:HasWeapon("gstands_the_fool") or victim:HasWeapon("gstands_hermit_purple") then
-			attacker:EmitSound( hahaha )
-		end
-	end
-end )
 
-function SetPain(time)
-    Pain = time
-end
-hook.Add( "EntityTakeDamage", "PainSoundTheWorld", function ( owner, dmginfo )
-	if SERVER then
-		if (not Pain or Pain <= CurTime()) then
-			if ( IsValid( owner ) && dmginfo:GetDamage() >= 10 && dmginfo:GetDamage() < 300 ) and owner:IsPlayer() and owner:HasWeapon("gstands_the_world") then
-				owner:EmitSound("weapons/world/pain/pain-0"..math.random(1, 6)..".wav", 75, 100 )
-				SetPain(CurTime()+3.8)
-			end
-		end
-	end
-end)
 
 if CLIENT then
 	net.Receive("world.PlaySound", 
@@ -422,6 +402,27 @@ if CLIENT then
 				["$pp_colour_mulb"]		 = -5,
 				}
 				local StartTime = CurTime()
+				hook.Add( "RenderScreenspaceEffects", "StopTimeColour"..LocalPlayer():GetName(), function()
+					local tabI = {
+						[ "$pp_colour_addr" ] = Lerp(0.01, (CurTime() % 10)/512, 0),
+						[ "$pp_colour_addg" ] = Lerp(0.01, ((CurTime() + 200) % 10)/512, 0),
+						[ "$pp_colour_addb" ] = Lerp(0.01, ((CurTime() + 400) % 10)/512, 0),
+						[ "$pp_colour_brightness" ] = Lerp(0.1, tab[ "$pp_colour_brightness" ],0),
+						[ "$pp_colour_contrast" ] = Lerp(0.1, tab[ "$pp_colour_contrast" ], 0.4),
+						[ "$pp_colour_colour" ] = Lerp(0.1, tab[ "$pp_colour_colour" ], 0.01),
+						[ "$pp_colour_mulr" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulr" ], 0.5), 0.5),
+						[ "$pp_colour_mulg" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulg" ], 0.5), 0.5),
+						[ "$pp_colour_mulb" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulb" ], 0.5), 0.5)
+					}
+					tab = tabI
+					DrawColorModify( tabI )
+					
+				end)
+			end)
+			net.Receive("world.Exit", function( ply ) 
+				hook.Remove( "RenderScreenspaceEffects", "StopTimeColour"..LocalPlayer():GetName() )
+			end)
+
 end
 
 if SERVER then
@@ -471,7 +472,7 @@ function SWEP:Deploy()
 	timer.Simple(0.1, function() 
 		if GetConVar("gstands_deploy_sounds"):GetBool() then
 			self.Owner:EmitStandSound(SDeploy)
-			self.Owner:EmitSound("world.deploys")
+			self.Owner:EmitSound("weapons/world/deploy_01.wav")
 		end
 	end)
 	self.Owner:SetCanZoom(false)
@@ -489,8 +490,7 @@ function SWEP:DefineStand()
 		self.Stand.Range = self.Range
 		self.Stand.Speed = 20 * self.Speed
 		self.Stand:Spawn()
-		self.Stand.CurrentAnim = "swimming_fist"
-		self.Stand:ResetSequence( self.Stand:LookupSequence("swimming_fist") ) 
+		--self.Stand.CurrentAnim = "swimming_fist"
 	end
 	timer.Simple(0.1, function()
 		if self.Stand:IsValid() then
@@ -678,6 +678,13 @@ function SWEP:StopTime()
 				zawa:SetEntity(self.Stand)
 				zawa:SetOrigin(self.Stand:GetBonePosition(6))
 				zawa:SetMagnitude(3)
+				util.Effect("tw2", zawa)
+			end
+			if SERVER and self.Stand:IsValid() then
+				local zawa = EffectData()
+				zawa:SetEntity(self.Stand)
+				zawa:SetOrigin(self.Stand:GetBonePosition(6))
+				zawa:SetMagnitude(3)
 				util.Effect("tw", zawa)
 			end
 			if SERVER then
@@ -747,7 +754,7 @@ function SWEP:StartTime()
 					zawa:SetMagnitude(3)
 					util.Effect("tw", zawa)   
 				end
-				timer.Simple(0.8, function()
+				timer.Simple(0.1, function()
 					if SERVER and self.Stand and self.Stand:IsValid() then
 						local zawa = EffectData()
 						zawa:SetEntity(self.Stand)
@@ -821,11 +828,11 @@ function SWEP:SecondaryAttack()
 		self:SetNextSecondaryFire( CurTime() + 3 )
 		if !GetConVar( "gstands_time_stop" ):GetBool() and !IsValid(GetGlobalEntity( "Time Stop" )) and self.Owner:KeyPressed(IN_ATTACK2) then
 			if SERVER and self.Stand:GetSequence() != self.Stand:LookupSequence( "timestop" ) then
-				self:SetHoldType( "pistol" )
-				self.Stand:SetPlaybackRate( 1 )
+				self.Stand:SetPlaybackRate( 0.1 )
 				self.Stand:SetCycle( 0 )
-				self.Stand:ResetSequence( self.Stand:LookupSequence( "timestop" ) )
-				timer.Simple(4, function() 
+				self.Stand:ResetSequence(self.Stand:LookupSequence("timestop"))
+				self.Stand.AnimDelay = CurTime() + self.Stand:SequenceDuration()
+				timer.Simple(4.2, function() 
 					if IsValid(self.Stand) then
 						self:SetHoldType( "stando" ) 
 						self.Stand:SetPlaybackRate( 1 ) 
@@ -857,11 +864,7 @@ function SWEP:SecondaryAttack()
 				if IsValid(self.Stand) and self:GetOwner():Alive() then
 					self.Stand:RemoveAllGestures()
 					self.Stand:ResetSequence( self.Stand:LookupSequence("donut") )
-					timer.Simple(1, function()
-						if IsValid(self.Stand) and self:GetOwner():Alive() then
-							self.Stand:ResetSequence( self.Stand:LookupSequence("SWIMMING_FIST") )
-						end
-					end)
+
 					self.Stand:ResetSequenceInfo()
 					self.Stand:SetPlaybackRate( 1 )
 					self.Stand:SetCycle( 0 )
@@ -872,9 +875,6 @@ function SWEP:SecondaryAttack()
 				end
 				self.Stand:RemoveAllGestures()
 				self.Stand:ResetSequence( self.Stand:LookupSequence("spinkick") )
-				timer.Simple(0.7, function()
-					self.Stand:ResetSequence( self.Stand:LookupSequence("SWIMMING_FIST") )
-				end)
 				self.Stand:ResetSequenceInfo()
 				self.Stand:SetPlaybackRate( 1 )
 				self.Stand:SetCycle( 0 )
@@ -899,8 +899,6 @@ function SWEP:SecondaryAttack()
 					if IsValid(self) then
 						if IsValid(self.Stand) and self:GetOwner():Alive() then
 							self:SetHoldType( "stando")
-							self.CurrentAnim = "swimming_fist"
-							self.Stand:ResetSequence( self.Stand:LookupSequence("swimming_fist") ) 
 						end
 					end
 				end)
@@ -945,7 +943,7 @@ function SWEP:Barrage()
 		dmginfo:SetAttacker( attacker )
 		dmginfo:SetDamageForce(self.Stand:GetAngles():Forward() * 750)
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_the_world_barrage_damage"):GetInt())
+		dmginfo:SetDamage(21)
 		if tr.Entity:GetClass() != "stand" then
 			local vel = tr.Entity:GetAbsVelocity()
 			tr.Entity:TakeDamageInfo( dmginfo )
@@ -1031,7 +1029,7 @@ function SWEP:DonutPunch()
 		local attacker = self.Owner
 		dmginfo:SetAttacker( attacker )
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_the_world_punch_damage"):GetInt())
+		dmginfo:SetDamage(300)
 		local vel = tr.Entity:GetAbsVelocity()
 		local pos = tr.Entity:GetPos()
 		tr.Entity:TakeDamageInfo( dmginfo )

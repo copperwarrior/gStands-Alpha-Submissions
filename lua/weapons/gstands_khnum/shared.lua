@@ -54,14 +54,7 @@ local SwingSound = Sound( "WeaponFrag.Throw" )
 local HitSound = Sound( "Flesh.ImpactHard" )
 
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-            if self:GetOwner():IsValid() and SERVER then
-                self:GetOwner():SetHealth(GetConVar("gstands_khnum_heal"):GetInt())
-                self:GetOwner():SetMaxHealth(GetConVar("gstands_khnum_heal"):GetInt())
-            end
-		end
-	end)
+    --Set the third person hold type to fists
 end
 function SWEP:DrawWorldModel()
 	if IsValid(self.Owner) then
@@ -70,72 +63,7 @@ function SWEP:DrawWorldModel()
 		self:DrawModel()
 	end
 end
-local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
-local base        	= "vgui/hud/gstands_hud/"
-local armor_bar   	= Material(base.."armor_bar")
-local bar_border  	= Material(base.."bar_border")
-local boxdis      	= Material(base.."boxdis")
-local boxend      	= Material(base.."boxend")
-local cooldown_box	= Material(base.."cooldown_box")
-local generic_rect	= Material(base.."generic_rect")
-local health_bar  	= Material(base.."health_bar")
-local pfpback     	= Material(base.."pfpback")
-local pfpfront    	= Material(base.."pfpfront")
-local corner_left  	= Material(base.."corner_left")
-local corner_right  = Material(base.."corner_right")
-function SWEP:DrawHUD()
-	--if IsValid(self.Stand) then
-		local color = Color(255,255,255,255)
-		local height = ScrH()
-		local width = ScrW()
-		local mult = ScrW() / 1920
-		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-		local nocompletegstands = Color(255,0,0, 255)
-		draw.TextShadow({
-			text = "No Complete!",
-			font = "gStandsFont",
-			pos = {width - 1500 * mult, height - 265 * mult},
-			color = nocompletegstands,
-		}, 2 * mult, 250)
 
-		draw.TextShadow({
-			text = "This Stand is incomplete!",
-			font = "gStandsFont",
-			pos = {width - 1550 * mult, height - 235 * mult},
-			color = nocompletegstands,
-		}, 2 * mult, 250)
-	--end
-end
-hook.Add( "HUDShouldDraw", "KhnumHud", function(elem)
-	if IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_khnum" and (elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") and GetConVar("gstands_draw_hud"):GetBool() then
-		return false
-	end
-end)
-local material = Material( "vgui/hud/gstands_hud/crosshair" )
-function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Owner) and IsValid(LocalPlayer()) then
-		local tr = util.TraceLine( {
-			start = self.Owner:EyePos(),
-			endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 1500,
-			filter = {self.Owner},
-			mask = MASK_SHOT_HULL
-		} )
-		local pos = tr.HitPos
-		
-		local pos2d = pos:ToScreen()
-		if pos2d.visible then
-			surface.SetMaterial( material )
-			local clr = (self.Color)
-			local h,s,v = ColorToHSV(clr)
-			h = h - 180
-			clr = HSVToColor(h,1,1)
-			surface.SetDrawColor( clr )
-			surface.DrawTexturedRect( pos2d.x - 16, pos2d.y - 16, 32, 32 )
-		end
-		return true
-	end
-end
 --Third Person View
 
 local thirdperson_offset = GetConVar("gstands_thirdperson_offset")
@@ -198,7 +126,25 @@ end
     
    
 function SWEP:PrimaryAttack()
- local lastHoldType = self:GetHoldType()
+            local tr = util.TraceLine( {
+                start = self.Owner:EyePos(),
+                endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * self.HitDistance * 5000,
+                filter = self.Owner ,
+                mask = MASK_SHOT_HULL,
+                ignoreworld = true,
+                collisiongroup = COLLISION_GROUP_PROJECTILE
+            } )
+        --Punch mode
+        if !self.Owner:gStandsKeyDown("modifierkey2") then
+        if SERVER and tr.Entity:IsValid() and (tr.Entity:IsNPC() or tr.Entity:IsPlayer()) and IsFirstTimePredicted() then
+        self.Owner:SetModel(tr.Entity:GetModel())
+        self:SetHoldType(tr.Entity:GetActiveWeapon():GetHoldType())
+        self.Owner:SetModelScale(tr.Entity:GetModelScale())
+        end
+        --Set time until power punch.
+        self:SetNextSecondaryFire( CurTime() + (0.1 * self.Speed) )
+    else
+        local lastHoldType = self:GetHoldType()
         self:SetHoldType("grenade")
         if SERVER then
         timer.Simple(0.05, function() self.Owner:SetAnimation( PLAYER_ATTACK1 ) end)
@@ -212,7 +158,7 @@ function SWEP:PrimaryAttack()
         end)
         end
         timer.Simple(1, function() self:SetHoldType(lastHoldType) end)
-
+    end
     self:SetNextPrimaryFire( CurTime() + (1 * self.Speed) )
 end
 

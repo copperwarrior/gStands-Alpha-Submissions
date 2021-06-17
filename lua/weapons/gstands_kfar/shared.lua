@@ -32,10 +32,8 @@ SWEP.DrawCrosshair      = true
 SWEP.WorldModel = "models/kfar/kfar.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
-SWEP.StandModel 				= "models/kfar/kfar.mdl"
-SWEP.StandModelP 				= "models/kfar/kfar.mdl"
 if CLIENT then
-	SWEP.StandModel = "models/kfar/kfar.mdl"
+	SWEP.StandModel = "models/player/heg/heg.mdl"
 end
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -133,16 +131,8 @@ function SWEP:SetWeaponHoldType( t )
     
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_kiss_from_a_rose_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_kiss_from_a_rose_heal"):GetInt())
-			end
-		end
-	end)   
+    
 end
-
 local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
 local base        	= "vgui/hud/gstands_hud/"
 local armor_bar   	= Material(base.."armor_bar")

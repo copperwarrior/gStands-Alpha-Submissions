@@ -49,9 +49,6 @@ SWEP.gStands_IsThirdPerson = true
 
 SWEP.StandModel 			= "models/gstands/stands/geb.mdl"
 SWEP.StandModelP 			= "models/gstands/stands/geb.mdl"
-if CLIENT then
-	SWEP.StandModel = "models/player/dbm/dbm.mdl"
-end
 local PrevHealth = nil
 
 local ActIndex = {
@@ -154,14 +151,7 @@ local SwingSound = Sound( "WeaponFrag.Throw" )
 local HitSound = Sound( "Flesh.ImpactHard" )
 
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_geb_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_geb_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 end
 
 function SWEP:DrawWorldModel()
@@ -633,7 +623,9 @@ function SWEP:OnDrop()
 end
 
 function SWEP:OnRemove()
-
+	if SERVER and self.Stand:IsValid() then
+		self.Stand:Remove()
+	end
 	if self:GetState() then
 		self.Owner:SetJumpPower(200)
 		hook.Remove("SetupPlayerVisibility", "gebnocullbreak"..self.Owner:GetName())

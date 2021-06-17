@@ -137,14 +137,7 @@ function SWEP:SetWeaponHoldType( t )
 	
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_the_fool_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_the_fool_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 	if CLIENT then
 	end
 	self:DrawShadow(false)
@@ -425,7 +418,7 @@ function SWEP:PrimaryAttack()
 				dmginfo:SetAttacker( attacker )
 				
 				dmginfo:SetInflictor( self.Owner:GetActiveWeapon() or self )
-				dmginfo:SetDamage(GetConVar("gstands_the_fool_dome_punch"):GetInt())
+				dmginfo:SetDamage( 55 )
 				tr.Entity:TakeDamageInfo( dmginfo )
 				
 				tr.Entity:SetVelocity( (self.Owner:GetAimVector() + Vector( 0, 0, 5 )) * 355)
@@ -454,7 +447,7 @@ function SWEP:PrimaryAttack()
 				dmginfo:SetAttacker( attacker )
 				
 				dmginfo:SetInflictor( self.Owner:GetActiveWeapon() or self )
-				dmginfo:SetDamage(GetConVar("gstands_the_fool_dome_punch"):GetInt())
+				dmginfo:SetDamage( 85 )
 				tr.Entity:TakeDamageInfo( dmginfo )
 				
 				tr.Entity:SetVelocity( (self.Owner:GetAimVector() + Vector( 0, 0, 5 )) * 425)
@@ -483,7 +476,7 @@ function SWEP:PrimaryAttack()
 				dmginfo:SetAttacker( attacker )
 				
 				dmginfo:SetInflictor( self.Owner:GetActiveWeapon() or self )
-				dmginfo:SetDamage(GetConVar("gstands_the_fool_dome_punch"):GetInt())
+				dmginfo:SetDamage( 85 )
 				tr.Entity:TakeDamageInfo( dmginfo )
 				
 				tr.Entity:SetVelocity( (self.Owner:GetAimVector() + Vector( 0, 0, 5 )) * 425)

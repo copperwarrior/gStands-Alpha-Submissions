@@ -282,14 +282,6 @@ function SWEP:DoDrawCrosshair(x,y)
 end
 
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_magicians_red_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_magicians_red_heal"):GetInt())
-			end
-		end
-	end)
 	self:DrawShadow(false)
 end
 
@@ -706,7 +698,7 @@ function SWEP:DonutPunch()
 		local dmginfo = DamageInfo()		
 		dmginfo:SetAttacker( self.Owner )
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_magicians_red_kick_damage"):GetInt())
+		dmginfo:SetDamage( 150 )
 		dmginfo:SetDamageType(DMG_BURN)
 		
 		local vel = tr.Entity:GetAbsVelocity()
@@ -813,7 +805,7 @@ function SWEP:PrimaryAttack()
 						local dmg = DamageInfo()
 						dmg:SetAttacker(self.Owner)
 						dmg:SetInflictor(self)
-						dmg:SetDamage(GetConVar("gstands_magicians_red_flame_tower_damage"):GetInt())
+						dmg:SetDamage(10 * mult)
 						dmg:SetDamageType(DMG_BURN)
 						v:EmitSound("ambient/fire/mtov_flame2.wav", 75, 100)
 						v:TakeDamageInfo(dmg)
@@ -837,7 +829,7 @@ function SWEP:PrimaryAttack()
 							local dmg = DamageInfo()
 							dmg:SetAttacker(self.Owner)
 							dmg:SetInflictor(self)
-							dmg:SetDamage(GetConVar("gstands_magicians_red_flame_tower_damage"):GetInt())
+							dmg:SetDamage(10 * mult)
 							dmg:SetDamageType(DMG_BURN)
 							v:EmitSound("ambient/fire/mtov_flame2.wav", 75, 100)
 							v:TakeDamageInfo(dmg)
@@ -862,10 +854,14 @@ function SWEP:PrimaryAttack()
 		if SERVER then
 			self.Stand:EmitStandSound(SwingSound)
 			timer.Simple(self.Stand:SequenceDuration()/6, function()
-				self:DonutPunch()
+				if IsValid(self.Stand) then
+					self:DonutPunch()
+				end
 			end)
 			timer.Simple(self.Stand:SequenceDuration(), function()
-				self:SetHoldType( "stando")
+				if IsValid(self.Stand) then
+					self:SetHoldType( "stando")
+				end
 			end)
 		end
 		self:SetNextPrimaryFire( CurTime() + 1 )
@@ -903,7 +899,9 @@ function SWEP:SecondaryAttack()
 			end
 			self:SetNextSecondaryFire( CurTime() + self.Stand:SequenceDuration() + 0.1 )
 			timer.Simple(self.Stand:SequenceDuration(), function()
-				self:SetHoldType( "stando")
+				if IsValid(self.Stand) then
+					self:SetHoldType( "stando")
+				end
 			end)
 			elseif !self:GetAMode() and !self.Owner:gStandsKeyDown("modifierkey1") then
 			self:SetNextSecondaryFire( CurTime() + 2 )
@@ -916,10 +914,14 @@ function SWEP:SecondaryAttack()
 			if SERVER then
 				self.Owner:EmitSound(Mun)
 				timer.Simple(self.Stand:SequenceDuration()/2, function()
-					self.Bomb = self:PlaceFireBomb()
+					if IsValid(self.Stand) then
+						self.Bomb = self:PlaceFireBomb()
+					end
 				end)
 				timer.Simple(self.Stand:SequenceDuration(), function()
-					self:SetHoldType("stando")
+					if IsValid(self.Stand) then
+						self:SetHoldType("stando")
+					end
 				end)
 			end
 			self:SetNextSecondaryFire( CurTime() + 2 )

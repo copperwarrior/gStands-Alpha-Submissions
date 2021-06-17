@@ -215,14 +215,7 @@ end
     
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_lovers_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_lovers_heal"):GetInt())
-			end
-		end
- 	end)
+    
 end
 function SWEP:DrawWorldModel()
 	if IsValid(self.Owner) then

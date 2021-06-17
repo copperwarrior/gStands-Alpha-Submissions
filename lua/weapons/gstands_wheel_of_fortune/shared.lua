@@ -153,16 +153,17 @@ local corner_left   = Material(base.."corner_left")
 local corner_right  = Material(base.."corner_right")
 
 function SWEP:DrawHUD()
-	--if IsValid(self.Stand) then
-		if GetConVar("gstands_draw_hud"):GetBool() then
-			local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
-			local height = ScrH()
-			local width = ScrW()
-			local mult = ScrW() / 1920
-			local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-			gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+    if GetConVar("gstands_draw_hud"):GetBool() then
+		local color = Color(255,255,255,255)
+		if IsValid(self.Stand) then
+        color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
 		end
-	--end
+        local height = ScrH()
+		local width = ScrW()
+		local mult = ScrW() / 1920
+		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+    end
 end
 hook.Add( "HUDShouldDraw", "WofHud", function(elem)
     if GetConVar("gstands_draw_hud"):GetBool() and IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_wheel_of_fortune" and (((elem == "CHudWeaponSelection" ) and LocalPlayer().SPInZoom) or elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") then
@@ -268,14 +269,7 @@ function SWEP:UnDefineStand()
 	end
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_wheel_of_fortune_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_wheel_of_fortune_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 end
 function SWEP:DrawWorldModel()
 	if IsValid(self.Owner) then
@@ -445,7 +439,7 @@ function SWEP:Think()
 			util.Effect("menacing", effectdata)
 		end
 	end
-	if !self.Owner:gStandsKeyDown("dododo") and self.ClimbState != 5 then
+	if !self.Owner:gStandsKeyDown("dododo") and self.ClimbState != 5 and IsValid(self.Stand) then
 		
 			self.ClimbState = 5
 			local phys = self:GetStand():GetPhysicsObject()
@@ -726,7 +720,7 @@ local dmginfo = DamageInfo()
 	local attacker = self.Owner
 	dmginfo:SetAttacker( attacker )
 	dmginfo:SetInflictor( self )
-	dmginfo:SetDamage( GetConVar("gstands_wheel_of_fortune_shoot"):GetInt() * self:GetConfidence())
+	dmginfo:SetDamage( 5 * self:GetConfidence())
 		local tr1 = util.TraceLine( {
 		start = pos1,
 		endpos = pos1 + (dir2 * 150000),

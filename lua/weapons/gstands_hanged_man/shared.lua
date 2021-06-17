@@ -105,16 +105,14 @@ local corner_left   = Material(base.."corner_left")
 local corner_right  = Material(base.."corner_right")
 
 function SWEP:DrawHUD()
-	if IsValid(self.Stand) then
-		if GetConVar("gstands_draw_hud"):GetBool() then
-			local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
-			local height = ScrH()
-			local width = ScrW()
-			local mult = ScrW() / 1920
-			local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-			gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-		end
-	end
+    if GetConVar("gstands_draw_hud"):GetBool() then
+        local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+        local height = ScrH()
+		local width = ScrW()
+		local mult = ScrW() / 1920
+		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+    end
 end
 hook.Add( "HUDShouldDraw", "HangedManHud", function(elem)
     if GetConVar("gstands_draw_hud"):GetBool() and IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_hanged_man" and (((elem == "CHudWeaponSelection" ) and LocalPlayer().SPInZoom) or elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") then
@@ -193,14 +191,7 @@ end
 	
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self:GetOwner():SetHealth(GetConVar("gstands_hanged_man_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_hanged_man_heal"):GetInt())
-			end
-		end
-	end)
+	--Set the third person hold type to fists
 end
 
 function SWEP:SetupDataTables()
@@ -529,7 +520,7 @@ function SWEP:SecondaryAttack()
 		dmginfo:SetAttacker( attacker )
 		dmginfo:SetDamageType(DMG_SLASH)
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_hanged_man_neck_damage"):GetInt())
+		dmginfo:SetDamage( 350 )
 				tr.Entity:TakeDamageInfo( dmginfo ) 
 				local fx = EffectData()
 				fx:SetOrigin(self:GetStand():GetBonePosition(self:GetStand():LookupBone("ValveBiped.Bip01_R_Hand")))
@@ -605,7 +596,7 @@ function SWEP:Barrage()
 		dmginfo:SetAttacker( attacker )
 		dmginfo:SetDamageType(DMG_SLASH)
 		dmginfo:SetInflictor( self )
-		dmginfo:SetDamage(GetConVar("gstands_hanged_man_slash_damage"):GetInt())
+		dmginfo:SetDamage( 50 )
 		local eftrace = util.TraceLine({
 			start=self:GetStand():GetBonePosition(self:GetStand():LookupBone("ValveBiped.Bip01_R_Hand")),
 			endpos = tr.Entity:WorldSpaceCenter(),

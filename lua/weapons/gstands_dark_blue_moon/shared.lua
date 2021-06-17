@@ -168,30 +168,29 @@ local bones = {
 }
 function SWEP:DrawHUD()
 	if GetConVar("gstands_draw_hud"):GetBool() then
-		if IsValid(self.Stand) then
-			local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
-			local height = ScrH()
-			local width = ScrW()
-			local mult = ScrW() / 1920
-			local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-			gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-			
-			surface.SetMaterial(generic_rect)
-			surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
-			
-			self.WaterLevelZ = self.WaterLevelZ or self.Owner:GetPos().z
-			local lvl = math.Round(((self.WaterLevelZ - self.Owner:GetPos().z))/300 + 1)
-			if LocalPlayer():WaterLevel() < 1 then
-				lvl = 0
-			end
-			draw.TextShadow({
-				text = Format(language.GetPhrase("gstands.dbm.waterlevel"), lvl),
-				font = "gStandsFont",
-				pos = {width - 160 * mult, height - 120 * mult},
-				color = tcolor,
-				xalign = TEXT_ALIGN_CENTER
-			}, 2 * mult, 250)
+		local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+		local height = ScrH()
+		local width = ScrW()
+		local mult = ScrW() / 1920
+		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+		
+		surface.SetMaterial(generic_rect)
+		surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
+		
+		self.WaterLevelZ = self.WaterLevelZ or self.Owner:GetPos().z
+		local lvl = math.Round(((self.WaterLevelZ - self.Owner:GetPos().z))/300 + 1)
+		if LocalPlayer():WaterLevel() < 1 then
+			lvl = 0
 		end
+		draw.TextShadow({
+			text = Format(language.GetPhrase("gstands.dbm.waterlevel"), lvl),
+			font = "gStandsFont",
+			pos = {width - 160 * mult, height - 120 * mult},
+			color = tcolor,
+			xalign = TEXT_ALIGN_CENTER
+		}, 2 * mult, 250)
+		
 	end
 end
 hook.Add( "HUDShouldDraw", "DarkBlueMoonHud", function(elem)
@@ -224,15 +223,6 @@ function SWEP:DoDrawCrosshair(x,y)
 	end
 end
 function SWEP:Initialize()
-	timer.Simple(0.1, function() 
-		if self:GetOwner() != nil then
-			if self:GetOwner():IsValid() and SERVER then
-				self.Owner:EmitStandSound(SDeploy)
-				self:GetOwner():SetHealth(GetConVar("gstands_dark_blue_moon_heal"):GetInt())
-				self:GetOwner():SetMaxHealth(GetConVar("gstands_dark_blue_moon_heal"):GetInt())
-			end
-		end
-	end)
     self:DrawShadow(false)
 end
 if CLIENT then
@@ -798,7 +788,7 @@ function SWEP:BarnaclePunch()
 		dmginfo:SetAttacker( attacker )
 		
 		dmginfo:SetInflictor( self.Owner )
-		dmginfo:SetDamage(GetConVar("gstands_dark_blue_moon_slash_damage"):GetInt())
+		dmginfo:SetDamage( 55 * self.Power)
 		
 		self.Stand:EmitStandSound(Grab)
 		tr.Entity:TakeDamageInfo( dmginfo )
