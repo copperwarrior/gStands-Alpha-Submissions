@@ -54,6 +54,7 @@ local NonStandard = {
 function ENT:Initialize()
 	self:DrawShadow(false)
 	self:UseClientSideAnimation()
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 	for k,v in pairs(self:GetMaterials()) do
 		local mat = Material(v)
 		if string.StartWith(mat:GetShader(),"Eyes") then
@@ -101,7 +102,7 @@ function ENT:Initialize()
 		end
 	end
 	self.Wep = self.Owner:GetActiveWeapon()
-	self:SetRenderMode(RENDERMODE_TRANSALPHA)
+	self:SetRenderMode(RENDERGROUP_BOTH)
 	self.OwnerPos = self.Owner:GetPos()
 	self.OwnerCenterPos = self.Owner:WorldSpaceCenter()
 	self.CenterPos = self:WorldSpaceCenter()
@@ -150,7 +151,7 @@ function ENT:Initialize()
 		end)
 	end
 	self.Model = self:GetModel()
-	self:SetRenderMode(RENDERMODE_WORLDGLOW)
+	self:SetRenderMode(RENDERGROUP_BOTH)
 	self.OwnerName = self.Owner:GetName()
 	self.Color = self:GetColor()
 		self.StandId = GetgStandsID(self:GetModel())
@@ -255,9 +256,6 @@ function ENT:DoMovement()
 			if !self:GetMoveParent():IsValid() then
 				self:GetMoveParent(self.Owner)
 			end
-			elseif self:GetSequence() == self:LookupSequence("timestop") or self:GetSequence() == self:LookupSequence("flick") then
-			self:SetIdealPos(self.Owner:EyePos() + (self.Owner:GetForward() * self.offset.x) + (self.Owner:GetRight() * self.offset.y) - Vector(0,0,self.offset.z))
-			self.Pos = self:GetPos()
 		end
 		elseif Active then
 		self:SetPos((self.OwnerPos - Vector(0,0,50)))
@@ -379,6 +377,7 @@ end
 local unlimitrange = GetConVar("gstands_unlimited_stand_range")
 
 function ENT:Think()
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 	if not IsValid(self.Owner) then return end
 
 	self.Range = self:GetRange()
@@ -454,9 +453,11 @@ local shine = Material("sprites/light_glow02_add.vmt")
 local transmat = Material("models/transfilter.vmt")
 
 function ENT:Draw()
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 end
 
 function ENT:DrawTranslucent(flags, opaque)
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 	if !IsValid(self.Owner) then
 		return true 
 	end
@@ -1233,7 +1234,7 @@ function ENT:DrawTranslucent(flags, opaque)
 					end
 					if IsValid(self.CenterImage) and self:GetSequence() == self:LookupSequence("block") then
 						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
-						for i = 0, GetConVar("gstands_block_arms"):GetInt() do
+						for i = 0, 4 do
 							render.SetBlend(1)
 							self.ArmFrame = FrameNumber() + (5 - (5 * self.Timescale))
 							local resetAnim = self:GetCycle()
@@ -1268,7 +1269,7 @@ function ENT:DrawTranslucent(flags, opaque)
 					end
 					if !IsValid(self.CenterImage) and self:GetSequence() == self:LookupSequence("block") then
 						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
-						for i = 0, GetConVar("gstands_block_arms"):GetInt() do
+						for i = 0, 4 do
 							render.SetBlend(1)
 							self.ArmFrame = FrameNumber() + (5 - (5 * self.Timescale))
 							local resetAnim = self:GetCycle()
@@ -1302,7 +1303,7 @@ function ENT:DrawTranslucent(flags, opaque)
 						arms:Remove()
 					end
 					if self:GetSequence() == self:LookupSequence("kBarrage") and self:GetPlaybackRate() >= 1 then
-						for i = 0, GetConVar("gstands_barrage_legs"):GetInt() do
+						for i = 0, 4 do
 							self.ArmFrame = FrameNumber() + (5 - (5 * self.Timescale))
 							
 							local resetAnim = self:GetCycle()

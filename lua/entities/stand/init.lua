@@ -14,6 +14,7 @@ ENT.Animated = true
 ENT.Color = Color(150,150,150,1)
 ENT.ForceOnce = false
 ready = false
+ENT.RenderGroup	= RENDERGROUP_BOTH
 ENT.ImageID = 1
 ENT.Rate = 0
 ENT.Health = 1
@@ -97,7 +98,6 @@ end
 function ENT:Initialize()
 	self:SetLagCompensated(true)
 	self.Wep = self.Owner:GetActiveWeapon()
-	self:SetRenderMode(RENDERMODE_TRANSALPHA)
 	self.OwnerPos = self.Owner:GetPos()
 	self.OwnerCenterPos = self.Owner:WorldSpaceCenter()
 	self.CenterPos = self:WorldSpaceCenter()
@@ -138,7 +138,7 @@ function ENT:Initialize()
 		end
 	end
 	if SERVER and ( self.StandId == GSTANDS_OSIRIS or self.StandId == GSTANDS_HORUS) then
-		self:ResetSequence(self:LookupSequence("idle"))
+		self:ResetSequence(self:LookupSequence("Standidle"))
 	end
 	self.Rate = math.random(0,5)
 	if self:GetImageID() == 1 then

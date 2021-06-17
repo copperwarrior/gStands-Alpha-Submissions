@@ -267,9 +267,9 @@ if IsFirstTimePredicted() then
         dmginfo:SetInflictor( self.Wep )
 
         if self.Wep:GetState() then
-		dmginfo:SetDamage(GetConVar("gstands_geb_slash_damage"):GetInt())
+        dmginfo:SetDamage( 45 )
         else
-		dmginfo:SetDamage(GetConVar("gstands_geb_slash_damage"):GetInt())
+        dmginfo:SetDamage( 15 )
         end
         dmginfo:SetDamageType(DMG_SLASH)
         tr.Entity:TakeDamageInfo( dmginfo )
@@ -309,7 +309,7 @@ if IsFirstTimePredicted() then
 
         dmginfo:SetInflictor( self.Wep )
         --High damage, but not quite enough to kill.
-		dmginfo:SetDamage(GetConVar("gstands_geb_shot_damage"):GetInt())
+        dmginfo:SetDamage( 45 )
         dmginfo:SetDamageType(DMG_SLASH)
         tr.Entity:TakeDamageInfo( dmginfo )
 		self.SoundTimer = self.SoundTimer or CurTime()
@@ -327,7 +327,7 @@ if IsFirstTimePredicted() then
     end
     end
     if not self.Owner:gStandsKeyDown("modifierkey2") and !self.Wep:GetState() then
-        self:SetPos(LerpVector(0.5, self.Owner:GetPos() - Vector(0,0,0), self:GetPos()))
+        self:SetPos(LerpVector(0.5, self.Owner:GetPos() - Vector(0,0,4), self:GetPos()))
 		self.slice = false
     else
             self.Owner:AnimRestartGesture(GESTURE_SLOT_CUSTOM, self.Owner:GetSequenceActivity(self.Owner:LookupSequence("sit_zen")))
