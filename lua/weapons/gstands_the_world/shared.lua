@@ -402,26 +402,9 @@ if CLIENT then
 				["$pp_colour_mulb"]		 = -5,
 				}
 				local StartTime = CurTime()
-				hook.Add( "RenderScreenspaceEffects", "StopTimeColour"..LocalPlayer():GetName(), function()
-					local tabI = {
-						[ "$pp_colour_addr" ] = Lerp(0.01, (CurTime() % 10)/512, 0),
-						[ "$pp_colour_addg" ] = Lerp(0.01, ((CurTime() + 200) % 10)/512, 0),
-						[ "$pp_colour_addb" ] = Lerp(0.01, ((CurTime() + 400) % 10)/512, 0),
-						[ "$pp_colour_brightness" ] = Lerp(0.1, tab[ "$pp_colour_brightness" ],0),
-						[ "$pp_colour_contrast" ] = Lerp(0.1, tab[ "$pp_colour_contrast" ], 0.4),
-						[ "$pp_colour_colour" ] = Lerp(0.1, tab[ "$pp_colour_colour" ], 0.01),
-						[ "$pp_colour_mulr" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulr" ], 0.5), 0.5),
-						[ "$pp_colour_mulg" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulg" ], 0.5), 0.5),
-						[ "$pp_colour_mulb" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulb" ], 0.5), 0.5)
-					}
-					tab = tabI
-					DrawColorModify( tabI )
-					
-				end)
+
 			end)
-			net.Receive("world.Exit", function( ply ) 
-				hook.Remove( "RenderScreenspaceEffects", "StopTimeColour"..LocalPlayer():GetName() )
-			end)
+
 
 end
 
