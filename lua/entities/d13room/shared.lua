@@ -65,7 +65,7 @@ hook.Add("PreRender","PreRenderDreamlandEnts",function()
 	for k,Dreamland in ipairs(ents.FindByClass("d13room")) do
 		if Dreamland:ShouldRenderInterior() then continue end
 		for o,ent in ipairs(ents.GetAll()) do
-			if !ent.DreamlandRenderingMode and ent != Dreamland and ent:GetClass() != "d13wall" and Dreamland:PositionInside(ent:GetPos()) then
+			if !ent.DreamlandRenderingMode and ent != Dreamland and Dreamland:PositionInside(ent:GetPos()) then
 				ent.DreamlandRenderingMode = true
 				local prevRender = ent.RenderOverride
 				ent.RenderOverride = function(self)

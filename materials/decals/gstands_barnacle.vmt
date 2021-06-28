@@ -1,9 +1,0 @@
-"Decal"
-{
-	"$translucent" 1
-	"$basetexture" "decals/gstands_barnacle"
-	"$modelmaterial" "decals/gstands_barnaclev"
-	"$decal" 1
-	"$decalscale" 0.1
-	"$vertexcolor" 1
-}

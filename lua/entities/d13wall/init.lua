@@ -3,6 +3,7 @@ AddCSLuaFile("cl_init.lua")
 include("shared.lua")
 
 function ENT:Initialize()
+	
 	self:SetModel("models/hunter/blocks/cube025x025x025.mdl")
 	
 	local bound = self:GetWallBounds()
@@ -28,9 +29,10 @@ function ENT:Initialize()
 		phys:AddGameFlag(bit.bor(FVPHYSICS_NO_PLAYER_PICKUP,FVPHYSICS_NO_SELF_COLLISIONS,FVPHYSICS_NO_NPC_IMPACT_DMG,FVPHYSICS_NO_IMPACT_DMG))
 		phys:EnableMotion(false)
 	end
+	
 	self.Invincible = true
-self.BalloonList = {}
-	for i=0, 10 do
+	self.BalloonList = {}
+	for i=0, 12 do
 		self.BalloonList[i] = ents.Create("d13balloon")
 		self.BalloonList[i]:Spawn()
 		self.BalloonList[i]:Activate()

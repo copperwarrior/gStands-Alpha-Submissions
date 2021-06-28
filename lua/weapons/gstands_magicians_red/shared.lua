@@ -52,7 +52,7 @@ SWEP.LifeDetector				= NULL
 SWEP.StandModel 				= "models/player/mgr/mgr.mdl"
 SWEP.StandModelP 				= "models/player/mgr/mgr.mdl"
 if CLIENT then
-	SWEP.StandModel = "models/player/mgr.mdl"
+	SWEP.StandModel = "models/player/mgr/mgr.mdl"
 end
 SWEP.gStands_IsThirdPerson = true
 
@@ -258,7 +258,7 @@ hook.Add( "HUDShouldDraw", "MagiciansRedHud", function(elem)
 end)
 local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Stand) and IsValid(self.Owner) then
 		local tr = util.TraceLine( {
 			start = self.Stand:GetEyePos(true),
 			endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,
@@ -854,10 +854,14 @@ function SWEP:PrimaryAttack()
 		if SERVER then
 			self.Stand:EmitStandSound(SwingSound)
 			timer.Simple(self.Stand:SequenceDuration()/6, function()
-				self:DonutPunch()
+				if IsValid(self.Stand) then
+					self:DonutPunch()
+				end
 			end)
 			timer.Simple(self.Stand:SequenceDuration(), function()
-				self:SetHoldType( "stando")
+				if IsValid(self.Stand) then
+					self:SetHoldType( "stando")
+				end
 			end)
 		end
 		self:SetNextPrimaryFire( CurTime() + 1 )
@@ -895,7 +899,9 @@ function SWEP:SecondaryAttack()
 			end
 			self:SetNextSecondaryFire( CurTime() + self.Stand:SequenceDuration() + 0.1 )
 			timer.Simple(self.Stand:SequenceDuration(), function()
-				self:SetHoldType( "stando")
+				if IsValid(self.Stand) then
+					self:SetHoldType( "stando")
+				end
 			end)
 			elseif !self:GetAMode() and !self.Owner:gStandsKeyDown("modifierkey1") then
 			self:SetNextSecondaryFire( CurTime() + 2 )
@@ -908,10 +914,14 @@ function SWEP:SecondaryAttack()
 			if SERVER then
 				self.Owner:EmitSound(Mun)
 				timer.Simple(self.Stand:SequenceDuration()/2, function()
-					self.Bomb = self:PlaceFireBomb()
+					if IsValid(self.Stand) then
+						self.Bomb = self:PlaceFireBomb()
+					end
 				end)
 				timer.Simple(self.Stand:SequenceDuration(), function()
-					self:SetHoldType("stando")
+					if IsValid(self.Stand) then
+						self:SetHoldType("stando")
+					end
 				end)
 			end
 			self:SetNextSecondaryFire( CurTime() + 2 )

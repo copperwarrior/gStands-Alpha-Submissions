@@ -63,26 +63,7 @@ local Shine = Sound("weapons/d13/shine.wav")
 local Romantic = Sound("weapons/d13/romantic-to-die.wav")
 local Throw = Sound("weapons/d13/throw.wav")
 
-local material = Material( "sprites/hud/v_crosshair1" )
-function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Stand) then
-		local tr = util.TraceLine( {
-			start = self:GetStand():WorldSpaceCenter(),
-			endpos = self:GetStand():WorldSpaceCenter() + self.Owner:GetAimVector() * 1500,
-			filter = {self.Owner, self:GetStand()},
-			mask = MASK_SHOT_HULL
-		} )
-		local pos = tr.HitPos
-		
-		local pos2d = pos:ToScreen()
-		if pos2d.visible then
-			surface.SetMaterial( material	)
-			surface.SetDrawColor( gStands.GetStandColorTable(self:GetStand():GetModel(), self:GetStand():GetSkin()) )
-			surface.DrawTexturedRect( pos2d.x - 8, pos2d.y - 8, 16, 16 )
-		end
-		return true
-	end
-end
+
 hook.Add("PlayerSwitchWeapon", "SleptPlayersSwapNoThings", function(ply, owep, newep)
 	if IsFirstTimePredicted() and Dreamland and Dreamland:IsValid() and Dreamland.PositionInside and Dreamland:PositionInside(ply:GetPos()) then
 		return true
@@ -233,6 +214,26 @@ hook.Add( "HUDShouldDraw", "DeathHud", function(elem)
 		return false
 	end
 end)
+local material = Material( "sprites/hud/v_crosshair1" )
+function SWEP:DoDrawCrosshair(x,y)
+	if IsValid(self.Stand) then
+		local tr = util.TraceLine( {
+			start = self:GetStand():WorldSpaceCenter(),
+			endpos = self:GetStand():WorldSpaceCenter() + self.Owner:GetAimVector() * 1500,
+			filter = {self.Owner, self:GetStand()},
+			mask = MASK_SHOT_HULL
+		} )
+		local pos = tr.HitPos
+		
+		local pos2d = pos:ToScreen()
+		if pos2d.visible then
+			surface.SetMaterial( material )
+			surface.SetDrawColor( gStands.GetStandColorTable(self:GetStand():GetModel(), self:GetStand():GetSkin()) )
+			surface.DrawTexturedRect( pos2d.x - 8, pos2d.y - 8, 16, 16 )
+		end
+		return true
+	end
+end
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Entity", 0, "Dream")

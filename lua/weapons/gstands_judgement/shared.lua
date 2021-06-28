@@ -210,7 +210,7 @@ hook.Add( "HUDShouldDraw", "JudgementHud", function(elem)
 end)
 	local material = Material( "vgui/hud/gstands_hud/crosshair" )
 	function SWEP:DoDrawCrosshair(x,y)
-		if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+		if IsValid(self.Stand) and IsValid(self.Owner) then
 			local tr = util.TraceLine( {
 				start = self.Stand:GetEyePos(true),
 				endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,
@@ -360,17 +360,26 @@ function SWEP:Think()
 	self.BlockSet = self.BlockSet or false
 	if SERVER and self.Owner:gStandsKeyDown("block") then
 		self:SetHoldType("pistol")
-		if !self.BlockSet then
-		self.Stand:ResetSequence(self.Stand:LookupSequence( "standblock" ))
-		self.Stand:SetCycle(0)
-		self.Stand:SetPlaybackRate(0)
-		self.BlockSet = true
+		if not self.BlockSet then
+			self.Stand:ResetSequence(self.Stand:LookupSequence("standblock"))
+			self.Stand:SetCycle(0)
+			self.Stand:SetPlaybackRate(1)
+			timer.Simple(0, function()
+				if IsValid(self) and IsValid(self.Stand) then
+					self.Stand:EmitStandSound(robo1)
+				end
+			end)
+			timer.Simple(0.2, function()
+				if IsValid(self) and IsValid(self.Stand) then
+					self.Stand:EmitStandSound(robo5)
+				end
+			end)
+			self.BlockSet = true
 		end
 		elseif SERVER and self.BlockSet then
 		self:SetHoldType("stando")
-		self.Stand.HeadRotOffset = -75 
+		self.Stand.HeadRotOffset = -75
 		self.BlockSet = false
-		self.Stand:SetPlaybackRate(1)
 	end
 	if SERVER and self.Stand:GetSequence() == self.Stand:LookupSequence("attack2_end_succeed") and IsValid(self.GrabTarget) then
 		if self.Stand:GetCycle() < 0.5 then
@@ -426,7 +435,7 @@ function SWEP:SecondaryAttack()
 		self.Stand:ResetSequence(self.Stand:LookupSequence("attack2_start"))
         self.Stand:SetCycle( 0 )
 		self.Stand:EmitStandSound(robo4)
-		timer.Simple(self.Stand:SequenceDuration(), function() self:CheckGrab() timer.Simple(self.Stand:SequenceDuration(), function() self:SetHoldType("stando") end) end)
+		timer.Simple(self.Stand:SequenceDuration(), function() if IsValid(self.Stand) then self:CheckGrab() timer.Simple(self.Stand:SequenceDuration(), function() if IsValid(self.Stand) then self:SetHoldType("stando") end end) end end)
 		self:SetNextSecondaryFire(CurTime() + 2)
 	end
 end

@@ -6,7 +6,7 @@ ENT.Purpose			= ""
 ENT.Instructions		= ""
 ENT.Spawnable			= false
 ENT.AdminOnly = true 
-ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup = RENDERGROUP_BOTH
 local HitSound = Sound( "physics/flesh/flesh_impact_bullet"..math.random(1,5)..".wav" )
 local Hit = Sound( "emp.hit" )
 function ENT:FindTraces(numPoints)
@@ -236,7 +236,7 @@ if SERVER then
 			endpos = tr.HitEntity:EyePos()
 			})
 		if tr.HitEntity:GetHitBoxBone(headshottrace.HitBox, 1) == tr.HitEntity:LookupBone("ValveBiped.Bip01_Head") then headshotmult = 2 end
-		if self.Wep:Clip1() < 6 then
+		if IsValid(self.Wep) and self.Wep:Clip1() < 6 then
 			self.Wep:SetClip1(math.min(self.Wep:Clip1() + 1))
 		end
 		local damager

@@ -212,7 +212,7 @@ hook.Add( "HUDShouldDraw", "FoolHud", function(elem)
 end)
 local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Owner) then
 		local tr = util.TraceLine( {
 			start = self.Owner:EyePos(),
 			endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 1500,

@@ -86,6 +86,7 @@ local Grab = Sound( "weapons/platinum/grab.wav" )
 local Zoom = Sound( "weapons/platinum/zoom.wav" )
 local Break = Sound( "weapons/platinum/break.wav" )
 local Huagh = Sound( "weapons/platinum/huagh.wav" )
+local StartTimeVoice = Sound( "weapons/platinum/time_resume.wav" )
 
 local ActIndex = {
 	[ "pistol" ]		= ACT_HL2MP_IDLE_PISTOL,
@@ -196,13 +197,16 @@ end
 if CLIENT then
 	net.Receive( "platinum.PlaySound", function()
 		if IsValid(LocalPlayer()) then
-			LocalPlayer():EmitSound(StopTime) 
+			timer.Simple(2, function()
+				LocalPlayer():EmitSound(StopTime)
+			end)
 		end
 	end)
 	
 	net.Receive( "platinum.PlaySound2", function()
 		if IsValid(LocalPlayer()) then
 			LocalPlayer():EmitSound(StartTime) 
+			LocalPlayer():EmitSound(StartTimeVoice) 
 		end
 	end)
 	
@@ -229,67 +233,69 @@ if CLIENT then
 	}
 	function SWEP:DrawHUD()
 		if GetConVar("gstands_draw_hud"):GetBool() and IsValid(self.Stand) then
-			local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
-			local height = ScrH()
-			local width = ScrW()
-			local mult = ScrW() / 1920
-			local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
-			gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-			
-			surface.SetMaterial(generic_rect)
-			surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
-			
-			if !self:GetAMode() then
-				surface.SetMaterial(boxend)
-				else
-				surface.SetMaterial(boxdis)
+			if IsValid(self.Stand) then
+				local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+				local height = ScrH()
+				local width = ScrW()
+				local mult = ScrW() / 1920
+				local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+				gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+				
+				surface.SetMaterial(generic_rect)
+				surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
+				
+				if !self:GetAMode() then
+					surface.SetMaterial(boxend)
+					else
+					surface.SetMaterial(boxdis)
+				end
+				surface.DrawTexturedRect(width - (192 * mult) - 135 * mult, height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
+				
+				if !self:GetAMode() then
+					surface.SetMaterial(boxdis)
+					else
+					surface.SetMaterial(boxend)
+				end
+				surface.DrawTexturedRect(width - (192 * mult), height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
+				
+				
+				draw.TextShadow({
+					text = self:Clip1().."/"..self:GetMaxClip1(),
+					font = "gStandsFontLarge",
+					pos = {width - 160 * mult, height - 120 * mult},
+					color = tcolor,
+					xalign = TEXT_ALIGN_CENTER
+				}, 2 * mult, 250)
+				
+				draw.TextShadow({
+					text = "#gstands.general.punch",
+					font = "gStandsFont",
+					pos = {width - 295 * mult, height - 295 * mult},
+					color = tcolor,
+				}, 2 * mult, 250)
+				
+				draw.TextShadow({
+					text = "#gstands.general.ability",
+					font = "gStandsFont",
+					pos = {width - 165 * mult, height - 295 * mult},
+					color = tcolor,
+				}, 2 * mult, 250)
+				
+				surface.SetMaterial(cooldown_box)
+				if !IsValid(GetGlobalEntity("Time Stop")) then
+					surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), GetConVar( "gstands_star_platinum_next_timestop" ):GetFloat(), 0, 0, 40 * mult)))
+					else
+					surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), 0, GetConVar( "gstands_star_platinum_timestop_length" ):GetFloat(), 0, 40 * mult)))
+				end
+				surface.DrawTexturedRect(width - (64 * mult) - 32 * mult, height - (64 * mult) - 340 * mult, 64 * mult, 64 * mult)
+				draw.TextShadow({
+					text = "#gstands.star_platinum.timestop",
+					font = "gStandsFont",
+					pos = {width - 100 * mult, height - 390 * mult},
+					color = tcolor,
+					xalign = TEXT_ALIGN_RIGHT
+				}, 2 * mult, 250)
 			end
-			surface.DrawTexturedRect(width - (192 * mult) - 135 * mult, height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
-			
-			if !self:GetAMode() then
-				surface.SetMaterial(boxdis)
-				else
-				surface.SetMaterial(boxend)
-			end
-			surface.DrawTexturedRect(width - (192 * mult), height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
-			
-			
-			draw.TextShadow({
-				text = self:Clip1().."/"..self:GetMaxClip1(),
-				font = "gStandsFontLarge",
-				pos = {width - 160 * mult, height - 120 * mult},
-				color = tcolor,
-				xalign = TEXT_ALIGN_CENTER
-			}, 2 * mult, 250)
-			
-			draw.TextShadow({
-				text = "#gstands.general.punch",
-				font = "gStandsFont",
-				pos = {width - 295 * mult, height - 295 * mult},
-				color = tcolor,
-			}, 2 * mult, 250)
-			
-			draw.TextShadow({
-				text = "#gstands.general.ability",
-				font = "gStandsFont",
-				pos = {width - 165 * mult, height - 295 * mult},
-				color = tcolor,
-			}, 2 * mult, 250)
-			
-			surface.SetMaterial(cooldown_box)
-			if !IsValid(GetGlobalEntity("Time Stop")) then
-				surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), 15, 0, 0, 40 * mult)))
-				else
-				surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), 0, GetConVar( "gstands_star_platinum_timestop_length" ):GetFloat(), 0, 40 * mult)))
-			end
-			surface.DrawTexturedRect(width - (64 * mult) - 32 * mult, height - (64 * mult) - 340 * mult, 64 * mult, 64 * mult)
-			draw.TextShadow({
-				text = "#gstands.star_platinum.timestop",
-				font = "gStandsFont",
-				pos = {width - 100 * mult, height - 390 * mult},
-				color = tcolor,
-				xalign = TEXT_ALIGN_RIGHT
-			}, 2 * mult, 250)
 		end
 	end
 	hook.Add( "HUDShouldDraw", "StarPlatinumHud", function(elem)
@@ -582,7 +588,7 @@ function SWEP:Think()
 		self.Stand:EmitStandSound( "succ_loop" ) 
 		self.Stand.HeadRotOffset = 0
 		for k,v in pairs(ents.FindInCone(self.Stand:GetEyePos(true), self.Stand:GetForward(), 1500, 0.55)) do
-			if SERVER and IsValid(v) and v.GetActiveWeapon and IsValid(v:GetActiveWeapon()) and v:GetActiveWeapon():GetClass() == "gstands_justice" then
+			if IsValid(v) and v.GetActiveWeapon and IsValid(v:GetActiveWeapon()) and v:GetActiveWeapon():GetClass() == "gstands_justice" then
 				
 				local dmginfo = DamageInfo()
 				local attacker = self.Owner
@@ -594,7 +600,7 @@ function SWEP:Think()
 			end
 		end
 		for k,v in pairs(ents.FindInCone(self.Stand:GetEyePos(true), self.Owner:GetForward(), 350, 0.55)) do
-			if SERVER and IsValid(v) and (v:IsPlayer() or v:IsNPC()) then
+			if IsValid(v) and (v:IsPlayer() or v:IsNPC()) then
 				local tr = util.TraceLine( {
 					start = self.Stand:GetEyePos(true),
 					endpos = v:WorldSpaceCenter(),
@@ -621,7 +627,7 @@ function SWEP:Think()
 			
 		end
 	end
-	if SERVER and IsValid(self.Stand) and self.Stand:GetSequence() != self.Stand:LookupSequence( "Succ" ) then
+	if IsValid(self.Stand) and self.Stand:GetSequence() != self.Stand:LookupSequence( "Succ" ) then
 		self.Succ = false
 		self.Stand.HeadRotOffset = -75
 		self.Stand:StopSound( "succ_loop" )
@@ -733,13 +739,20 @@ function SWEP:Think()
 	end
 	self.StandBlockTimer = self.StandBlockTimer or CurTime()
 	if SERVER and self.Owner:gStandsKeyDown("block") and CurTime() > self.StandBlockTimer then
-		self.Stand.HeadRotOffset = -5
-		self:SetHoldType("pistol")
-		self.Stand:ResetSequence(self.Stand:LookupSequence( "standblock" ))
-		self.Stand:SetCycle(0)
-		self.Stand:EmitStandSound(Huagh)
-		timer.Simple(self.Stand:SequenceDuration("standblock"), function() self:SetHoldType("stando") self.Stand.HeadRotOffset = -75 end)
-		self.StandBlockTimer = CurTime() + self.Stand:SequenceDuration("standblock") + 0.5
+		if IsValid(self.Stand) and self:GetOwner():Alive() then
+			self.Stand.HeadRotOffset = -5
+			self:SetHoldType("pistol")
+			self.Stand:ResetSequence(self.Stand:LookupSequence( "standblock" ))
+			self.Stand:SetCycle(0)
+			self.Stand:EmitStandSound(Huagh)
+			timer.Simple(self.Stand:SequenceDuration("standblock"), function() 
+				if IsValid(self.Stand) and self:GetOwner():Alive() then
+					self:SetHoldType("stando") 
+					self.Stand.HeadRotOffset = -75 
+				end
+			end)
+			self.StandBlockTimer = CurTime() + self.Stand:SequenceDuration("standblock") + 0.5
+		end
 	end
 end
 
@@ -781,7 +794,9 @@ function SWEP:StopTime()
 			end
 			self.TimeStopperController = GetGlobalEntity( "Time Stop" )
 			self.TimeStopperController:Spawn()
-			table.insert(self.TimeStopperController.StoppedUsers, self.Owner)
+			if IsValid(GetGlobalEntity( "Time Stop" )) then
+				table.insert(self.TimeStopperController.StoppedUsers, self.Owner)
+			end
 			self.TimeStopperController:Activate()
 			self:SetTimeStopDelay(CurTime() + GetConVar( "gstands_star_platinum_timestop_length" ):GetFloat())
 		end
@@ -789,7 +804,9 @@ function SWEP:StopTime()
 end
 
 function SWEP:StartTime()
-	self.Owner:StopSound( "platinum.ora_loop" )
+	if IsValid(self.Owner) then
+		self.Owner:StopSound( "platinum.ora_loop" )
+	end
 	if IsValid(GetGlobalEntity("Time Stop")) and #GetGlobalEntity( "Time Stop" ).StoppedUsers > 1 and GetConVar( "gstands_star_platinum_limit" ):GetBool() then
 		table.RemoveByValue(GetGlobalEntity( "Time Stop" ).StoppedUsers, self.Owner)
 		self.Owner:EmitSound(Nani)
@@ -797,7 +814,7 @@ function SWEP:StartTime()
 		self.TSExitBuffer = CurTime() + 1
 		elseif !self.Owner:IsFlagSet(FL_FROZEN) then
 		self:SetNextSecondaryFire( CurTime() + 4 )
-		self:SetTimeStopDelay(CurTime() + 15)
+		self:SetTimeStopDelay(CurTime() + GetConVar( "gstands_star_platinum_next_timestop" ):GetInt())
 		if SERVER then
 			GetConVar( "gstands_time_stop" ):SetInt(0)
 		end
@@ -883,12 +900,14 @@ function SWEP:PrimaryAttack()
 		
 		else
 		self:SetHoldType( "pistol" )
-		if self.Stand:GetSequence() != self.Stand:LookupSequence( "barrage" ) then
-			
-			self.Stand:ResetSequence(self.Stand:LookupSequence( "barrage" ))
-			self.Stand:SetCycle(0)
+		if IsValid(self.Stand) then
+			if self.Stand:GetSequence() != self.Stand:LookupSequence( "barrage" ) then
+				
+				self.Stand:ResetSequence(self.Stand:LookupSequence( "barrage" ))
+				self.Stand:SetCycle(0)
+			end
+			self:Barrage()
 		end
-		self:Barrage()
 		
 		self:SetNextPrimaryFire( CurTime() + 0.02 )
 		self:SetNextSecondaryFire( CurTime() + 0.1 )
@@ -906,7 +925,13 @@ function SWEP:SecondaryAttack()
 				self.Stand:SetPlaybackRate( 1 )
 				self.Stand:SetCycle( 0 )
 				self.Stand:ResetSequence( self.Stand:LookupSequence( "timestop" ) )
-				timer.Simple(4, function() self:SetHoldType( "stando" ) self.Stand:SetPlaybackRate( 1 ) self.Stand:ResetSequence( "standidle" ) end)
+				timer.Simple(4, function() 
+					if IsValid(self.Stand) then
+						self:SetHoldType( "stando" ) 
+						self.Stand:SetPlaybackRate( 1 ) 
+						self.Stand:ResetSequence( "standidle" ) 
+					end
+				end)
 				timer.Create( "sutahprachina"..self.Owner:GetName(), 2.2, 1, function() 
 					self:StopTime()
 				end)
@@ -1356,33 +1381,33 @@ function SWEP:GrabThrow(throw)
 			collisiongroup=COLLISION_GROUP_WORLD
 			})
 			if trhull.HitWorld then
-				-- for k,v in pairs(self.traces) do
-					-- local norma = v
-					-- local trOut = util.TraceLine( {
-						-- start = self.Stand.GrabbedPlayer:GetPos(),
-						-- endpos = self.Stand.GrabbedPlayer:GetPos() + norma * 500,
-						-- filter = { self, self.Owner},
-						-- mask=0
-					-- } )
-					-- if trOut.FractionLeftSolid > 0 then
-						-- self.Stand.GrabbedPlayer:SetPos(self.Stand.GrabbedPlayer:GetPos() + v * 500)
-					-- end
-				-- end
-				-- local norm = (self.Stand.GrabbedPlayer:WorldSpaceCenter() - trhull.HitPos):GetNormalized()
-				-- for i=1, 55 do
-					-- if bit.band(util.PointContents(self.Stand.GrabbedPlayer:GetPos() + norm * 5 * i), CONTENTS_SOLID) != CONTENTS_SOLID then
-					-- self.Stand.GrabbedPlayer:SetPos(self.Stand.GrabbedPlayer:GetPos() + norm * 5 * i)
-					-- self.Stand.GrabbedPlayer:DropToFloor()
-					-- break
-					-- end
-				-- end
-				-- trhull = util.TraceHull({
-					-- start = self.Stand.GrabbedPlayer:GetPos(),
-					-- endpos = self.Stand.GrabbedPlayer:GetPos(),
-					-- mins=mins,
-					-- maxs=maxs,
-					-- collisiongroup=COLLISION_GROUP_WORLD
-				-- })
+				for k,v in pairs(self.traces) do
+					local norma = v
+					local trOut = util.TraceLine( {
+						start = self.Stand.GrabbedPlayer:GetPos(),
+						endpos = self.Stand.GrabbedPlayer:GetPos() + norma * 500,
+						filter = { self, self.Owner},
+						mask=0
+					} )
+					if trOut.FractionLeftSolid > 0 then
+						self.Stand.GrabbedPlayer:SetPos(self.Stand.GrabbedPlayer:GetPos() + v * 500)
+					end
+				end
+				local norm = (self.Stand.GrabbedPlayer:WorldSpaceCenter() - trhull.HitPos):GetNormalized()
+				for i=1, 55 do
+					if bit.band(util.PointContents(self.Stand.GrabbedPlayer:GetPos() + norm * 5 * i), CONTENTS_SOLID) != CONTENTS_SOLID then
+					self.Stand.GrabbedPlayer:SetPos(self.Stand.GrabbedPlayer:GetPos() + norm * 5 * i)
+					self.Stand.GrabbedPlayer:DropToFloor()
+					break
+					end
+				end
+				trhull = util.TraceHull({
+					start = self.Stand.GrabbedPlayer:GetPos(),
+					endpos = self.Stand.GrabbedPlayer:GetPos(),
+					mins=mins,
+					maxs=maxs,
+					collisiongroup=COLLISION_GROUP_WORLD
+				})
 				local positions = {}
 				table.insert(self.traces,0,-self.Owner:GetAimVector())
 				for k,v in pairs(self.traces) do
@@ -1399,9 +1424,9 @@ function SWEP:GrabThrow(throw)
 					end
 				end
 				table.remove(self.traces, 0)
-				--local endpos = self:GetClosestPoint(positions, self.Stand.GrabbedPlayer:GetPos())
-				--self.Stand.GrabbedPlayer:SetPos(endpos)
-									--self.Stand.GrabbedPlayer:DropToFloor()
+				local endpos = self:GetClosestPoint(positions, self.Stand.GrabbedPlayer:GetPos())
+				self.Stand.GrabbedPlayer:SetPos(endpos)
+				self.Stand.GrabbedPlayer:DropToFloor()
 
 			end
 		self.Stand.GrabbedPlayer.IsGrabbed = false
@@ -1433,17 +1458,29 @@ end
 function SWEP:StarFinger()
 	if IsValid(self.Stand) then
 		if SERVER then
-			self.Owner:EmitSound(StarFinger)
-			self.Stand:EmitStandSound(SwingSound2)
-			self.Stand:EmitStandSound(SwingSound)
+			if IsValid(self.Stand) and self:GetOwner():Alive() then
+				self.Owner:EmitSound(StarFinger)
+				self.Stand:EmitStandSound(SwingSound2)
+				self.Stand:EmitStandSound(SwingSound)
+			end
 		end
 		self:SetHoldType( "pistol" )
 		if self.Stand:GetSequence() != self.Stand:LookupSequence( "starfinger" ) then
-			self.Stand:ResetSequence(self.Stand:LookupSequence( "starfinger" ))
-			self.Stand:SetCycle(0)
-			self.Stand:SetPlaybackRate(1)
+			if IsValid(self.Stand) and self:GetOwner():Alive() then
+				self.Stand:ResetSequence(self.Stand:LookupSequence( "starfinger" ))
+				self.Stand:SetCycle(0)
+				self.Stand:SetPlaybackRate(1)
+			end
 		end
-		timer.Simple(self.Stand:SequenceDuration(), function() self:ResetFingers() self.Hit = false end)
+		if IsValid(self.Stand) then
+
+			timer.Simple(self.Stand:SequenceDuration(), function() 
+				if IsValid(self.Stand) and self:GetOwner():Alive() then
+					self:ResetFingers() 
+					self.Hit = false 
+				end
+			end)
+		end	
 	end
 end
 
@@ -1556,6 +1593,10 @@ function SWEP:Holster(wep)
 			self.Stand:EmitStandSound(Withdraw)
 		end
 		self.Stand:Withdraw()
+	end
+	if IsValid(self.Stand) then
+		self.Stand:StopSound(OraLoop)
+		self.Stand:StopSound("succ_loop")
 	end
 	if IsValid(self.Stand) and IsValid(self.Stand.GrabbedPlayer) then
 		self:GrabThrow(false)

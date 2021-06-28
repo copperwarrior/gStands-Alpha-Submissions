@@ -856,3 +856,97 @@ sound.Add( {
 } )
 
 
+sound.Add( {
+	name = "temperence.taunt",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/temperance/taunt-01.wav",
+		"weapons/temperance/taunt-02.wav",
+		"weapons/temperance/taunt-03.wav",
+		"weapons/temperance/taunt-04.wav",
+	}
+} )
+sound.Add( {
+	name = "justice.taunt",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/justice/taunt01.wav",
+		"weapons/justice/taunt02.wav",
+		"weapons/justice/taunt03.wav",
+		"weapons/justice/taunt04.wav",
+	}
+} )
+sound.Add( {
+	name = "world.deploys",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/world/deploy_01-1.wav",
+		"weapons/world/deploy-02.wav",
+	}
+} )
+
+sound.Add( {
+	name = "atum.taunt",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/atum/taunt-01.wav",
+		"weapons/atum/taunt-02.wav",
+		"weapons/atum/taunt-03.wav",
+		"weapons/atum/taunt-04.wav",
+	}
+} )
+sound.Add( {
+	name = "devil.taunt",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/ebonydevil/taunt-01.wav",
+		"weapons/ebonydevil/taunt-02.wav",
+		"weapons/ebonydevil/taunt-03.wav",
+		"weapons/ebonydevil/taunt-04.wav",
+	}
+} )
+sound.Add( {
+	name = "bastet.taunt",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/bastet/voice/taunt-01.wav",
+		"weapons/bastet/voice/taunt-02.wav",
+		"weapons/bastet/voice/taunt-03.wav",
+		"weapons/bastet/voice/taunt-04.wav",
+	}
+} )
+sound.Add( {
+	name = "wof.taunt",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/wof/taunt-01.wav",
+		"weapons/wof/taunt-02.wav",
+		"weapons/wof/taunt-03.wav",
+		"weapons/wof/taunt-04.wav",
+	}
+} )
+sound.Add( {
+	name = "emperor.deploy",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	sound = {
+		"weapons/emperor/deploy/deploy-01.wav",
+		"weapons/emperor/deploy/deploy-02.wav",
+	}
+} )
+

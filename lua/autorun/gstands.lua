@@ -28,6 +28,8 @@ CreateConVar( "gstands_stand_see_stands", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 
 CreateConVar( "gstands_stand_hurt_stands", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "#gstands.general.standuserharm" ) 
 CreateConVar( "gstands_the_world_timestop_length", 10, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.wolength")
 CreateConVar( "gstands_star_platinum_timestop_length", 5, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.splength")
+CreateConVar( "gstands_the_world_next_timestop", 30, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.wonextstop")
+CreateConVar( "gstands_star_platinum_next_timestop", 15, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.spnextstop")
 CreateConVar( "gstands_unlimited_stand_range", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.standrange")
 CreateConVar( "gstands_tohth_page_timer", 120, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.tohthpagetimer")
 CreateConVar( "gstands_the_sun_range", 5000, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.sunrange")
@@ -74,8 +76,6 @@ CreateClientConVar( "gstands_active_dododo_toggle", "1", true, true, "#gstands.g
 CreateClientConVar( "gstands_draw_hdm_mirror", "1", true, true, "#gstands.general.drawhdmmirror" )
 CreateClientConVar( "gstands_replacement_gstands_the_world", "models/player/worldjf/world.mdl", true, true, "" )
 CreateClientConVar( "gstands_replacement_gstands_star_platinum", "models/player/starpjf/spjf.mdl", true, true, "" )
-
-
 
 game.AddParticles("particles/menacing.pcf")
 
@@ -231,12 +231,7 @@ local part3mdls = {
 	["models/player/dbm/dbm.mdl2"] = Vector(1,0.6,0),
 	["models/player/dbm/dbm.mdl3"] = Vector(0, 0.6, 0),
 	["models/player/dbm/dbm.mdl4"] = Vector(1, 0, 0),
-	["models/player/dbm/dbm.mdl0"] = Vector(0.3,0.6,1),
-	["models/player/dbm/dbm.mdl1"] = Vector(0.6,0.3,1),
-	["models/player/dbm/dbm.mdl2"] = Vector(1,0.6,0),
-	["models/player/dbm/dbm.mdl3"] = Vector(0, 0.6, 0),
-	["models/player/dbm/dbm.mdl4"] = Vector(1, 0, 0),
-	--Geb
+    --Geb
 	["models/gstands/stands/geb.mdl0"] = Vector(0.5,0.5,0.6),
 	["models/gstands/stands/geb.mdl1"] = Vector(0.7,0.5,0.6),
 	["models/gstands/stands/geb.mdl2"] = Vector(0.4,0.7,0.3),
@@ -262,15 +257,21 @@ local part3mdls = {
 	["models/player/heg/heg.mdl5"] = Vector(0.1,0.3,1),
 	["models/player/heg/heg.mdl6"] = Vector(1,0.3,0.5),
 	["models/player/heg/heg.mdl7"] = Vector(1,1,0),
+	--Kiss From a Rose
+	["models/kfar/kfar.mdl0"] = Vector(0,1,0),
 	--Hermit Purple
-	["models/hpworld/hpworld.mdl0"] = Vector(1,1,0.5),
+	["models/hpworld/hpworld.mdl0"] = Vector(1,1,0,1),
+	--Hermit Purple2
+	["models/hpworld2/hpworld2.mdl0"] = Vector(1,0,1),
 	--Emperor
 	["models/emperor/models/emperor.mdl0"] = Vector(1,0.4,1),
 	--Horus
-	["models/horus/horus.mdl0"] = Vector(0.5,0.5,0.6),
+	["models/horus/horus.mdl0"] = Vector(0.607843137,0.803921569,0.776470588),  --rgb(155,205,198)
 	["models/horus/horus.mdl1"] = Vector(0.5,0.6,0.6),
 	["models/horus/horus.mdl2"] = Vector(0.5,0.3,0.5),
 	["models/horus/horus.mdl3"] = Vector(0.5,0.5,0.4),
+	--Tohth
+	["models/tohth/thoth.mdl0"] = Vector(1,0.733333333,1),
 	--Justice
 	["models/jst/jst.mdl0"] = Vector(0.3,0.3,0.3),
 	--Magician's Red
@@ -311,7 +312,7 @@ local part3mdls = {
 	["models/player/starprv/sp.mdl7"] = Vector(0.5,0,1),
 	["models/player/starprv/sparms.mdl1"] = Vector(0.5,0,1),
 	--Star Platinum JF
-	["models/player/starpjf/spjf.mdl0"] = Vector(0.6,0.4,1),
+	["models/player/starpjf/spjf.mdl0"] = Vector(0.8,0.4,1),
 	["models/player/starpjf/spjf.mdl1"] = Vector(0.2,0.6,1),
 	["models/player/starpjf/spjf.mdl2"] = Vector(0.8,0.4,1),
 	["models/player/starpjf/spjf.mdl3"] = Vector(0.5,0.9,0.5),
@@ -339,10 +340,11 @@ local part3mdls = {
 	["models/player/worldjf/world.mdl7"] = Vector(0,0.6,0.7),
 	["models/player/worldjf/worldarms.mdl1"] = Vector(0,0.6,0.7),
 	--Tower of Gray
-	["models/tgray/tgray.mdl0"] = Vector(0.9,1,0.9),
+	["models/tgray/tgray.mdl0"] = Vector(0.35,0.40,0.35),
 	--Death 13
-	["models/d13/d13.mdl0"] = Vector(0.5,0,0.5),
-	["models/d13/d13.mdl1"] = Vector(0.5,0.3,0.5),
+	["models/d13/d13.mdl0"] = Vector(0.5, 0, 0.5),
+	["models/d13/d13.mdl1"] = Vector(0.5, 0.3,  0.5),
+	["models/d13/balloon.mdl0"] = Vector(0.5, 0, 0.5),
 	--Kiss From a Rose
 	["models/kfar/kfar.mdl"] = Vector(0.1,1,0.1),
 	--Osiris
@@ -359,8 +361,14 @@ local part3mdls = {
 	["models/hipriestess/highpriestess.mdl2"] = Vector(0.3,1,0.3),
 	["models/hipriestess/highpriestess.mdl3"] = Vector(0.6,0.1,1),
 	--Judgement
-	["models/player/jgm.mdl0"] = Vector(0.5, 0.5, 0.5),
-	["models/player/jgm.mdl1"] = Vector(1, 0.9, 0.4),
+	["models/player/jgm/jgm.mdl0"] = Vector(1, 1, 1),
+	["models/player/jgm/jgm.mdl1"] = Vector(1, 0.9, 0.4),
+	["models/player/jgm/jgm.mdl2"] = Vector(0.670588235, 0.780382157, 0.964705882),
+	["models/player/jgm/jgm.mdl3"] = Vector(0.788235294, 0.694117647, 0.980392157),
+	["models/player/jgm/jgm.mdl4"] = Vector(0.301960784, 0.51372549, 0.870588235),
+	--Anubis
+	["models/anubis/w_anubis.mdl"] = Vector(1, 1, 1),
+	["models/anubis/w_anubis.mdl0"] = Vector(1, 1, 1),
 	--Fool
 	["models/gstands/stands/thefool.mdl0"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stands/thefool.mdl1"] = Vector(1, 1, 0.5),
@@ -371,22 +379,21 @@ local part3mdls = {
 	["models/gstands/stands/dome.mdl0"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stands/dome.mdl1"] = Vector(1, 1, 0.5),
 	["models/gstands/stands/dome.mdl2"] = Vector(1, 0.3, 0),
-	["models/gstands/stands/dome.mdl3"] = Vector(0.8, 0.8, 0.5),
-	["models/gstands/stands/dome.mdl4"] = Vector(1, 0.5, 0),
+	["models/gstands/stands/dome.mdl3"] = Vector(1, 0.5, 0),
+	["models/gstands/stands/dome.mdl4"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stands/dome.mdl5"] = Vector(0.8, 0.8, 1),
-	["models/gstands/stand_acc/foolsand_effect.mdl"] = Vector(0.5, 0.5, 0.5),
+	["models/gstands/stand_acc/foolsand_effect.mdl0"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stand_acc/foolsand_effect.mdl1"] = Vector(1, 1, 0.5),
 	["models/gstands/stand_acc/foolsand_effect.mdl2"] = Vector(1, 0.3, 0),
-	["models/gstands/stand_acc/foolsand_effect.mdl3"] = Vector(0.8, 0.8, 0.5),
-	["models/gstands/stand_acc/foolsand_effect.mdl4"] = Vector(1, 0.5, 0),
+	["models/gstands/stand_acc/foolsand_effect.mdl3"] = Vector(1, 0.5, 0),
+	["models/gstands/stand_acc/foolsand_effect.mdl4"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stand_acc/foolsand_effect.mdl5"] = Vector(0.8, 0.8, 1),
-	
 	--Copper
 	["models/player/copper/copper.mdl0"] = Vector(0.6,0.4,0.2),
 	["models/player/copper/copper.mdl1"] = Vector(0.6,0.4,0.2),
 	["models/player/copper/copper.mdl2"] = Vector(0.6,0.4,0.2),
 	--Wheel of Fortune
-	["models/wof.mdl0"] = Vector(1,0.1,1),
+	["models/wof/wof.mdl0"] = Vector(1,0.1,1),
 	["models/buggy.mdl0"] = Vector(1,0.1,1),
 	--Hanged Man
 	["models/hdm/hdm.mdl0"] = Vector(1, 0, 1),
@@ -400,6 +407,10 @@ local part3mdls = {
 	["models/lovers/lovers.mdl3"] = Vector(0.3, 1, 0.3),
 	--Empress
 	["models/empress/empress.mdl0"] = Vector(1, 0.7, 0.3),
+	--The sun
+	["models/sun/gstands_sun.mdl0"] = Vector(0.6,0.5,0),
+	--Temperance
+	["models/yellowtemperance/yellowtemperance.mdl0"] = Vector(1,1,0),
 }
 table.Merge(StandTable, part3mdls)
 function IsPlayerStandUser(ply)
@@ -1528,6 +1539,7 @@ if CLIENT then
 		box:SetValue(true)
 		box = panel:NumSlider( "#gstands.general.arms", "gstands_barrage_arms", 0, 5, 3, 0) 
 	end
+	--TODO: Add in stand stat adjustments
 	local BdygrpTable = {
 		["models/player/slc/slc.mdl"] = Vector(2,1),
 		["models/player/heg.mdl"] = Vector(0,1),

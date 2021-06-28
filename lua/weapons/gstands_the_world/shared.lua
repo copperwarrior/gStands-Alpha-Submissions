@@ -61,7 +61,7 @@ SWEP.TSConvarLength = GetConVar("gstands_the_world_timestop_length")
 local SwingSound = Sound( "WeaponFrag.Throw" )
 local HitSound = Sound( "Flesh.ImpactHard" )
 local MudaBig = Sound("weapons/world/muda.wav")
-local MudaLoop = Sound("weapons/world/muda_loop.wav")
+local MudaLoop = Sound("world.muda_loop")
 local StopTime = Sound("weapons/world/time_stop.wav")
 local StartTime = Sound("weapons/world/start_time.wav")
 local Deploy = Sound("weapons/world/deploy.wav")
@@ -153,69 +153,133 @@ end
 function SWEP:SetupDataTables()
 	self:NetworkVar("Entity", 0, "Stand")
 	self:NetworkVar("Bool", 0, "AMode")
-	self:NetworkVar("Float", 1, "Delay2")
+	self:NetworkVar("Float", 1, "TimeStopDelay")
 end
+local pos, material, white = Vector( 0, 0, 0 ), Material( "sprites/hud/v_crosshair1" ), Color( 255, 255, 255, 255 )
+local base			= "vgui/hud/gstands_hud/"
+local armor_bar   	= Material(base.."armor_bar")
+local bar_border  	= Material(base.."bar_border")
+local boxdis	  	= Material(base.."boxdis")
+local boxend	  	= Material(base.."boxend")
+local cooldown_box	= Material(base.."cooldown_box")
+local generic_rect	= Material(base.."generic_rect")
+local health_bar  	= Material(base.."health_bar")
+local pfpback	 	= Material(base.."pfpback")
+local pfpfront		= Material(base.."pfpfront")
+local corner_left  	= Material(base.."corner_left")
+local corner_right  = Material(base.."corner_right")
 if CLIENT then
 	function SWEP:DrawHUD()
-		
-		draw.SimpleTextOutlined( "MODE:", "HudSelectionText", ScrW() / 2 - 25,15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0,0,0,255)) 
-		draw.SimpleTextOutlined( "Defensive:", "HudSelectionText", ScrW() / 40 - 25,15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0,0,0,255)) 
-		draw.RoundedBox( 3, ScrW() / 2 - 50, 35, 50, 50, Color(0,0,0,255) )
-		draw.RoundedBox( 3, ScrW() / 2, 35, 50, 50, Color(0,0,0,255) )
-		
-		draw.RoundedBox( 3, ScrW() / 55, 35, 50, 50, Color(0,0,0,255) )
-		if self.Stand and self.Stand:IsValid() then
-			if self:GetAMode() then
-				draw.RoundedBox( 3, ScrW() / 2, 35, 50, 50, Color(gStands.GetStandColor(self.Stand:GetModel(), self.Stand:GetSkin()).x * 255,gStands.GetStandColor(self.Stand:GetModel(), self.Stand:GetSkin()).y * 255,gStands.GetStandColor(self.Stand:GetModel(), self.Stand:GetSkin()).z * 255,255) ) 
-				draw.SimpleText( "A", "DermaLarge", ScrW() / 2 + 16,45, Color( 0, 0, 0, 255 )) 
-				else
-				draw.RoundedBox( 3, ScrW() / 2 - 50, 35, 50, 50, Color(gStands.GetStandColor(self.Stand:GetModel(), self.Stand:GetSkin()).x * 255,gStands.GetStandColor(self.Stand:GetModel(), self.Stand:GetSkin()).y * 255,gStands.GetStandColor(self.Stand:GetModel(), self.Stand:GetSkin()).z * 255,255) )
-				draw.SimpleText( "P", "DermaLarge", ScrW() / 2 - 32,45, Color( 0, 0, 0, 255 )) 
+		if GetConVar("gstands_draw_hud"):GetBool() and IsValid(self.Stand) then
+			if IsValid(self.Stand) then
+				local color = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+				local height = ScrH()
+				local width = ScrW()
+				local mult = ScrW() / 1920
+				local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
+				gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
+				
+				surface.SetMaterial(generic_rect)
+				surface.DrawTexturedRect(width - (256 * mult) - 30 * mult, height - (128 * mult) - 30 * mult, 256 * mult, 128 * mult)
+				
+				if !self:GetAMode() then
+					surface.SetMaterial(boxend)
+					else
+					surface.SetMaterial(boxdis)
+				end
+				surface.DrawTexturedRect(width - (192 * mult) - 135 * mult, height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
+				
+				if !self:GetAMode() then
+					surface.SetMaterial(boxdis)
+					else
+					surface.SetMaterial(boxend)
+				end
+				surface.DrawTexturedRect(width - (192 * mult), height - (192 * mult) - 120 * mult, 192 * mult, 192 * mult)
+				
+				
+				
+				draw.TextShadow({
+					text = "#gstands.general.punch",
+					font = "gStandsFont",
+					pos = {width - 295 * mult, height - 295 * mult},
+					color = tcolor,
+				}, 2 * mult, 250)
+				
+				draw.TextShadow({
+					text = "#gstands.general.ability",
+					font = "gStandsFont",
+					pos = {width - 165 * mult, height - 295 * mult},
+					color = tcolor,
+				}, 2 * mult, 250)
+				
+				draw.TextShadow({
+					text = "#gstands.general.incomplete",
+					font = "gStandsFont",
+					pos = {width - 1550 * mult, height - 235 * mult},
+					color = Color(255,0,0, 255),
+				}, 2 * mult, 250
+
+				draw.TextShadow({
+					text = self:Clip1().."/"..self:GetMaxClip1(),
+					font = "gStandsFontLarge",
+					pos = {width - 160 * mult, height - 120 * mult},
+					color = tcolor,
+					xalign = TEXT_ALIGN_CENTER
+				}, 2 * mult, 250)
+				
+				surface.SetMaterial(cooldown_box)
+				if !IsValid(GetGlobalEntity("Time Stop")) then
+					surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), GetConVar( "gstands_the_world_next_timestop" ):GetFloat(), 0, 0, 40 * mult)))
+					else
+					surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 340 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap(self:GetTimeStopDelay() - CurTime(), 0, GetConVar( "gstands_the_world_timestop_length" ):GetFloat(), 0, 40 * mult)))
+				end
+				surface.DrawTexturedRect(width - (64 * mult) - 32 * mult, height - (64 * mult) - 340 * mult, 64 * mult, 64 * mult)
+				draw.TextShadow({
+					text = "#gstands.star_platinum.timestop",
+					font = "gStandsFont",
+					pos = {width - 100 * mult, height - 390 * mult},
+					color = tcolor,
+					xalign = TEXT_ALIGN_RIGHT
+				}, 2 * mult, 250)
 			end
 		end
 	end
+	hook.Add( "HUDShouldDraw", "TheWorldHud", function(elem)
+		if GetConVar("gstands_draw_hud"):GetBool() and IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "gstands_the_world" and (((elem == "CHudWeaponSelection" ) and LocalPlayer().SPInZoom) or elem == "CHudHealth" or elem == "CHudAmmo" or elem == "CHudBattery" or elem == "CLHudSecondaryAmmo") then
+			return false
+		end
+	end)
 end
-local material = Material( "sprites/hud/v_crosshair1" )
+local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-		if IsValid(self.Stand) then 
+	if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
 		local tr = util.TraceLine( {
-			start = self.Stand:GetEyePos(),
-			endpos = self.Stand:GetEyePos() + self.Owner:GetAimVector() * 1500,
+			start = self.Stand:GetEyePos(true),
+			endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,
 			filter = {self.Owner, self.Stand},
 			mask = MASK_SHOT_HULL
 		} )
 		local pos = tr.HitPos
-
+		
 		local pos2d = pos:ToScreen()
 		if pos2d.visible then
-			surface.SetMaterial( material	)
-			surface.SetDrawColor( gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin()) )
-			surface.DrawTexturedRect( pos2d.x - 8, pos2d.y - 8, 16, 16 )
+			surface.SetMaterial( material )
+			local clr = gStands.GetStandColorTable(self.Stand:GetModel(), self.Stand:GetSkin())
+			local h,s,v = ColorToHSV(clr)
+			h = h - 180
+			clr = HSVToColor(h,1,1)
+			surface.SetDrawColor( clr )
+			surface.DrawTexturedRect( pos2d.x - 16, pos2d.y - 16, 32, 32 )
 		end
 		return true
 	end
 end
-function SWEP:Equip()
-	-- if IsValid(self.Owner) then
-		-- self:Spawn()
-		-- self:SetWeaponHoldType( "stando" )
-	-- end
-end
-function SWEP:OwnerChanged()
-	-- if IsValid(self.Owner) then
-		-- self:Spawn()
-		-- self:SetWeaponHoldType( "stando" )
-	-- end
-end
+
 function SWEP:Initialize()
-	--Set the third person hold type to fists
 	self:DrawShadow(false)
 end
 
 if CLIENT then
-	
-	
-	
 	net.Receive("world.PlaySound", 
 		function()
 			LocalPlayer():EmitSound(StopTime)  
@@ -224,59 +288,9 @@ if CLIENT then
 			function()
 				LocalPlayer():EmitSound(StartTime) 
 			end)
-			net.Receive("world.Enter", function() 
-				local tab = {
-					["$pp_colour_addr"]		 = 0/255,
-					["$pp_colour_addg"]		 = 0/255,
-					["$pp_colour_addb"]		 = 0/255,
-					["$pp_colour_brightness"]	 = 0.3,
-					["$pp_colour_contrast"]	 = 1,
-					["$pp_colour_colour"]		 = -5,
-					["$pp_colour_mulr"]		 = -5,
-				["$pp_colour_mulg"]		 = -5,
-				["$pp_colour_mulb"]		 = -5,
-				}
-				local StartTime = CurTime()
-				hook.Add( "RenderScreenspaceEffects", "StopTimeColour"..LocalPlayer():GetName(), function()
-					local tabI = {
-						[ "$pp_colour_addr" ] = Lerp(0.01, (CurTime() % 10)/512, 0),
-						[ "$pp_colour_addg" ] = Lerp(0.01, ((CurTime() + 200) % 10)/512, 0),
-						[ "$pp_colour_addb" ] = Lerp(0.01, ((CurTime() + 400) % 10)/512, 0),
-						[ "$pp_colour_brightness" ] = Lerp(0.1, tab[ "$pp_colour_brightness" ],0),
-						[ "$pp_colour_contrast" ] = Lerp(0.1, tab[ "$pp_colour_contrast" ], 0.4),
-						[ "$pp_colour_colour" ] = Lerp(0.1, tab[ "$pp_colour_colour" ], 0.01),
-						[ "$pp_colour_mulr" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulr" ], 0.5), 0.5),
-						[ "$pp_colour_mulg" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulg" ], 0.5), 0.5),
-						[ "$pp_colour_mulb" ] = Lerp(0.1, math.Rand(tab[ "$pp_colour_mulb" ], 0.5), 0.5)
-					}
-					tab = tabI
-					DrawColorModify( tabI )
-					
-				end)
-			end)
-			net.Receive("world.Exit", function( ply ) 
-				hook.Remove( "RenderScreenspaceEffects", "StopTimeColour"..LocalPlayer():GetName() )
-			end)
-			net.Receive("world.Blind", function( ply ) 
-				hook.Add( "PostDrawHUD", "Stop"..LocalPlayer():GetName(), function() DrawMotionBlur(1, 1, 10000) end)
-				timer.Simple(0.1, function() hook.Add( "CalcView", "KillAudioVeryWell"..LocalPlayer():GetName(), function(ply, pos, ang)
-					if ( !IsValid( ply ) ) then return end
-					if ( !LocalPlayer() or !IsValid( LocalPlayer() ) or (LocalPlayer():GetActiveWeapon() and LocalPlayer():GetActiveWeapon():IsValid() and (LocalPlayer():GetActiveWeapon():GetClass() == "gstands_star_platinum" or LocalPlayer():GetActiveWeapon():GetClass() == "gstands_the_world")) ) then return end
-					if GetConVar("gstands_time_stop"):GetBool() then
-						
-						return {
-							origin = pos + Vector(0,0,10000),
-							angles = ang,
-							drawviewer = true
-						}
-					end
-				end )
-				end )
-			end)
-			net.Receive("world.UnBlind", function( ply ) 
-				hook.Remove( "PostDrawHUD", "Stop"..LocalPlayer():GetName() )
-				hook.Remove( "CalcView", "KillAudioVeryWell"..LocalPlayer():GetName())
-			end)
+		net.Receive("world.Enter", function() 
+			local StartTime = CurTime()
+		end)
 end
 
 if SERVER then
@@ -566,7 +580,9 @@ function SWEP:StopTime()
 		end
 		self.TimeStopperController = GetGlobalEntity("Time Stop")
 		self.TimeStopperController:Spawn()
-		table.insert(self.TimeStopperController.StoppedUsers, self.Owner)
+		if IsValid(GetGlobalEntity( "Time Stop" )) then
+			table.insert(self.TimeStopperController.StoppedUsers, self.Owner)
+		end
 		self.TimeStopperController:Activate()
 		
 	end
@@ -653,7 +669,7 @@ function SWEP:SecondaryAttack()
 		--Ability mode
 		self.TimeStopDelay = self.TimeStopDelay or CurTime()
 		self.TSReleaseDelay = self.TSReleaseDelay or CurTime()
-		if (self:GetAMode()) then
+		if (self:GetAMode()) and CurTime() > self:GetTimeStopDelay() then
 			if SERVER and GetConVar("gstands_time_stop"):GetInt() != 1 and !IsValid(GetGlobalEntity("Time Stop")) and self.Owner:KeyPressed(IN_ATTACK2) and IsFirstTimePredicted() and self.TimeStopDelay <= CurTime() then
 				self:SetHoldType("pistol")
 				self.TimeStopDelay = CurTime() + 25
@@ -690,13 +706,15 @@ function SWEP:SecondaryAttack()
 			if SERVER and !self.Owner:gStandsKeyDown("modifierkey1") and self.Stand:GetSequence() != self.Stand:LookupSequence("donut") then
 				for i = 0, 14 do
 					self.Stand:SetLayerBlendOut(i, 0)
+				en
+				if IsValid(self.Stand) and self:GetOwner():Alive() then
+					self.Stand:RemoveAllGestures()
+					
+					self.Stand:ResetSequence( self.Stand:LookupSequence("donut") )
+					self.Stand:ResetSequenceInfo()
+					self.Stand:SetPlaybackRate( 1 )
+					self.Stand:SetCycle( 0 )
 				end
-				self.Stand:RemoveAllGestures()
-				
-				self.Stand:ResetSequence( self.Stand:LookupSequence("donut") )
-				self.Stand:ResetSequenceInfo()
-				self.Stand:SetPlaybackRate( 1 )
-				self.Stand:SetCycle( 0 )
 			elseif SERVER and self.Owner:gStandsKeyDown("modifierkey1") and self.Stand:GetSequence() != self.Stand:LookupSequence("spinkick") then
 				for i = 0, 14 do
 					self.Stand:SetLayerBlendOut(i, 0)
@@ -731,7 +749,7 @@ function SWEP:SecondaryAttack()
 					end)
 				end
 				timer.Simple(self.Stand:SequenceDuration(), function()
-					if IsValid(self) then
+					if IsValid(self.Stand) and self:GetOwner():Alive() then
 						self:SetHoldType( "stando")
 					end
 				end)
@@ -842,7 +860,10 @@ function SWEP:Barrage()
 	
 	--Stand leaps! If you punch the ground, you go flying back! Normal punch is half power.
 	if SERVER and ( tr.HitWorld ) then
-		self.Owner:SetVelocity( self.Owner:GetAimVector() * -128 + Vector( 0, 0, 128 ) )
+		local mult = 128
+		if !self.Owner:OnGround() then
+			self.Owner:SetVelocity( self.Owner:GetAimVector() * -mult + Vector( 0, 0, mult ) )
+		end
 	end
 	
 	self.Owner:LagCompensation( false )
@@ -948,54 +969,59 @@ function SWEP:DonutPunch()
 	
 	--Stand leaps! If you punch the ground, you go flying back! Normal punch is half power.
 	if ( tr.HitWorld ) then
-		self.Owner:SetVelocity( self.Owner:GetAimVector() * -(170.66 * self.Power) + Vector( 0, 0, (170.66 * self.Power) ) )
+		if !self.Owner:OnGround() then
+			self.Owner:SetVelocity( self.Owner:GetAimVector() * -(17.66 * self.Power) + Vector( 0, 0, (170.66 * self.Power) ) )
+		end
 	end
 	
 	self.Owner:LagCompensation( false )
 	
 end
 function SWEP:KnifeThrow()
-	
-	--Most of this is from the default fists swep, sped up and adapted to fit high speed stand rushes.
-	self:SetHoldType("pistol")
-	local anim = self.Owner:GetSequenceName(self.Owner:GetSequence())
-	self.Stand:ResetSequence( self.Stand:LookupSequence("SEQ_BATON_SWING") )
-	self.Stand:SetCycle( 0.1 )
-	self.Stand:SetPlaybackRate( 2.5 )
 	if SERVER then
-		self.Stand:RemoveAllGestures()
+		--Most of this is from the default fists swep, sped up and adapted to fit high speed stand rushes.
+		self:SetHoldType("pistol")
+		local anim = self.Owner:GetSequenceName(self.Owner:GetSequence())
+		self.Stand:ResetSequence( self.Stand:LookupSequence("SEQ_BATON_SWING") )
+		self.Stand:SetCycle( 0.1 )
+		self.Stand:SetPlaybackRate( 2.5 )
+		if SERVER then
+			self.Stand:RemoveAllGestures()
+		end
+		
+		timer.Simple(0.3, function() 
+			if IsValid(self) then 
+				self:SetHoldType( "stando")
+				self.Stand:SetPlaybackRate( 1 )
+			end
+		end)
+		if SERVER then
+			self.Owner:EmitSound(KnifeThrow)
+		end
+		self.Owner:LagCompensation( true )
+		
+		local tr = util.TraceLine( {
+			start = self.Stand:GetEyePos(),
+			endpos = self.Stand:GetEyePos() + self.Owner:GetAimVector() * (self.HitDistance * 400),
+			filter = {self.Owner, self.Stand},
+			mask = MASK_SHOT_HULL
+		} )
+		if self.Stand:GetBlockCap() and IsValid(self.Stand:GetAITarget()) then
+			tr.Entity = self.Stand.AITarget
+		end
+		ent = { }
+		local amount = 5
+		if self.Owner:gStandsKeyDown("modifierkey2") then
+			amount = 1
+			else
+			amount = 5
+		end
+		for i = 1, amount, 1
+		do
+			self:ThrowKnife(amount, tr.Entity)
+		end
+		self.Owner:LagCompensation( false )
 	end
-	
-	timer.Simple(0.3, function() if IsValid(self) then self:SetHoldType( "stando") self.Stand:SetPlaybackRate( 1 ) self.Stand:ResetSequence( self.Stand:LookupSequence(self.Owner:GetSequenceName(self.Owner:GetSequence())) )
-	end
-	end)
-	if SERVER then
-		self.Owner:EmitSound(KnifeThrow)
-	end
-	self.Owner:LagCompensation( true )
-	
-	local tr = util.TraceLine( {
-		start = self.Stand:GetEyePos(),
-		endpos = self.Stand:GetEyePos() + self.Owner:GetAimVector() * (self.HitDistance * 400),
-		filter = {self.Owner, self.Stand},
-		mask = MASK_SHOT_HULL
-	} )
-	if self.Stand:GetBlockCap() and IsValid(self.Stand:GetAITarget()) then
-		tr.Entity = self.Stand.AITarget
-	end
-	ent = { }
-	local amount = 5
-	if self.Owner:gStandsKeyDown("modifierkey2") then
-		amount = 1
-		else
-		amount = 5
-	end
-	for i = 1, amount, 1
-	do
-		self:ThrowKnife(amount, tr.Entity)
-	end
-	self.Owner:LagCompensation( false )
-	
 end
 
 function SWEP:ThrowKnife(amount, target)

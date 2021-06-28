@@ -32,6 +32,11 @@ SWEP.DrawCrosshair      = true
 SWEP.WorldModel = "models/player/whitesnake/disc.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
+SWEP.StandModel = "models/jst/jst.mdl"
+SWEP.StandModelP = "models/jst/jst.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/jst/jst.mdl"
+end
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -215,7 +220,7 @@ end
 	end)
 	local material = Material( "vgui/hud/gstands_hud/crosshair" )
 	function SWEP:DoDrawCrosshair(x,y)
-		if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+		if IsValid(self.Stand) and IsValid(self.Owner) then
 			local tr = util.TraceLine( {
 				start = self.Stand:GetEyePos(true),
 				endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,

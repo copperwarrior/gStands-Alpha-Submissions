@@ -193,8 +193,9 @@ function ENT:DrawMainBeamOtherClients( StartPos, EndPos, dist )
 end
 
 function ENT:DrawRope(EndPos, StartPos, alpha)
+	if IsValid(self.clent) then
 		self.clent:SetupBones()
-
+	end
 	self.clent:SetPos(StartPos)
 	local norm = (EndPos - StartPos):GetNormalized()
 	local ang = norm:Angle()

@@ -9,7 +9,7 @@ ENT.Purpose= "To stand"
 ENT.Instructions= "How are you reading the instructions? This shouldn't be normally spawnable"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
-ENT.RenderGroup = RENDERGROUP_OPAQUE
+ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.AutomaticFrameAdvance = true
 ENT.Animated = true
 ENT.Color = Color(150,150,150,1)
@@ -54,6 +54,7 @@ local NonStandard = {
 function ENT:Initialize()
 	self:DrawShadow(false)
 	self:UseClientSideAnimation()
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 	for k,v in pairs(self:GetMaterials()) do
 		local mat = Material(v)
 		if string.StartWith(mat:GetShader(),"Eyes") then
@@ -101,7 +102,7 @@ function ENT:Initialize()
 		end
 	end
 	self.Wep = self.Owner:GetActiveWeapon()
-	self:SetRenderMode(RENDERMODE_TRANSALPHA)
+	self:SetRenderMode(RENDERGROUP_BOTH)
 	self.OwnerPos = self.Owner:GetPos()
 	self.OwnerCenterPos = self.Owner:WorldSpaceCenter()
 	self.CenterPos = self:WorldSpaceCenter()
@@ -150,7 +151,7 @@ function ENT:Initialize()
 		end)
 	end
 	self.Model = self:GetModel()
-	self:SetRenderMode(RENDERMODE_WORLDGLOW)
+	self:SetRenderMode(RENDERGROUP_BOTH)
 	self.OwnerName = self.Owner:GetName()
 	self.Color = self:GetColor()
 		self.StandId = GetgStandsID(self:GetModel())
@@ -184,7 +185,7 @@ function ENT:DoMovement()
 				local sPose = self.Owner:GetPoseParameterName( i )
 				local sPose2 = self:GetPoseParameterName( i )
 				if sPose == sPose2 then
-					if self.Owner:GetPoseParameterName( i ) != "head_yaw" and self.Owner:GetPoseParameterName( i ) != "head_pitch" and self.Owner:GetPoseParameterName( i ) != "move_y" and self.Owner:GetPoseParameterName( i ) != "move_x" then
+					if self.Owner:GetPoseParameterName( i ) != "head_yaw" and self.Owner:GetPoseParameterName( i ) != "head_pitch" then
 						self:SetPoseParameter( sPose, Lerp(0.1, self:GetPoseParameter(sPose), self.Owner:GetPoseParameter( sPose )  ))
 					end
 				end
@@ -203,8 +204,10 @@ function ENT:DoMovement()
 	end
 	local flMin, flMax = self:GetPoseParameterRange( 6 )
 	self:SetPoseParameter("head_yaw", ang.y)
+	self:SetPoseParameter("aim_yaw", ang.y)
 	flMin, flMax = self:GetPoseParameterRange( 7 )
 	self:SetPoseParameter("head_pitch", ang.p)
+	self:SetPoseParameter("aim_pitch", ang.p)
 	if self:GetParent() != nil and !self:GetParent():IsValid() then
 		if !(self:GetInDoDoDo() or self.InStill and self.StandId != GSTANDS_JST) and (self.Owner:GetActiveWeapon():IsValid() and self.Owner:GetActiveWeapon():GetHoldType() != "pistol") and !Active then
 			if self:GetImageID() == 1 then
@@ -253,9 +256,6 @@ function ENT:DoMovement()
 			if !self:GetMoveParent():IsValid() then
 				self:GetMoveParent(self.Owner)
 			end
-			elseif self:GetSequence() == self:LookupSequence("timestop") or self:GetSequence() == self:LookupSequence("flick") then
-			self:SetIdealPos(self.Owner:EyePos() + (self.Owner:GetForward() * self.offset.x) + (self.Owner:GetRight() * self.offset.y) - Vector(0,0,self.offset.z))
-			self.Pos = self:GetPos()
 		end
 		elseif Active then
 		self:SetPos((self.OwnerPos - Vector(0,0,50)))
@@ -271,59 +271,87 @@ function ENT:DoMovement()
 	end
 	self.StandVelocity = self.StandVelocity or Vector(0,0,0)
 	if self:GetInDoDoDo() and self.StandId != GSTANDS_JST then
-			self.Owner:AddFlags(FL_ATCONTROLS)
-			self:SetIdealAngles((self.Owner:GetAimVector():Angle()))
-			if !((self.StandId == GSTANDS_TGRAY) and self.Owner:KeyDown(IN_SPEED) and IsValid(self.Wep) and IsValid(self.Wep:GetLockTarget())) and self.Owner:KeyDown(IN_FORWARD) then
-				self.StandVelocity = (self.StandVelocity + self.Owner:GetAimVector()):GetNormalized()
+		self.Owner:AddFlags(FL_ATCONTROLS)
+		self:SetIdealAngles((self.Owner:GetAimVector():Angle()))
+		if !((self.StandId == GSTANDS_TGRAY) and self.Owner:KeyDown(IN_SPEED) and IsValid(self.Wep) and IsValid(self.Wep:GetLockTarget())) and self.Owner:KeyDown(IN_FORWARD) then
+			self.StandVelocity = (self.StandVelocity + self.Owner:GetAimVector()):GetNormalized()
+			if SERVER then
+				self:SetPoseParameter( "move_x", Lerp(0.2, self:GetPoseParameter( "move_x" ), 1 ))
 			end
-			if self.Owner:KeyDown(IN_BACK) then
-				self.StandVelocity = (self.StandVelocity - self.Owner:GetAimVector()):GetNormalized()
-			end
-			if self.Owner:KeyDown(IN_MOVELEFT) then
-				self.StandVelocity = (self.StandVelocity - self.Owner:GetAimVector():Angle():Right()):GetNormalized()
-				self.Pos = self:GetPos()
-					self:SetPoseParameter( "move_y", Lerp(0.2, self:GetPoseParameter( "move_y" ), -1 ))
-			end
-			if self.Owner:KeyDown(IN_MOVERIGHT) then
-				self.StandVelocity = (self.StandVelocity + self.Owner:GetAimVector():Angle():Right()):GetNormalized()
-				self.Pos = self:GetPos()				
-			end
-			if self.Owner:KeyDown(IN_JUMP) then
-				self.StandVelocity = (self.StandVelocity + Vector(0,0,1)):GetNormalized()
-				self.Pos = self:GetPos()
-			end
-			if !self.Owner:gStandsKeyDown("modifierkey2") and self.Owner:KeyDown(IN_DUCK) then
-				self.StandVelocity = (self.StandVelocity - Vector(0,0,1)):GetNormalized()
-				self.Pos = self:GetPos()
-			end
-		elseif !self:GetInDoDoDo() and self.StandId != GSTANDS_JST then
-			self.Owner:RemoveFlags(FL_ATCONTROLS)
-			
-		end
-		util.TraceLine({
-				start = self.Pos,
-				endpos = self.Pos + self.StandVelocity * self.Speed * 5,
-				filter = {self, self.Owner},
-				output = FTr,
-				collisiongroup = self:GetCollisionGroup()
-		})
-		if self.OwnerPos:Distance(self.Pos + self.StandVelocity * self.Speed) < self.Range then
-			if FTr.Hit then
-				self.StandVelocity = self.StandVelocity + FTr.HitNormal/5
-			end
-			if self:GetInDoDoDo() then
-				self:SetIdealPos((self.Pos + self.StandVelocity * FTr.Fraction * self.Speed))
+			else
+			if SERVER then
+				self:SetPoseParameter( "move_x", Lerp(0.01, self:GetPoseParameter( "move_x" ), 0 ))
 			end
 		end
-		if not self.SendForward then
-			self.StandVelocity = self.StandVelocity / 1.1
-			if (self.StandId == GSTANDS_TGRAY) then
-				self.StandVelocity = self.StandVelocity / 1.5
+		if self.Owner:KeyDown(IN_BACK) then
+			self.StandVelocity = (self.StandVelocity - self.Owner:GetAimVector()):GetNormalized()
+			if SERVER then
+				self:SetPoseParameter( "move_x", Lerp(0.2, self:GetPoseParameter( "move_x" ), -1 ))
+			end
+			else
+			if SERVER then
+				self:SetPoseParameter( "move_x", Lerp(0.01, self:GetPoseParameter( "move_x" ), 0 ))
 			end
 		end
-		
-	
+		if self.Owner:KeyDown(IN_MOVELEFT) then
+			self.StandVelocity = (self.StandVelocity - self.Owner:GetAimVector():Angle():Right()):GetNormalized()
+			self.Pos = self:GetPos()
+			if SERVER then
+				self:SetPoseParameter( "move_y", Lerp(0.2, self:GetPoseParameter( "move_y" ), -1 ))
+			end
+			else
+			if SERVER then
+				self:SetPoseParameter( "move_y", Lerp(0.01, self:GetPoseParameter( "move_y" ), 0 ))
+			end
+		end
+		if self.Owner:KeyDown(IN_MOVERIGHT) then
+			self.StandVelocity = (self.StandVelocity + self.Owner:GetAimVector():Angle():Right()):GetNormalized()
+			self.Pos = self:GetPos()
+			if SERVER then
+				self:SetPoseParameter( "move_y", Lerp(0.2, self:GetPoseParameter( "move_y" ), 1 ))
+			end
+			else
+			if SERVER then
+				self:SetPoseParameter( "move_y", Lerp(0.01, self:GetPoseParameter( "move_y" ), 0 ))
+			end
+		end
+		if self.Owner:KeyDown(IN_JUMP) then
+			self.StandVelocity = (self.StandVelocity + self.Owner:GetAimVector():Angle():Up()):GetNormalized()
+			self.Pos = self:GetPos()
+		end
+		if !self.Owner:gStandsKeyDown("modifierkey2") and self.Owner:KeyDown(IN_DUCK) then
+			self.StandVelocity = (self.StandVelocity - self.Owner:GetAimVector():Angle():Up()):GetNormalized()
+			self.Pos = self:GetPos()
+		end
+	elseif !self:GetInDoDoDo() and self.StandId != GSTANDS_JST then
+		self.Owner:RemoveFlags(FL_ATCONTROLS)
+		if self:GetBlockCap() then
+			if SERVER then
+				self:SetAITarget(self:GetNPCThreat())
+			end
+		end
 	end
+	local FTr = util.TraceLine({
+			start = self.Pos,
+			endpos = self.Pos + self.StandVelocity * self.Speed * 5,
+			filter = {self, self.Owner},
+			collisiongroup = self:GetCollisionGroup()
+			})
+	if self.OwnerPos:Distance(self.Pos + self.StandVelocity * self.Speed) < self.Range then
+		if FTr.Hit then
+			self.StandVelocity = self.StandVelocity + FTr.HitNormal/5
+		end
+		if self:GetInDoDoDo() then
+			self:SetIdealPos((self.Pos + self.StandVelocity * FTr.Fraction * self.Speed))
+		end
+	end
+	self.StandVelocity = self.StandVelocity / 1.1
+	if (self.StandId == GSTANDS_TGRAY) then
+		self.StandVelocity = self.StandVelocity / 1.5
+	end
+	
+
+end
 	if (self.StandId == GSTANDS_TGRAY) and self.Owner:KeyDown(IN_SPEED) and IsValid(self.Wep) and IsValid(self.Wep:GetLockTarget()) then
 		self:SetIdealAngles((LerpVector(0.1, self.Wep:GetLockTarget():EyePos(), self.Wep:GetLockTarget():WorldSpaceCenter()) - self:GetPos()):Angle())
 		if self.Owner:KeyDown(IN_FORWARD) then
@@ -349,12 +377,9 @@ end
 local unlimitrange = GetConVar("gstands_unlimited_stand_range")
 
 function ENT:Think()
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 	if not IsValid(self.Owner) then return end
-	if CLIENT then
-		if self.StandId == GSTANDS_HIEROPHANT and self:GetHEGEndPos() != Vector(0,0,0) then
-			self:SetRenderBoundsWS(-self:GetHEGEndPos(), self:GetHEGEndPos())
-		end
-	end
+
 	self.Range = self:GetRange()
 	if unlimitrange:GetBool() then
 		self.Range = 100000000000
@@ -427,10 +452,12 @@ local JusticeFogMatNoz = Material( "models/jst/smokestack_nofognoz.vmt" )
 local shine = Material("sprites/light_glow02_add.vmt")
 local transmat = Material("models/transfilter.vmt")
 
-function ENT:DrawTranslucent(flags)
+function ENT:Draw()
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 end
 
-function ENT:Draw(flags, opaque)
+function ENT:DrawTranslucent(flags, opaque)
+	self.Owner:SetRenderMode(RENDERGROUP_BOTH)
 	if !IsValid(self.Owner) then
 		return true 
 	end
@@ -501,27 +528,132 @@ function ENT:Draw(flags, opaque)
 					self.Succ:StopEmission(false, true)
 					self.Succ = nil
 				end
-				if self.StandId == GSTANDS_CHARIOTUN and !IsValid(self.CenterImage) then
-					render.SetBlend(math.Rand(0.1,0.2))
-					local OGPos = self:GetPos()
-					self:SetPos(OGPos + VectorRand()/5 + self:GetRight() * math.Rand(1,3))
-					self:SetupBones()
-					self:DrawModel()
-					render.SetBlend(math.Rand(0.1,0.2))
-					self:SetPos(OGPos - VectorRand()/5 - self:GetRight() * math.Rand(1,3))
-					self:SetupBones()
-					self:DrawModel()
-					render.SetBlend(math.Rand(0.05,0.1))
-					self:SetPos(OGPos + VectorRand()/5 + self:GetRight() * math.Rand(2,4))
-					self:SetupBones()
-					self:DrawModel()
-					render.SetBlend(math.Rand(0.05,0.1))
-					self:SetPos(OGPos - VectorRand()/5 -self:GetRight() * math.Rand(2,4))
-					self:SetupBones()
-					self:DrawModel()
-					self:SetPos(OGPos)
-					self:SetupBones()
-					render.SetBlend( 50 / LOD )
+				if self:GetImageID() == 1 and self.StandId == GSTANDS_CHARIOTUN then
+					if IsValid(self.CenterImage) then
+
+						render.SetBlend(math.Rand(0.1,0.2))
+
+						local OGPos = self:GetPos()
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(1,3)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.1,0.2))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 - self:GetRight() * math.Rand(1,3)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.05,0.1))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(2,4)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.05,0.1))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 -self:GetRight() * math.Rand(2,4)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+						self:SetPos(OGPos)
+						self:SetupBones()
+					end
+					
+				end
+
+				if self:GetImageID() == 2 and self.StandId == GSTANDS_CHARIOTUN then
+					if IsValid(self.CenterImage) then
+
+						render.SetBlend(math.Rand(0.1,0.2))
+
+						local OGPos = self:GetPos()
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(1,3)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.1,0.2))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 - self:GetRight() * math.Rand(1,3)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.05,0.1))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(2,4)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.05,0.1))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 -self:GetRight() * math.Rand(2,4)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+						self:SetPos(OGPos)
+						self:SetupBones()
+					end
+					
+				end
+
+				
+				if self:GetImageID() == 3 and self.StandId == GSTANDS_CHARIOTUN then
+
+					if IsValid(self.CenterImage) then
+
+						render.SetBlend(math.Rand(0.1,0.2))
+
+						local OGPos = self:GetPos()
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(1,3)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.1,0.2))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 - self:GetRight() * math.Rand(1,3)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.05,0.1))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(2,4)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+
+						render.SetBlend(math.Rand(0.05,0.1))
+
+						self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 -self:GetRight() * math.Rand(2,4)))
+
+						self:SetupBones()
+
+						self:DrawModel()
+						self:SetPos(OGPos)
+						self:SetupBones()
+					end
+					
 				end
 				
 				if self.StandId == GSTANDS_JUDGEMENT and self:GetSequence() == self:LookupSequence("h2u") then
@@ -559,29 +691,7 @@ function ENT:Draw(flags, opaque)
 					end
 					render.SetBlend(self.PullOut2)
 					if self.StandId == GSTANDS_CHARIOTUN then
-						if IsValid(self.CenterImage) then
-							render.SetBlend(math.Rand(0.1,0.2))
-							local OGPos = self:GetPos()
-							self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(1,3)))
-							self:SetupBones()
-							self:DrawModel()
-							render.SetBlend(math.Rand(0.1,0.2))
-							self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 - self:GetRight() * math.Rand(1,3)))
-							self:SetupBones()
-							self:DrawModel()
-							render.SetBlend(math.Rand(0.05,0.1))
-							self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos + VectorRand()/5 + self:GetRight() * math.Rand(2,4)))
-							self:SetupBones()
-							self:DrawModel()
-							render.SetBlend(math.Rand(0.05,0.1))
-							self:SetPos(LerpVector(math.Rand(0.5,1.1), self.CenterImage:GetPos(), OGPos - VectorRand()/5 -self:GetRight() * math.Rand(2,4)))
-							self:SetupBones()
-							self:DrawModel()
-							self:SetPos(OGPos)
-							self:SetupBones()
-						end
 						render.SetBlend( 50 / LOD )
-						
 					end
 					if IsValid(self.Wep) and (self.StandId == GSTANDS_CHARIOT or self.StandId == GSTANDS_CHARIOTUN) and self:GetSequence() != self:LookupSequence("stab") then
 						local color = gStands.GetStandColorTable(self.Model, self:GetSkin())
@@ -644,33 +754,55 @@ function ENT:Draw(flags, opaque)
 					end
 					
 					if self.StandId == GSTANDS_TGRAY and self:GetBodygroup(1) == 0 then
+
 						local OGPos = self:GetPos()
+
 						local OGCycle = self:GetCycle()
+
 						self.LastPosTG = self.LastPosTG or {}
+
 						self.LastPosIndex = self.LastPosIndex or 1
+
 						local mult = 1
+
 						if self.Wep.GetTongues then
+
 						mult = self.Wep:GetTongues()/3.75
+
 						end
+
 						for k,v in pairs(self.LastPosTG) do
+
 							render.SetBlend((self.LastPosIndex % 5)/15)
+
 							self:SetPos(v + VectorRand() * (mult))
+
 							self:SetupBones()
+
 							self:DrawModel()
+
 							self:SetCycle(1 - (k/5))
+
 						end
+
 						self.LastPosTG[self.LastPosIndex % 6] = OGPos
+
 						self.LastPosIndex = self.LastPosIndex + 1
+
 						self:SetPos(OGPos)
+
 						self:SetCycle(OGCycle)
+
 						self:SetupBones()
+
 						render.SetBlend( 1 )
+
 					end
 					if self.StandId == GSTANDS_CHARIOT and self:GetSequence() == self:LookupSequence("stabonce") then
 						local OGPos = self:GetPos()
 						local OGCycle = self:GetCycle()
 						self.Start = self.Start or CurTime()
-						for i = 0, 5 do
+						for i = 0, 10 do
 							render.SetBlend(0.1)
 							self:SetPos(LerpVector(i/15 * (1 - ((CurTime() - self.Start))), OGPos, self.OwnerPos))
 							self:SetupBones()
@@ -684,21 +816,37 @@ function ENT:Draw(flags, opaque)
 					if self.StandId == GSTANDS_CHARIOT and self:GetSequence() != self:LookupSequence("stabonce") then
 						self.Start = nil
 					end
+
 					if self.StandId == GSTANDS_TGRAY and self.Owner:KeyDown(IN_ATTACK2) and self:GetBodygroup(1) != 1 then
+
 						local OGPos = self:GetPos()
+
 						local OGCycle = self:GetCycle()
+
 						for i = 0, 5 do
+
 							render.SetBlend(math.Rand(0.2,0.8))
+
 							self:SetCycle(math.Rand(0,1))
+
 							self:SetPos(OGPos + VectorRand() * 10 * (self.Wep:GetTongues()/3.75))
+
 							self:SetupBones()
+
 							self:DrawModel()
+
 							self.LastPosTG[i] = OGPos + VectorRand() * 10
+
 						end
+
 						self:SetPos(OGPos)
+
 						self:SetCycle(OGCycle)
+
 						self:SetupBones()
+
 						render.SetBlend( 0.1 )
+
 					end
 					
 					if self.StandId == GSTANDS_HIEROPHANT then
@@ -732,9 +880,9 @@ function ENT:Draw(flags, opaque)
 					self:SetModel(self.NewModel)
 					
 					self:DrawModel()
-						-- render.MaterialOverride(transmat)
-						-- self:DrawModel()
-						-- render.MaterialOverride()
+						--render.MaterialOverride(transmat)
+						--self:DrawModel()
+						--render.MaterialOverride()
 					self:SetModel(mdl)
 					else
 						self:DrawModel() 
@@ -743,10 +891,10 @@ function ENT:Draw(flags, opaque)
 
 					end
 				util.TimerCycle()
-				if !self.Owner:IsFlagSet(FL_FROZEN) and self:GetPlaybackRate() >= 1 then   
+				if self:GetPlaybackRate() >= 1 then   
 					local zero = Vector(0,0,0)
 					if !(IsValid(self.Image) or IsValid(self.Image1)) and self:GetSequence() == self.BarrageAnimIndex then
-						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
+						local arms = ClientsideModel(ArmsTable[self:GetModel()])
 						for i = 0, GetConVar("gstands_barrage_arms"):GetInt() do
 							
 							local resetAnim = self:GetCycle()
@@ -772,12 +920,11 @@ function ENT:Draw(flags, opaque)
 									self.FlameFX4:SetControlPoint(1, VectorRand() * 10)
 								end
 							end
-							local angadj = 45
-							local angadj2 = 0
+							local angadj = 35
+							local angadj2 = 45
 							local oldclip = false
 							if self:GetSequence() == self:LookupSequence("stab") then
 								angadj = 5
-								angadj2 = 1
 								oldclip = render.EnableClipping( true )
 								local normal = self:GetForward()
 								local position = normal:Dot( self:GetEyePos(true) )
@@ -785,14 +932,14 @@ function ENT:Draw(flags, opaque)
 							end
 							
 							self:ManipulateBoneAngles(lupper,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
-							self:ManipulateBoneAngles(rupper,Angle(math.random(-angadj2,angadj2), math.random(-angadj2,angadj2),math.random(-angadj2,angadj2)))
+							self:ManipulateBoneAngles(rupper,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
 							arms:SetBodygroup(2,1)
 							
 							self:SetupBones()
 							arms:SetupBones()
 							render.SetBlend(math.Rand(0.1, 0.9))
 							if self:GetSequence() == self:LookupSequence("Stab") then
-								render.SetBlend(math.Rand(0.5, 1))
+								render.SetBlend(math.Rand(0.1, 0.8))
 							end
 							arms:DrawModel()
 							arms:Remove()
@@ -830,7 +977,262 @@ function ENT:Draw(flags, opaque)
 						end
 						arms:Remove()
 					end
-					if self.StandId == GSTANDS_CHARIOT and (self:GetSequence() == self:LookupSequence("block")) then
+
+					if (IsValid(self.Image) or IsValid(self.Image1)) and self:GetSequence() == self.BarrageAnimIndex then
+						local arms = ClientsideModel(ArmsTable[self:GetModel()])
+						for i = 0, GetConVar("gstands_barrage_arms"):GetInt() do
+							
+							local resetAnim = self:GetCycle()
+							self:SetCycle(self:GetCycle() + math.Rand(0.3,0.8))
+							arms:SetSkin(self:GetSkin())
+							
+							arms:SetPos(self.Pos)
+							arms:SetParent(self)
+							arms:AddEffects( EF_BONEMERGE || EF_BONEMERGE_FASTCULL || EF_PARENT_ANIMATES)
+							local randvec1 = VectorRand() * 10
+							local randvec1 = Vector(randvec1.x/4, randvec1.y, randvec1.z)
+							local randvec2 = VectorRand() * 10
+							local randvec2 =  Vector(randvec2.x/4, randvec2.y, randvec2.z)
+							if self:GetSequence() != self:LookupSequence("Stab") then
+								self:ManipulateBonePosition(lupper,randvec1)
+								self:ManipulateBonePosition(llower,self:GetManipulateBonePosition(lupper)/2)
+								self:ManipulateBonePosition(rupper,randvec2)
+								self:ManipulateBonePosition(rlower,self:GetManipulateBonePosition(rupper)/2)
+								if self.FlameFX1 and self.FlameFX2 and self.FlameFX3 and self.FlameFX4 then
+									self.FlameFX1:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX2:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX3:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX4:SetControlPoint(1, VectorRand() * 10)
+								end
+							end
+							local angadj = 35
+							local angadj2 = 45
+							local oldclip = false
+							if self:GetSequence() == self:LookupSequence("stab") then
+								angadj = 5
+								oldclip = render.EnableClipping( true )
+								local normal = self:GetForward()
+								local position = normal:Dot( self:GetEyePos(true) )
+								render.PushCustomClipPlane( normal, position )
+							end
+							
+							self:ManipulateBoneAngles(lupper,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
+							self:ManipulateBoneAngles(rupper,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
+							arms:SetBodygroup(2,1)
+							
+							self:SetupBones()
+							arms:SetupBones()
+							render.SetBlend(math.Rand(0.1, 0.9))
+							if self:GetSequence() == self:LookupSequence("Stab") then
+								render.SetBlend(math.Rand(0.1, 0.2))
+							end
+							arms:DrawModel()
+							arms:Remove()
+							local tr1 = util.TraceLine( {
+								start = self:GetBonePosition(rupperh),
+								endpos = self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10,
+								filter = {self.Owner, self.Stand},
+							} )
+							local tr2 = util.TraceLine( {
+								start = self:GetBonePosition(lupperh),
+								endpos = self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10,
+								filter = {self.Owner, self.Stand},
+							} )
+							if tr1.HitWorld and math.random(0, 50) == 0 then
+								util.Decal("Impact.Concrete", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("Impact.Sand", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("FadingScorch", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+							end
+							if tr2.HitWorld and math.random(0, 50) == 0 then
+								util.Decal("Impact.Concrete", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("Impact.Sand", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("FadingScorch", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+							end
+							if self:GetSequence() == self:LookupSequence("Stab") then
+								render.PopCustomClipPlane()
+								oldclip = render.EnableClipping( oldclip )
+							end
+							self:SetCycle(resetAnim)
+							self:ManipulateBonePosition(lupper,zero)
+							self:ManipulateBonePosition(llower,zero)
+							self:ManipulateBonePosition(rupper,zero)
+							self:ManipulateBonePosition(rlower,zero)
+							self:ManipulateBoneAngles(lupper,Angle(0,0,0))
+							self:ManipulateBoneAngles(rupper,Angle(0,0,0))
+						end
+						arms:Remove()
+					end
+
+					
+
+					if (IsValid(self.Image) or IsValid(self.Image1)) and self:GetSequence() == self.BarrageAnimIndex then
+						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
+						for i = 0, 0 do
+							
+							local resetAnim = self:GetCycle()
+							self:SetCycle(self:GetCycle() + math.Rand(0,9999))
+							arms:SetSkin(self:GetSkin())
+							
+							arms:SetPos(self.Pos)
+							arms:SetParent(self)
+							arms:AddEffects( EF_BONEMERGE || EF_BONEMERGE_FASTCULL || EF_PARENT_ANIMATES)
+							local randvec1 = VectorRand() * 10
+							local randvec1 = Vector(randvec1.x/4, randvec1.y, randvec1.z)
+							local randvec2 = VectorRand() * 10
+							local randvec2 =  Vector(randvec2.x/4, randvec2.y, randvec2.z)
+							if self:GetSequence() != self:LookupSequence("Stab") then
+								self:ManipulateBonePosition(lupper,randvec1)
+								self:ManipulateBonePosition(llower,self:GetManipulateBonePosition(lupper)/2)
+								self:ManipulateBonePosition(rupper,randvec2)
+								self:ManipulateBonePosition(rlower,self:GetManipulateBonePosition(rupper)/2)
+								if self.FlameFX1 and self.FlameFX2 and self.FlameFX3 and self.FlameFX4 then
+									self.FlameFX1:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX2:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX3:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX4:SetControlPoint(1, VectorRand() * 10)
+								end
+							end
+							render.SetBlend(math.Rand(1,1))
+							local angadj = 1
+							local angadj2 = 1
+							local oldclip = false
+							if self:GetSequence() == self:LookupSequence("stab") then
+								angadj = 10
+								angadj2 = 5
+								oldclip = render.EnableClipping( false )
+								local normal = self:GetForward()
+								local position = normal:Dot( self:GetEyePos(false) )
+								render.PushCustomClipPlane( normal, position )
+								render.SetBlend(math.Rand(0.2, 0.2))
+							end
+							
+							self:ManipulateBoneAngles(lupper,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
+							self:ManipulateBoneAngles(rupper,Angle(math.random(-angadj2,angadj2), math.random(-angadj2,angadj2),math.random(-angadj2,angadj2)))
+							arms:SetBodygroup(2,1)
+							
+							self:SetupBones()
+							arms:SetupBones()
+							arms:DrawModel()
+							arms:Remove()
+							local tr1 = util.TraceLine( {
+								start = self:GetBonePosition(rupperh),
+								endpos = self:GetBonePosition(rupperh) + self.Owner:GetAimVector() *11110,
+								filter = {self.Owner, self.Stand},
+							} )
+							local tr2 = util.TraceLine( {
+								start = self:GetBonePosition(lupperh),
+								endpos = self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 11110,
+								filter = {self.Owner, self.Stand},
+							} )
+							if tr1.HitWorld and math.random(0, 0) == 0 then
+								util.Decal("Impact.Concrete", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("Impact.Sand", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("FadingScorch", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+							end
+							if tr2.HitWorld and math.random(0, 0) == 0 then
+								util.Decal("Impact.Concrete", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("Impact.Sand", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("FadingScorch", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+							end
+							if self:GetSequence() == self:LookupSequence("Stab") then
+								render.PopCustomClipPlane()
+								oldclip = render.EnableClipping( oldclip )
+							end
+							self:SetCycle(resetAnim)
+							self:ManipulateBonePosition(lupper,zero)
+							self:ManipulateBonePosition(llower,zero)
+							self:ManipulateBonePosition(rupper,zero)
+							self:ManipulateBonePosition(rlower,zero)
+							self:ManipulateBoneAngles(lupper,Angle(0,0,0))
+							self:ManipulateBoneAngles(rupper,Angle(0,0,0))
+						end
+						arms:Remove()
+					end
+
+					if self.StandId == GSTANDS_CHARIOT and self:GetSequence() == self.BarrageAnimIndex then
+						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
+						for i = 0, 0 do
+							
+							local resetAnim = self:GetCycle()
+							self:SetCycle(self:GetCycle() + math.Rand(0,9999))
+							arms:SetSkin(self:GetSkin())
+							
+							arms:SetPos(self.Pos)
+							arms:SetParent(self)
+							arms:AddEffects( EF_BONEMERGE || EF_BONEMERGE_FASTCULL || EF_PARENT_ANIMATES)
+							local randvec1 = VectorRand() * 10
+							local randvec1 = Vector(randvec1.x/4, randvec1.y, randvec1.z)
+							local randvec2 = VectorRand() * 10
+							local randvec2 =  Vector(randvec2.x/4, randvec2.y, randvec2.z)
+							if self:GetSequence() != self:LookupSequence("Stab") then
+								self:ManipulateBonePosition(lupper,randvec1)
+								self:ManipulateBonePosition(llower,self:GetManipulateBonePosition(lupper)/2)
+								self:ManipulateBonePosition(rupper,randvec2)
+								self:ManipulateBonePosition(rlower,self:GetManipulateBonePosition(rupper)/2)
+								if self.FlameFX1 and self.FlameFX2 and self.FlameFX3 and self.FlameFX4 then
+									self.FlameFX1:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX2:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX3:SetControlPoint(1, VectorRand() * 10)
+									self.FlameFX4:SetControlPoint(1, VectorRand() * 10)
+								end
+							end
+							render.SetBlend(math.Rand(1,1))
+							local angadj = 1
+							local angadj2 = 1
+							local oldclip = false
+							if self:GetSequence() == self:LookupSequence("stab") then
+								angadj = 10
+								angadj2 = 5
+								oldclip = render.EnableClipping( false )
+								local normal = self:GetForward()
+								local position = normal:Dot( self:GetEyePos(false) )
+								render.PushCustomClipPlane( normal, position )
+								render.SetBlend(math.Rand(0.2, 0.4))
+							end
+							
+							self:ManipulateBoneAngles(lupper,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
+							self:ManipulateBoneAngles(rupper,Angle(math.random(-angadj2,angadj2), math.random(-angadj2,angadj2),math.random(-angadj2,angadj2)))
+							arms:SetBodygroup(2,1)
+							
+							self:SetupBones()
+							arms:SetupBones()
+							arms:DrawModel()
+							arms:Remove()
+							local tr1 = util.TraceLine( {
+								start = self:GetBonePosition(rupperh),
+								endpos = self:GetBonePosition(rupperh) + self.Owner:GetAimVector() *11110,
+								filter = {self.Owner, self.Stand},
+							} )
+							local tr2 = util.TraceLine( {
+								start = self:GetBonePosition(lupperh),
+								endpos = self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 11110,
+								filter = {self.Owner, self.Stand},
+							} )
+							if tr1.HitWorld and math.random(0, 0) == 0 then
+								util.Decal("Impact.Concrete", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("Impact.Sand", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("FadingScorch", self:GetBonePosition(rupperh), self:GetBonePosition(rupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+							end
+							if tr2.HitWorld and math.random(0, 0) == 0 then
+								util.Decal("Impact.Concrete", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("Impact.Sand", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+								util.Decal("FadingScorch", self:GetBonePosition(lupperh), self:GetBonePosition(lupperh) + self.Owner:GetAimVector() * 10, {self, self.Owner})
+							end
+							if self:GetSequence() == self:LookupSequence("Stab") then
+								render.PopCustomClipPlane()
+								oldclip = render.EnableClipping( oldclip )
+							end
+							self:SetCycle(resetAnim)
+							self:ManipulateBonePosition(lupper,zero)
+							self:ManipulateBonePosition(llower,zero)
+							self:ManipulateBonePosition(rupper,zero)
+							self:ManipulateBonePosition(rlower,zero)
+							self:ManipulateBoneAngles(lupper,Angle(0,0,0))
+							self:ManipulateBoneAngles(rupper,Angle(0,0,0))
+						end
+						arms:Remove()
+					end
+					if IsValid(self.CenterImage) and self:GetSequence() == self:LookupSequence("block") then
 						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
 						for i = 0, 4 do
 							render.SetBlend(1)
@@ -847,16 +1249,51 @@ function ENT:Draw(flags, opaque)
 							local oldclip = false
 							oldclip = render.EnableClipping( true )
 							local normal = self:GetForward()
-							local position = normal:Dot( self:WorldSpaceCenter() + normal * 15)
+							local position = normal:Dot( self:WorldSpaceCenter() + normal * 29)
 							render.PushCustomClipPlane( normal, position )
 							arms:SetBodygroup(2,1)
 							self:ManipulateBoneAngles(rupperh,Angle(0,0,math.random(-angadj,angadj)))
-							render.SetBlend(math.Rand(0.1, 0.9))
+							render.SetBlend(math.Rand(0.1, 0.4))
 
 							self:SetupBones()
 							arms:SetupBones()
 							arms:DrawModel()
-														render.SetBlend(1)
+							render.SetBlend(1)
+
+							render.PopCustomClipPlane()
+							oldclip = render.EnableClipping( oldclip )
+							self:SetCycle(resetAnim)
+							self:ManipulateBoneAngles(rupperh,Angle(0,0,0))
+						end
+						arms:Remove()
+					end
+					if !IsValid(self.CenterImage) and self:GetSequence() == self:LookupSequence("block") then
+						local arms = ClientsideModel(self.OverrideArms or ArmsTable[self:GetModel()])
+						for i = 0, 4 do
+							render.SetBlend(1)
+							self.ArmFrame = FrameNumber() + (5 - (5 * self.Timescale))
+							local resetAnim = self:GetCycle()
+							self:SetCycle(self:GetCycle() + math.Rand(0.3,0.8))
+							arms:SetSkin(self:GetSkin())
+							
+							arms:SetPos(self.Pos)
+							arms:SetParent(self)
+							arms:AddEffects( EF_BONEMERGE || EF_BONEMERGE_FASTCULL || EF_PARENT_ANIMATES)
+							
+							local angadj = 180
+							local oldclip = false
+							oldclip = render.EnableClipping( true )
+							local normal = self:GetForward()
+							local position = normal:Dot( self:WorldSpaceCenter() + normal * 29)
+							render.PushCustomClipPlane( normal, position )
+							arms:SetBodygroup(2,1)
+							self:ManipulateBoneAngles(rupperh,Angle(0,0,math.random(-angadj,angadj)))
+							render.SetBlend(math.Rand(0.1, 0.4))
+
+							self:SetupBones()
+							arms:SetupBones()
+							arms:DrawModel()
+							render.SetBlend(1)
 
 							render.PopCustomClipPlane()
 							oldclip = render.EnableClipping( oldclip )
@@ -866,30 +1303,30 @@ function ENT:Draw(flags, opaque)
 						arms:Remove()
 					end
 					if self:GetSequence() == self:LookupSequence("kBarrage") and self:GetPlaybackRate() >= 1 then
-						for i = 0, GetConVar("gstands_barrage_arms"):GetInt() do
+						for i = 0, 4 do
 							self.ArmFrame = FrameNumber() + (5 - (5 * self.Timescale))
 							
 							local resetAnim = self:GetCycle()
 							self:SetCycle(self:GetCycle() + math.Rand(0.3,0.8))
 							
-							local randvec1 = VectorRand() * 10
+							local randvec1 = VectorRand() * 1
 							local randvec1 = Vector(randvec1.x/4, randvec1.y, randvec1.z)
-							local randvec2 = VectorRand() * 10
+							local randvec2 = VectorRand() * 1
 							local randvec2 =  Vector(randvec2.x/4, randvec2.y, randvec2.z)
 							self:ManipulateBonePosition(rupperleg,randvec2)
-							self:ManipulateBonePosition(rlowerleg,self:GetManipulateBonePosition(rupperleg)/2)
-							local angadj = 45
-							local oldclip = false
-							angadj = 25
+							self:ManipulateBonePosition(rlowerleg,self:GetManipulateBonePosition(rupperleg)/1)
+							local angadj = 10
+							local oldclip = true
+							angadj = 10
 							oldclip = render.EnableClipping( true )
 							local normal = self:GetForward()
-							local position = normal:Dot( self:WorldSpaceCenter() + self:GetForward() * 5 )
+							local position = normal:Dot( self:WorldSpaceCenter() + self:GetForward() * 7 )
 							render.PushCustomClipPlane( normal, position )
 							
 							self:ManipulateBoneAngles(rupperleg,Angle(math.random(-angadj,angadj), math.random(-angadj,angadj),math.random(-angadj,angadj)))
 							
 							self:SetupBones()
-							render.SetBlend(math.Rand(0.1, 0.9))
+							render.SetBlend(math.Rand(0.1, 0.5))
 							
 							self:DrawModel()
 							render.PopCustomClipPlane()
@@ -938,7 +1375,7 @@ function ENT:Draw(flags, opaque)
 	end
 	if self.StandId == GSTANDS_JST then
 		render.SetMaterial(JusticeFogMatNoz)
-		--render.DrawSprite(self:GetPos(), 1500 * 2, 1500 * 2, Color(70,70,70,150))
+		render.DrawSprite(self:GetPos(), 1500 * 2, 1500 * 2, Color(70,70,70,150))
 	end
 	render.SetBlend(1)
 end

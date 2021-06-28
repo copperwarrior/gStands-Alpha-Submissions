@@ -65,6 +65,7 @@ function ENT:Initialize()
 		self:SetSolid( SOLID_OBB )
 		self:SetMoveType( MOVETYPE_NOCLIP )
 		
+		
 		self:SetSolidFlags( FSOLID_NOT_STANDABLE )
 		self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	if SERVER then
@@ -102,6 +103,11 @@ function ENT:OnRemove()
 	end
 end
 
+local speeds = {
+	["models/d13/d13.mdl"] = 8,
+	["models/d13/balloon.mdl"] = 6.6,
+}
+
 function ENT:Think() 
 	if self.Owner then
 		self:SetHealth(self.Owner:Health())
@@ -136,23 +142,35 @@ function ENT:Think()
 			end
 		if self.Wep:GetInDoDoDo() then
 			self.Owner:AddFlags(FL_ATCONTROLS)
-			if self:GetPos().x > self.DefPos.x + 2700 or self:GetPos().x < self.DefPos.x - 800
-			or self:GetPos().y > self.DefPos.y + 1500 or self:GetPos().y < self.DefPos.y - 1500 
-			or self:GetPos().z > self.DefPos.z or self:GetPos().z < self.DefPos.z - 1950 then
-						self:SetPos(LerpVector(0.1, self:GetPos(), self.DefPos))
+			if self:GetModel() == "models/d13/d13.mdl" then
+				if self:GetPos().x > self.DefPos.x + 2700 or self:GetPos().x < self.DefPos.x - 800
+				or self:GetPos().y > self.DefPos.y + 1500 or self:GetPos().y < self.DefPos.y - 800
+				or self:GetPos().z > self.DefPos.z or self:GetPos().z < self.DefPos.z - 1600 then
+							self:SetPos(LerpVector(0.1, self:GetPos(), self.DefPos))
+				end
+			end
+			if self:GetModel() == "models/d13/balloon.mdl" then
+				if self:GetPos().x > self.DefPos.x + 4700 or self:GetPos().x < self.DefPos.x - 1800
+				or self:GetPos().y > self.DefPos.y + 3500 or self:GetPos().y < self.DefPos.y - 1800
+				or self:GetPos().z > self.DefPos.z or self:GetPos().z < self.DefPos.z - 1600 then
+							self:SetPos(LerpVector(0.1, self:GetPos(), self.DefPos))
+				end
+			end			
+			local speed = speeds[self:GetModel()]
+			if self.Owner:KeyDown(IN_SPEED) then
+				speed = speed * 2
 			end
 			if self.Owner:KeyDown(IN_FORWARD) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
-				self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * 15))
+				self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector() * speed))
 			end
 			if self.Owner:KeyDown(IN_BACK) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetAimVector() * 1) != CONTENTS_SOLID then
-			self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * 15))
+				self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector() * speed))
 			end
 			if self.Owner:KeyDown(IN_MOVELEFT) and util.PointContents(self:WorldSpaceCenter() - self.Owner:GetRight() * 1) != CONTENTS_SOLID then
-			self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * 15))
+				self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() - self.Owner:GetAimVector():Angle():Right() * speed))
 			end
 			if self.Owner:KeyDown(IN_MOVERIGHT) and util.PointContents(self:WorldSpaceCenter() + self.Owner:GetRight() * 1) != CONTENTS_SOLID then
-			self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * 15))
-				
+				self:SetPos(LerpVector(0.5, self:GetPos(),self:GetPos() + self.Owner:GetAimVector():Angle():Right() * speed))
 			end
 			if self.Owner:KeyDown(IN_DUCK) and self:GetModel() != "models/d13/balloon.mdl" then
 			self:SetModel("models/d13/balloon.mdl")
@@ -196,28 +214,12 @@ function ENT:DrawTranslucent()
 	if CLIENT and LocalPlayer():GetActiveWeapon()  then
 	if LocalPlayer():IsValid() and LocalPlayer():GetActiveWeapon():IsValid() and string.StartWith(LocalPlayer():GetActiveWeapon():GetClass(), "gstands_") then
 		self.Aura = self.Aura or CreateParticleSystem(self.Owner, "auraeffect", PATTACH_POINT_FOLLOW, 0)
-				self.Aura:SetControlPoint(1, gStands.GetStandColor(self:GetModel(), self:GetSkin()))
-				self.StandAura = self.StandAura or CreateParticleSystem(self, "auraeffect", PATTACH_POINT_FOLLOW, 0)
-				self.StandAura:SetControlPoint(1, gStands.GetStandColor(self:GetModel(), self:GetSkin()))
-		self.BaseClass.Draw(self) -- Overrides Draw 
-		local selfT = { Ents = self }
-		local haloInfo = 
-		{
-			Ents = selfT,
-			Color = self.Color,
-			Hidden = when_hidden,
-			BlurX = math.sin(CurTime()) * 5,
-			BlurY = math.sin(CurTime()) * 5,
-			DrawPasses = 2,
-			Additive = true,
-			IgnoreZ = false
-		}
+		self.Aura:SetControlPoint(1, gStands.GetStandColor(self:GetModel(), self:GetSkin()))
+		self.StandAura = self.StandAura or CreateParticleSystem(self, "auraeffect", PATTACH_POINT_FOLLOW, 0)
+		self.StandAura:SetControlPoint(1, gStands.GetStandColor(self:GetModel(), self:GetSkin()))
 		
 		self:DrawModel() -- Draws Model Client Side
-		
-		if GetConVar("gstands_draw_halos"):GetBool() and self:WaterLevel() < 1 and render.SupportsHDR and !LocalPlayer():IsWorldClicking() then
-		halo.Render(haloInfo)
-		end
+
 	end
 	elseif self.Aura and self.StandAura then
 		self.Aura:StopEmission()

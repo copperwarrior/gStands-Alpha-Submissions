@@ -303,8 +303,8 @@ function SWEP:DrawHUD()
 			color = tcolor,
 			xalign = TEXT_ALIGN_RIGHT
 		}, 2 * mult, 250)
-		if IsValid(self:GetStand1()) then
-			surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 440 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap((CurTime() - self.StartCharge), 0, 3, 0, 40 * mult)))
+		if IsValid(self:GetStand2()) then
+			surface.DrawRect(width - (56 * mult) - 32 * mult, height - (56 * mult) - 440 * mult, 40 * mult, math.Clamp(0, 40 * mult, math.Remap((CurTime() ), 0, 3, 0, 40 * mult)))
 		end
 		surface.DrawTexturedRect(width - (64 * mult) - 32 * mult, height - (64 * mult) - 440 * mult, 64 * mult, 64 * mult)
 		
@@ -324,7 +324,7 @@ hook.Add( "HUDShouldDraw", "SilverChariotHud", function(elem)
 end)
 local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Stand) and IsValid(self.Owner) then
 		local tr = util.TraceLine( {
 			start = self.Stand:GetEyePos(true),
 			endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,
@@ -521,12 +521,14 @@ function SWEP:DefineImages()
 		} 
 		self.Stand.Image1 = self.Stand1
 		self.Stand.Image2 = self.Stand2
+		self.Stand:SetImage(self.Stand)
 		self.Stand1:SetImage(self.Stand)
 		self.Stand1.Image2 = self.Stand2
 		self.Stand2:SetImage(self.Stand)
 		self.Stand2.Image1 = self.Stand1
 		self.Stand:SetCenterImage(self.Stand1)
-		self.Stand2:SetCenterImage(self.Stand1)
+		self.Stand1:SetCenterImage(self.Stand2)
+		self.Stand2:SetCenterImage(self.Stand)
 		self.Stand:EmitStandSound(Afterimage)
 		self.Stand1:EmitStandSound(Afterimage2)
 		self.Stand2:EmitStandSound(Afterimage2)
@@ -716,6 +718,7 @@ function SWEP:Think()
 				self:SetHoldType("pistol")
 				self.Stand:ResetSequence(self.Stand:LookupSequence("slash"))
 				self.Stand:SetCycle( 0 )
+				self.StartCharge = 1
 				if self.Stand1:IsValid() then
 					self.Stand1:ResetSequence(self.Stand1:LookupSequence("slash"))
 					self.Stand1:SetCycle( 0 )
@@ -733,7 +736,7 @@ function SWEP:Think()
 					timer.Simple(0.8, function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Swoosh3) end end)
 					timer.Simple(1, function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Swoosh2) end end)
 				end
-				timer.Simple(self.Stand:SequenceDuration("slash"), function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Ting6) end self:SetHoldType("stando") end)
+				timer.Simple(self.Stand:SequenceDuration("slash"), function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Ting6) self:SetHoldType("stando") end end)
 				
 				self.SlashTimer = CurTime() + self.Stand:SequenceDuration("slash") + 0.1
 				
@@ -756,7 +759,7 @@ function SWEP:Think()
 					self.Stand2:EmitStandSound(Dash)
 				end	
 				self.ChargeStarted = false
-				timer.Simple(self.Stand:SequenceDuration("stabonce"), function() self:SetHoldType("stando") self.Stand.SendForward = false self.Stand1.SendForward = false self.Stand2.SendForward = false end)
+				timer.Simple(self.Stand:SequenceDuration("stabonce"), function() if IsValid(self.Stand) then self:SetHoldType("stando") self.Stand.SendForward = false self.Stand1.SendForward = false self.Stand2.SendForward = false end end)
 				
 				local anim = "punch2"
 				self.SlashTimer = CurTime() + self.Stand:SequenceDuration("stabonce") + 0.1
@@ -770,7 +773,7 @@ function SWEP:Think()
 					self.Stand2.SendForward = true
 					self.Stand2.StandVelocity = self.Stand2:GetForward() * math.Clamp(0, 3, (CurTime() - self.StartCharge)) * 2
 				end
-				self.StartCharge = 0
+				self.StartCharge = 1
 			end
 		end
 		self.ThousandTimer = self.ThousandTimer or CurTime()
@@ -915,7 +918,7 @@ function SWEP:Think()
 		self.Stand:SetCycle(0)
 		self.Stand:EmitStandSound(Swoosh1)
 		self.Stand:EmitStandSound(Schwing4)
-		timer.Simple(self.Stand:SequenceDuration("standblock"), function() self.Stand:EmitStandSound(Ting3) self:SetHoldType("stando") self.Stand.HeadRotOffset = -75 end)
+		timer.Simple(self.Stand:SequenceDuration("standblock"), function() if IsValid(self.Stand) then self.Stand:EmitStandSound(Ting3) self:SetHoldType("stando") self.Stand.HeadRotOffset = -75 end end)
 		self.StandBlockTimer = CurTime() + self.Stand:SequenceDuration("standblock") + 0.2
 	end
 end
@@ -1006,9 +1009,9 @@ function SWEP:RemoveArmor()
 		timer.Simple(0, function()
 			if IsValid(self.Stand) then
 				self.Stand:StopSound(BlowUp)
+				self.Owner:EmitStandSound(BlowUp)
+				self.Owner:EmitSound(MyTrueSpeed)
 			end
-			self.Owner:EmitStandSound(BlowUp)
-			self.Owner:EmitSound(MyTrueSpeed)
 		end)
 	end
 end
@@ -1062,26 +1065,35 @@ function SWEP:SecondaryAttack()
 	
 	
 	if SERVER and (self:GetAMode()) and self.Armor and self.Stand:GetBodygroup(2) == 1 then
-		self:SetNextSecondaryFire( CurTime() + 5 )
-		self.Stand:RemoveAllGestures()
-		self.Stand.AnimSet = {
-			"STANDIDLE", 0,
-			"Shoot", 1,
-			"STANDIDLE", 0,
-			"IDLE_ALL_02", 0,
-			"FIST_BLOCK", 0,
-		}
-		timer.Simple(0.3, function() self.Stand:SetBodygroup(2, 0) self:ShootSword() end)
-		timer.Simple(0.25, function()
+		if IsValid(self.Stand) then 
+			self:SetNextSecondaryFire( CurTime() + 5 )
+			self.Stand:RemoveAllGestures()
 			self.Stand.AnimSet = {
 				"STANDIDLE", 0,
-				"Shoot", 0,
+				"Shoot", 1,
 				"STANDIDLE", 0,
 				"IDLE_ALL_02", 0,
 				"FIST_BLOCK", 0,
-			} 
-			self.Stand:RemoveAllGestures()
-		end)
+			}
+			timer.Simple(0.3, function() 
+				if IsValid(self.Stand) then 
+					self.Stand:SetBodygroup(2, 0) 
+					self:ShootSword() 
+				end
+			end)
+			timer.Simple(0.25, function()
+				if IsValid(self.Stand) then 
+					self.Stand.AnimSet = {
+						"STANDIDLE", 0,
+						"Shoot", 0,
+						"STANDIDLE", 0,
+						"IDLE_ALL_02", 0,
+						"FIST_BLOCK", 0,
+					} 
+					self.Stand:RemoveAllGestures()
+				end
+			end)
+		end
 		timer.Simple(5, function() if IsValid(self.Stand) and self.Stand:GetBodygroup(2) == 0 then self.Stand:SetBodygroup(2, 1) end end)
 	end
 	
