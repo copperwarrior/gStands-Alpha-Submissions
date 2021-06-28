@@ -14,7 +14,6 @@ ENT.Animated = true
 ENT.Color = Color(150,150,150,1)
 ENT.ForceOnce = false
 ready = false
-ENT.RenderGroup	= RENDERGROUP_BOTH
 ENT.ImageID = 1
 ENT.Rate = 0
 ENT.Health = 1
@@ -127,18 +126,6 @@ function ENT:Initialize()
 	self.offset = Vector(-20,20,30)
 	if self.StandId == GSTANDS_JST then
 		self:ResetSequence(self:LookupSequence("float"))
-	end
-	if SERVER and !table.HasValue(NonStandard, self.Model) then
-		--self:ResetSequence( self.Owner:GetSequence() )
-		
-		elseif SERVER and (self.StandId == GSTANDS_JUDGEMENT or self.StandId == GSTANDS_OSIRIS or self.StandId == GSTANDS_HORUS) then
-		self:ResetSequence(self:LookupSequence("Standidle"))
-		if self.StandId == GSTANDS_JUDGEMENT then
-			self:ResetSequence(self:LookupSequence("Standidle"))
-		end
-	end
-	if SERVER and ( self.StandId == GSTANDS_OSIRIS or self.StandId == GSTANDS_HORUS) then
-		self:ResetSequence(self:LookupSequence("Standidle"))
 	end
 	self.Rate = math.random(0,5)
 	if self:GetImageID() == 1 then
@@ -379,7 +366,7 @@ function ENT:DoMovement()
 
 		for i = 0, self.Owner:GetNumPoseParameters() - 1 do
 			local sPose = self.Owner:GetPoseParameterName( i )
-			if self.Owner:GetPoseParameterName( i ) != "head_yaw" and self.Owner:GetPoseParameterName( i ) != "head_pitch" and self.Owner:GetPoseParameterName( i ) != "move_y" and self.Owner:GetPoseParameterName( i ) != "move_x" then
+			if self.Owner:GetPoseParameterName( i ) != "head_yaw" and self.Owner:GetPoseParameterName( i ) != "head_pitch" then
 				self:SetPoseParameter( sPose, Lerp(0.1, self:GetPoseParameter(sPose), self.Owner:GetPoseParameter( sPose )  ))
 				else
 				self:SetPoseParameter( sPose, Lerp(0.1, self:GetPoseParameter(sPose), self.Owner:GetPoseParameter( sPose )  ))

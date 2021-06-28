@@ -47,11 +47,9 @@ function ENT:Draw()
 		self.LastBlend = self.LastBlend - 0.01
 		self:DrawModel()
 	end 
-	--if IsValid(IsPlayerStandUser(LocalPlayer())) then
-		if IsPlayerStandUser(LocalPlayer()) then
-			self:GetTrail():SetNoDraw(false)
-		else
-			self:GetTrail():SetNoDraw(true)
-		end
-	--end
+	if IsPlayerStandUser(LocalPlayer()) then
+		self:GetTrail():SetNoDraw(false)
+	else
+		self:GetTrail():SetNoDraw(true)
+	end
 end

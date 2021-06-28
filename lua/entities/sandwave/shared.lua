@@ -111,7 +111,7 @@ function ENT:Touch(ent)
 			dmginfo:SetDamageType(DMG_CRUSH)
 			
 			dmginfo:SetInflictor( self )
-			dmginfo:SetDamage(GetConVar("gstands_the_fool_sand_wave"):GetInt())
+			dmginfo:SetDamage( 5 )
 			ent:TakeDamageInfo( dmginfo )
 		end
 	end
@@ -125,7 +125,7 @@ function ENT:Touch(ent)
 			dmginfo:SetDamageType(DMG_CRUSH)
 			
 			dmginfo:SetInflictor( self )
-			dmginfo:SetDamage(GetConVar("gstands_the_fool_sand_wave"):GetInt())
+			dmginfo:SetDamage( 5 )
 			ent:TakeDamageInfo( dmginfo )
 		end
 	end

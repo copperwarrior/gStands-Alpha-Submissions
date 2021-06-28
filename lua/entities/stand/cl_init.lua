@@ -185,7 +185,7 @@ function ENT:DoMovement()
 				local sPose = self.Owner:GetPoseParameterName( i )
 				local sPose2 = self:GetPoseParameterName( i )
 				if sPose == sPose2 then
-					if self.Owner:GetPoseParameterName( i ) != "head_yaw" and self.Owner:GetPoseParameterName( i ) != "head_pitch" and self.Owner:GetPoseParameterName( i ) != "move_y" and self.Owner:GetPoseParameterName( i ) != "move_x" then
+					if self.Owner:GetPoseParameterName( i ) != "head_yaw" and self.Owner:GetPoseParameterName( i ) != "head_pitch" then
 						self:SetPoseParameter( sPose, Lerp(0.1, self:GetPoseParameter(sPose), self.Owner:GetPoseParameter( sPose )  ))
 					end
 				end

@@ -89,7 +89,7 @@ if SERVER then
 			local Ent = self.Owner.SplashTrace.Entity
 			dmgInfo = DamageInfo()
 			dmgInfo:SetAttacker(self.Owner or self)
-			dmgInfo:SetDamage(GetConVar("gstands_emerald_splash_damage"):GetInt())
+			dmgInfo:SetDamage(25)
 			dmgInfo:SetInflictor( self or self )
 			Ent:TakeDamageInfo(dmgInfo)
 			self:Remove()

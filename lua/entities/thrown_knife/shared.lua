@@ -148,7 +148,7 @@ function ENT:PhysicsCollide(data, phys)
 			self.MarkToDisable = true
 			self.DisableData = data
 			
-			Ent:TakeDamage((GetConVar("gstands_the_world_knife_damage"):GetInt()) , damager, self.Entity)
+			Ent:TakeDamage(25 * self.DMG, damager, self.Entity)
 		end
 		
 	end

@@ -220,7 +220,7 @@ end
 	end)
 	local material = Material( "vgui/hud/gstands_hud/crosshair" )
 	function SWEP:DoDrawCrosshair(x,y)
-		if IsValid(self.Stand) and IsValid(self.Owner) and IsValid(LocalPlayer()) then
+		if IsValid(self.Stand) and IsValid(self.Owner) then
 			local tr = util.TraceLine( {
 				start = self.Stand:GetEyePos(true),
 				endpos = self.Stand:GetEyePos(true) + self.Owner:GetAimVector() * 1500,

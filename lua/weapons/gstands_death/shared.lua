@@ -49,9 +49,6 @@ SWEP.HitDistance = 74
 
 SWEP.StandModel = "models/d13/d13.mdl"
 SWEP.StandModelP = "models/d13/d13.mdl"
-if CLIENT then
-	SWEP.StandModel = "models/hpworld2/hpworld2.mdl"
-end
 SWEP.gStands_IsThirdPerson = true
 
 local PrevHealth = nil
@@ -230,7 +227,7 @@ function SWEP:DoDrawCrosshair(x,y)
 		
 		local pos2d = pos:ToScreen()
 		if pos2d.visible then
-			surface.SetMaterial( material	)
+			surface.SetMaterial( material )
 			surface.SetDrawColor( gStands.GetStandColorTable(self:GetStand():GetModel(), self:GetStand():GetSkin()) )
 			surface.DrawTexturedRect( pos2d.x - 8, pos2d.y - 8, 16, 16 )
 		end

@@ -56,12 +56,14 @@ if SERVER then
 				table.insert(GetGlobalEntity("Time Stop").StoppedUsers, ply)
 				if CanPlayerTimeStop(ply) then
 					wep.TSReleaseDelay = CurTime() + 1
+					MsgC(Color(255,0,0), ply:GetName().." is entering stopped time with "..v.ClassName.."!\n")
 					if wep.TSConvarLimit:GetBool() then
 						timer.Create("stopMax"..ply:GetName(), wep.TSConvarLength:GetFloat(), 1,
 						function() 
 							if GetConVar("gstands_time_stop"):GetBool() then
 								ply.WasFrozen = true
 								wep:StartTime()
+								MsgC(Color(255,0,0), ply:GetName().." is exiting stopped time with "..v.ClassName.."!\n")
 							end
 						end)
 					end

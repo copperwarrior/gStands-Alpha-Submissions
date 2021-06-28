@@ -35,7 +35,6 @@ if CLIENT then
 	SWEP.StandModel = "models/empress/empress.mdl"
 end
 
-SWEP.WorldModel = "models/empress/empress.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
 

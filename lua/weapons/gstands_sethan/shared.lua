@@ -34,9 +34,6 @@ SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
 SWEP.StandModel = "models/sethan/w_sethax.mdl"
 SWEP.StandModelP = "models/sethan/w_sethax.mdl"
-if CLIENT then
-	SWEP.StandModel = "models/hdm/hdm.mdl"
-end
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -170,20 +167,12 @@ function SWEP:DrawHUD()
 		local mult = ScrW() / 1920
 		local tcolor = Color(color.r + 75, color.g + 75, color.b + 75, 255)
 		gStands.DrawBaseHud(self, color, width, height, mult, tcolor)
-		local nocompletegstands = Color(255,0,0, 255)
 		draw.TextShadow({
-			text = "No Complete!",
-			font = "gStandsFont",
-			pos = {width - 1500 * mult, height - 265 * mult},
-			color = nocompletegstands,
-		}, 2 * mult, 250)
-
-		draw.TextShadow({
-			text = "This Stand is incomplete!",
+			text = "#gstands.general.incomplete",
 			font = "gStandsFont",
 			pos = {width - 1550 * mult, height - 235 * mult},
-			color = nocompletegstands,
-		}, 2 * mult, 250)
+			color = Color(255,0,0, 255),
+		}, 2 * mult, 250
 	end
 end
 hook.Add( "HUDShouldDraw", "SethanHud", function(elem)
@@ -193,7 +182,7 @@ hook.Add( "HUDShouldDraw", "SethanHud", function(elem)
 end)
 local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Owner) then
 		local tr = util.TraceLine( {
 			start = self.Owner:EyePos(),
 			endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 1500,

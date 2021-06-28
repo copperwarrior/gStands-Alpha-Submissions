@@ -30,9 +30,6 @@ SWEP.SlotPos			  		= 2
 SWEP.DrawCrosshair				= true
 SWEP.StandModel 				= "models/hpworld/hpworld.mdl"
 SWEP.StandModelP 				= "models/hpworld/hpworld.mdl"
-if CLIENT then
-	SWEP.StandModel = "models/hdm/hdm.mdl"
-end
 
 SWEP.WorldModel		   		= "models/hpworld/hpworld.mdl"
 SWEP.ViewModelFOV		 		= 54
@@ -166,7 +163,7 @@ hook.Add( "HUDShouldDraw", "HermitPurpleHud", function(elem)
 end)
 local material = Material( "vgui/hud/gstands_hud/crosshair" )
 function SWEP:DoDrawCrosshair(x,y)
-	if IsValid(self.Owner) and IsValid(LocalPlayer()) then
+	if IsValid(self.Owner) then
 		local tr = util.TraceLine( {
 			start = self.Owner:EyePos(),
 			endpos = self.Owner:EyePos() + self.Owner:GetAimVector() * 1500,

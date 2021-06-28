@@ -7,24 +7,17 @@ function ENT:Initialize()
 	local bounds = self:GetWallBounds()
 	self:SetRenderBounds(-bounds,bounds)
 	hook.Add("SetupWorldFog", "NightmareFog", function()
-	if self and self.GetDreamlandDimension and self:GetDreamlandDimension() and self:GetDreamlandDimension():IsValid() and self:GetDreamlandDimension():ShouldRenderInterior() then
-	local clr = HSVToColor(( CurTime() * 15 ) % 360, 1, 1)
+		if self and self.GetDreamlandDimension and self:GetDreamlandDimension() and self:GetDreamlandDimension():IsValid() and self:GetDreamlandDimension():ShouldRenderInterior() then
+		local clr = HSVToColor(( CurTime() * 15 ) % 360, 1, 1)
 
-	render.FogStart(0)
-	render.FogEnd(5000)
-	render.FogMode(MATERIAL_FOG_LINEAR)
-	for k, ent in pairs(ents.GetAll()) do
-        if ent:GetClass() == "d13scythe"then
-            render.FogMaxDensity(5)
-        else
-            render.FogMaxDensity(0.3)
-        end
-    end
-	render.FogColor(clr.r, clr.g, clr.b )
-	return true
-	end
+		render.FogStart(0)
+		render.FogEnd(5000)
+		render.FogMode(MATERIAL_FOG_LINEAR)
+		render.FogMaxDensity(0.3)
+		render.FogColor(clr.r, clr.g, clr.b )
+		return true
+		end
 	end)
-	
 end
 
 function ENT:GetDrawMesh()
@@ -73,18 +66,29 @@ function ENT:GetDrawMesh()
 	return self.mesh
 end
 
-
-
-
---	self:SetMaterial("models/d13/water")
 local matScale = Vector(15,15,15)
-
 local matScaleSky = Vector(1500,1,1500)
 
+function ENT:Draw()
+	if self:GetDreamlandDimension():IsValid() and !self:GetDreamlandDimension():ShouldRenderInterior() then
+		return
+	end
+	local mat = Matrix()
+	mat:Translate(self:GetPos())
+	mat:Rotate(self:GetAngles())
+	render.SetMaterial(sunBlockerMat)
+	cam.PushModelMatrix(mat)
+	self:GetDrawMesh():Draw() --Blocks the sun
+	cam.PopModelMatrix()
+	local bounds = self:GetWallBounds()
+	bounds.z = bounds.z+1 --Fix a clipping error with the sun blocker
+	self.mater = self.mater or Material("models/d13/skytex")
+	render.SetMaterial(sunBlockerMat)
 
+		
+	render.DrawQuad(self:LocalToWorld(Vector(-bounds.x,-bounds.y,bounds.z)),self:LocalToWorld(Vector(-bounds.x,bounds.y,bounds.z)),self:LocalToWorld(bounds),self:LocalToWorld(Vector(bounds.x,-bounds.y,bounds.z)),Color(229,183,83))
 
-
-
+end
 
 function ENT:OnRemove()
 	hook.Remove("SetupWorldFog", "NightmareFog")
