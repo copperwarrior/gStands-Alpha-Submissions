@@ -281,7 +281,7 @@ end
 hook.Add("SetupMove", "FoolFly", function(ply, mv)
 	if IsValid(ply) and IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "gstands_fool" then
 		local self = ply:GetActiveWeapon():GetStand()
-		if self:GetSequence() == self:LookupSequence("fly") then
+		if IsValid(self) and self:GetSequence() == self:LookupSequence("fly") then
 		local vel = 65--(mv:GetVelocity().x^2 + mv:GetVelocity().y^2 + math.Clamp( 0.3, -0.3, self:GetAngles():Forward().z))/38512
 		velf = self:GetForward()
 		local absoluteforward = Vector(velf.x, velf.y, 0)

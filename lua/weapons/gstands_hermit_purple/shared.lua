@@ -28,6 +28,11 @@ if CLIENT then
 end
 SWEP.SlotPos			  		= 2
 SWEP.DrawCrosshair				= true
+SWEP.StandModel 				= "models/hpworld/hpworld.mdl"
+SWEP.StandModelP 				= "models/hpworld/hpworld.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/hdm/hdm.mdl"
+end
 
 SWEP.WorldModel		   		= "models/hpworld/hpworld.mdl"
 SWEP.ViewModelFOV		 		= 54

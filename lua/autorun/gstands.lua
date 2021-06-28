@@ -28,6 +28,8 @@ CreateConVar( "gstands_stand_see_stands", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 
 CreateConVar( "gstands_stand_hurt_stands", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "#gstands.general.standuserharm" ) 
 CreateConVar( "gstands_the_world_timestop_length", 10, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.wolength")
 CreateConVar( "gstands_star_platinum_timestop_length", 5, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.splength")
+CreateConVar( "gstands_the_world_next_timestop", 30, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.splength")
+CreateConVar( "gstands_star_platinum_next_timestop", 15, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.splength")
 CreateConVar( "gstands_unlimited_stand_range", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.standrange")
 CreateConVar( "gstands_tohth_page_timer", 120, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.tohthpagetimer")
 CreateConVar( "gstands_the_sun_range", 5000, {FCVAR_REPLICATED, FCVAR_ARCHIVE},"#gstands.general.sunrange")
@@ -75,6 +77,95 @@ CreateClientConVar( "gstands_draw_hdm_mirror", "1", true, true, "#gstands.genera
 CreateClientConVar( "gstands_replacement_gstands_the_world", "models/player/worldjf/world.mdl", true, true, "" )
 CreateClientConVar( "gstands_replacement_gstands_star_platinum", "models/player/starpjf/spjf.mdl", true, true, "" )
 
+CreateClientConVar( "gstands_barrage_legs", 6, true, true, "Amount of sets of arms for legs" ) 
+CreateClientConVar( "gstands_block_arms", 4, true, true, "Amount of sets of arms for legs" ) 
+
+CreateConVar( "gstands_star_platinum_barrage_damage", 21, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_world_barrage_damage", 21, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_star_platinum_punch_damage", 300, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_world_punch_damage", 300, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_magicians_red_kick_damage", 150, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_magicians_red_flame_tower_damage", 10, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_cfhurricane_damage", 45, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chariot_barrage_no_flame", 4, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chariot_barrage_flame", 30, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chariot_slash_no_flame", 30, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chariot_slash_flame", 40, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chriot_charge_dash_damage_not_flame", 150, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chriot_charge_dash_damage_flame", 200, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_emerald_splash_damage", 25, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_judgement_donut_damage", 62.5, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_fool_dome_punch", 85, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_fool_sand_wave", 5, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_fool_slash_punch", 85, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_tower_gray_damage", 3, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" )
+CreateConVar( "gstands_highpriestess_bite_damage", 65, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" )  
+CreateConVar( "gstands_geb_shot_damage", 45, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_geb_slash_damage", 15, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_sethan_punch", 24, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_temperance_slash", 5, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hanged_man_slash_damage", 50, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hanged_man_neck_damage", 350, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_dark_blue_moon_slash_damage", 110, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_dark_blue_moon_waterblast", 1, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_dark_blue_moon_waterblast_end", 150, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hierophant_emerald_splash", 25, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_sun_laser", 19, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_sun_laser_first", 35, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hermit_purple_donut_punch", 52.5, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hermit_purple_slash", 5, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_world_knife_damage", 25, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_wheel_of_fortune_shoot", 25, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+
+
+CreateConVar( "gstands_star_platinum_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_world_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_silver_chariot_heal", 1000, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hierophant_heal", 1000, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_magicians_red_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_anubis_heal", 1000, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_atum_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_bastet_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_cream_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_dark_blue_moon_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_death_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_ebony_devil_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_emperor_heal", 800, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_empress_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_geb_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hanged_man_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hermit_purple_heal", 1000, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hermit_purple_two_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_hierophant_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_high_priestess_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_horus_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_judgement_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_justice_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_khnum_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_kiss_from_a_rose_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_lovers_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_magicians_red_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_osiris_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_sethan_heal", 800, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_cream_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_strength_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_tenore_sax_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_fool_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_sun_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_thoth_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_tower_of_gray_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_wheel_of_fortune_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_yellow_temperence_heal", 1500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+
+CreateConVar( "gstands_star_platinum_leap", 1, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_world_leap", 1, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_cream_leap", 0.1, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+
+
+CreateConVar( "gstands_dark_blue_moon_range", 800, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_cream_range", 250, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_the_fool_range", 250, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
+CreateConVar( "gstands_star_platinum_range", 500, {FCVAR_REPLICATED, FCVAR_NONE}, "Is time stopped?" ) 
 
 
 game.AddParticles("particles/menacing.pcf")
@@ -231,12 +322,7 @@ local part3mdls = {
 	["models/player/dbm/dbm.mdl2"] = Vector(1,0.6,0),
 	["models/player/dbm/dbm.mdl3"] = Vector(0, 0.6, 0),
 	["models/player/dbm/dbm.mdl4"] = Vector(1, 0, 0),
-	["models/player/dbm/dbm.mdl0"] = Vector(0.3,0.6,1),
-	["models/player/dbm/dbm.mdl1"] = Vector(0.6,0.3,1),
-	["models/player/dbm/dbm.mdl2"] = Vector(1,0.6,0),
-	["models/player/dbm/dbm.mdl3"] = Vector(0, 0.6, 0),
-	["models/player/dbm/dbm.mdl4"] = Vector(1, 0, 0),
-	--Geb
+    --Geb
 	["models/gstands/stands/geb.mdl0"] = Vector(0.5,0.5,0.6),
 	["models/gstands/stands/geb.mdl1"] = Vector(0.7,0.5,0.6),
 	["models/gstands/stands/geb.mdl2"] = Vector(0.4,0.7,0.3),
@@ -262,18 +348,30 @@ local part3mdls = {
 	["models/player/heg/heg.mdl5"] = Vector(0.1,0.3,1),
 	["models/player/heg/heg.mdl6"] = Vector(1,0.3,0.5),
 	["models/player/heg/heg.mdl7"] = Vector(1,1,0),
+	["models/heg/tentattack.mdl0"] = Vector(0,1,0),
+	["models/heg/emerald.mdl0"] = Vector(0,1,0),
+	["models/heg/barrier.mdl0"] = Vector(0,1,0),
+	--Kiss From a Rose
+	["models/kfar/kfar.mdl0"] = Vector(0,1,0),
 	--Hermit Purple
-	["models/hpworld/hpworld.mdl0"] = Vector(1,1,0.5),
+	["models/hpworld/hpworld.mdl0"] = Vector(1,1,0,1),
+	--Hermit Purple2
+	["models/hpworld2/hpworld2.mdl0"] = Vector(1,0,1),
 	--Emperor
 	["models/emperor/models/emperor.mdl0"] = Vector(1,0.4,1),
 	--Horus
-	["models/horus/horus.mdl0"] = Vector(0.5,0.5,0.6),
+	["models/horus/horus.mdl0"] = Vector(0.607843137,0.803921569,0.776470588),  --rgb(155,205,198)
 	["models/horus/horus.mdl1"] = Vector(0.5,0.6,0.6),
 	["models/horus/horus.mdl2"] = Vector(0.5,0.3,0.5),
 	["models/horus/horus.mdl3"] = Vector(0.5,0.5,0.4),
+	--Bastet
+	["models/bastet/bastet.mdl0"] = Vector(0.564705882,0.482352941,0.278431373), --rgb(141,123,71)
+	--Totgh
+	["models/tohth/thoth.mdl0"] = Vector(1,0.733333333,1),
 	--Justice
 	["models/jst/jst.mdl0"] = Vector(0.3,0.3,0.3),
 	--Magician's Red
+	["models/player/mgr/mgr.mdl"] = Vector(1,0.4,0),
 	["models/player/mgr/mgr.mdl0"] = Vector(1,0.4,0),
 	["models/player/mgr/mgr.mdl1"] = Vector(1,0.3,0),
 	["models/player/mgr/mgr.mdl2"] = Vector(0.3,1,0.3),
@@ -311,13 +409,15 @@ local part3mdls = {
 	["models/player/starprv/sp.mdl7"] = Vector(0.5,0,1),
 	["models/player/starprv/sparms.mdl1"] = Vector(0.5,0,1),
 	--Star Platinum JF
-	["models/player/starpjf/spjf.mdl0"] = Vector(0.6,0.4,1),
+	["models/player/starpjf/spjf.mdl0"] = Vector(0.8,0.4,1),
 	["models/player/starpjf/spjf.mdl1"] = Vector(0.2,0.6,1),
 	["models/player/starpjf/spjf.mdl2"] = Vector(0.8,0.4,1),
 	["models/player/starpjf/spjf.mdl3"] = Vector(0.5,0.9,0.5),
 	["models/player/starpjf/spjf.mdl4"] = Vector(0.6,0.6,0),
 	["models/player/starpjf/spjf.mdl5"] = Vector(1,0.2,0),
 	["models/player/starpjf/spjfarms.mdl1"] = Vector(1,0.2,0),
+	--Yellow
+	["models/yellowtemperance/yellowtemperance.mdl"] = Color(255,255,0),
 	--World
 	["models/player/worldrv/world.mdl0"] = Vector(1,0.8,0),
 	["models/player/worldrv/world.mdl1"] = Vector(0.9,0.9,0.5),
@@ -339,10 +439,13 @@ local part3mdls = {
 	["models/player/worldjf/world.mdl7"] = Vector(0,0.6,0.7),
 	["models/player/worldjf/worldarms.mdl1"] = Vector(0,0.6,0.7),
 	--Tower of Gray
-	["models/tgray/tgray.mdl0"] = Vector(0.9,1,0.9),
+	["models/tgray/tgray.mdl0"] = Vector(0.35,0.40,0.35),
 	--Death 13
-	["models/d13/d13.mdl0"] = Vector(0.5,0,0.5),
-	["models/d13/d13.mdl1"] = Vector(0.5,0.3,0.5),
+	["models/d13/d13.mdl0"] = Vector(0.5, 0, 0.5),
+	["models/d13/d13.mdl1"] = Vector(0.5, 0.3,  0.5),
+	["models/d13/d13map.mdl0"] = Vector(0.5, 0, 0.5),
+	["models/d13/d13scythe.mdl"] = Vector(0.5, 0, 0.5),
+	["models/d13/balloon.mdl"] = Vector(0.5, 0, 0.5),
 	--Kiss From a Rose
 	["models/kfar/kfar.mdl"] = Vector(0.1,1,0.1),
 	--Osiris
@@ -359,8 +462,14 @@ local part3mdls = {
 	["models/hipriestess/highpriestess.mdl2"] = Vector(0.3,1,0.3),
 	["models/hipriestess/highpriestess.mdl3"] = Vector(0.6,0.1,1),
 	--Judgement
-	["models/player/jgm.mdl0"] = Vector(0.5, 0.5, 0.5),
-	["models/player/jgm.mdl1"] = Vector(1, 0.9, 0.4),
+	["models/player/jgm/jgm.mdl0"] = Vector(1, 1, 1),
+	["models/player/jgm/jgm.mdl1"] = Vector(1, 0.9, 0.4),
+	["models/player/jgm/jgm.mdl2"] = Vector(0.670588235, 0.780382157, 0.964705882),
+	["models/player/jgm/jgm.mdl3"] = Vector(0.788235294, 0.694117647, 0.980392157),
+	["models/player/jgm/jgm.mdl4"] = Vector(0.301960784, 0.51372549, 0.870588235),
+	--Anubis
+	["models/anubis/w_anubis.mdl"] = Vector(1, 1, 1),
+	["models/anubis/w_anubis.mdl0"] = Vector(1, 1, 1),
 	--Fool
 	["models/gstands/stands/thefool.mdl0"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stands/thefool.mdl1"] = Vector(1, 1, 0.5),
@@ -371,22 +480,25 @@ local part3mdls = {
 	["models/gstands/stands/dome.mdl0"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stands/dome.mdl1"] = Vector(1, 1, 0.5),
 	["models/gstands/stands/dome.mdl2"] = Vector(1, 0.3, 0),
-	["models/gstands/stands/dome.mdl3"] = Vector(0.8, 0.8, 0.5),
-	["models/gstands/stands/dome.mdl4"] = Vector(1, 0.5, 0),
+	["models/gstands/stands/dome.mdl3"] = Vector(1, 0.5, 0),
+	["models/gstands/stands/dome.mdl4"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stands/dome.mdl5"] = Vector(0.8, 0.8, 1),
-	["models/gstands/stand_acc/foolsand_effect.mdl"] = Vector(0.5, 0.5, 0.5),
+	["models/gstands/stand_acc/foolsand_effect.mdl0"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stand_acc/foolsand_effect.mdl1"] = Vector(1, 1, 0.5),
 	["models/gstands/stand_acc/foolsand_effect.mdl2"] = Vector(1, 0.3, 0),
-	["models/gstands/stand_acc/foolsand_effect.mdl3"] = Vector(0.8, 0.8, 0.5),
-	["models/gstands/stand_acc/foolsand_effect.mdl4"] = Vector(1, 0.5, 0),
+	["models/gstands/stand_acc/foolsand_effect.mdl3"] = Vector(1, 0.5, 0),
+	["models/gstands/stand_acc/foolsand_effect.mdl4"] = Vector(0.5, 0.5, 0.5),
 	["models/gstands/stand_acc/foolsand_effect.mdl5"] = Vector(0.8, 0.8, 1),
-	
+	--Collor
+	["models/death/death/death.mdl"] = Vector(0.254901961,0,0.290196078),
+	--Collor ser
+	["models/death/death/sercollor.mdl"] = Vector(0.05,0.05,0.05),
 	--Copper
 	["models/player/copper/copper.mdl0"] = Vector(0.6,0.4,0.2),
 	["models/player/copper/copper.mdl1"] = Vector(0.6,0.4,0.2),
 	["models/player/copper/copper.mdl2"] = Vector(0.6,0.4,0.2),
 	--Wheel of Fortune
-	["models/wof.mdl0"] = Vector(1,0.1,1),
+	["models/wof/wof.mdl0"] = Vector(1,0.1,1),
 	["models/buggy.mdl0"] = Vector(1,0.1,1),
 	--Hanged Man
 	["models/hdm/hdm.mdl0"] = Vector(1, 0, 1),
@@ -400,6 +512,10 @@ local part3mdls = {
 	["models/lovers/lovers.mdl3"] = Vector(0.3, 1, 0.3),
 	--Empress
 	["models/empress/empress.mdl0"] = Vector(1, 0.7, 0.3),
+	--The sun
+	["models/sun/gstands_sun.mdl0"] = Vector(0.6,0.5,0),
+	--Temperence
+	["models/yellowtemperance/yellowtemperance.mdl0"] = Vector(1,1,0),
 }
 table.Merge(StandTable, part3mdls)
 function IsPlayerStandUser(ply)
@@ -1528,6 +1644,152 @@ if CLIENT then
 		box:SetValue(true)
 		box = panel:NumSlider( "#gstands.general.arms", "gstands_barrage_arms", 0, 5, 3, 0) 
 	end
+	function gStandsDamage(panel)
+		panel:SetName( "#gstands.general.options.damage.disp" )
+		box = panel:NumSlider( "Star Platinum Barrage", "gstands_star_platinum_barrage_damage", 0, 21, 21, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Star Platinum Punch", "gstands_star_platinum_punch_damage") 
+		box:SetValue(300)
+		box = panel:NumSlider( "The World Barrage", "gstands_the_world_barrage_damage", 0, 21, 21, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "The World Punch", "gstands_the_world_punch_damage") 
+		box:SetValue(300)
+		box = panel:NumSlider( "The World Knife", "gstands_the_world_knife_damage", 0, 45, 25, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Magician`s Red Kick", "gstands_magicians_red_kick_damage") 
+		box:SetValue(150)
+		box = panel:NumSlider( "Magician`s Red Flame Tower", "gstands_magicians_red_flame_tower_damage", 0, 20, 10, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Magician`s Red Cfhurricane", "gstands_cfhurricane_damage", 0, 60, 45, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Hierophant Green Emerald", "gstands_emerald_splash_damage", 0, 60, 25, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Silver Chariot Barrage no Flame", "gstands_silver_chariot_barrage_no_flame", 0, 8, 4, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Silver Chariot Barrage Flame", "gstands_silver_chariot_barrage_flame", 0, 50, 30, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Silver Chariot Slash No Flame", "gstands_silver_chariot_slash_no_flame", 0, 50, 30, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Silver Chariot Slash Flame", "gstands_silver_chariot_slash_flame", 0, 60, 40, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Silver Chariot Charge Dash Not Flame", "gstands_silver_chriot_charge_dash_damage_not_flame") 
+		box:SetValue(150)
+		box = panel:TextEntry( "Silver Chariot Charge Dash Flame", "gstands_silver_chriot_charge_dash_damage_flame") 
+		box:SetValue(200)
+		box = panel:TextEntry( "Judgement Donut Punch", "gstands_judgement_donut_damage") 
+		box:SetValue(62.5)
+		box = panel:TextEntry( "The Fool Dome Punch", "gstands_the_fool_dome_punch") 
+		box:SetValue(62.5)
+		box = panel:NumSlider( "The Fool Sand Wave", "gstands_the_fool_sand_wave", 0, 12, 5, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "The Fool Slash Punch", "gstands_the_fool_slash_punch") 
+		box:SetValue(85)
+		box = panel:NumSlider( "Tower of Gray Damage", "gstands_tower_gray_damage", 0, 15, 3, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Highpriestess Bite", "gstands_highpriestess_bite_damage") 
+		box:SetValue(65)
+		box = panel:NumSlider( "Geb Shot", "gstands_geb_shot_damage", 0, 70, 45, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Geb Slash", "gstands_geb_slash_damage", 0, 35, 15, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Sethan Punch", "gstands_sethan_punch", 0, 45, 24, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Yellow Temperance Slash", "gstands_temperance_slash", 0, 15, 5, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Hanged Man Neck Slash", "gstands_hanged_man_neck_damage") 
+		box:SetValue(350)
+		box = panel:NumSlider( "Hanged Man Slash", "gstands_hanged_man_slash_damage", 0, 80, 50, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Dark Blue Moon Water Blast", "gstands_dark_blue_moon_waterblast", 0, 15, 1, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Dark Blue Moon Slash", "gstands_dark_blue_moon_slash_damage") 
+		box:SetValue(110)
+		box = panel:TextEntry( "Dark Blue Moon Water Blast End", "gstands_dark_blue_moon_waterblast_end") 
+		box:SetValue(150)
+		box = panel:NumSlider( "The Sun Laser", "gstands_the_sun_laser", 0, 39, 19, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "The Sun Laser First", "gstands_the_sun_laser_first", 0, 60, 35, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Wheel of Fortune Shot", "gstands_wheel_of_fortune_shoot", 0, 15, 5, 0) 
+		box:SetValue(true)
+		box = panel:NumSlider( "Hermit Purple Slash", "gstands_hermit_purple_slash", 0, 15, 5, 0) 
+		box:SetValue(true)
+		box = panel:TextEntry( "Hermit Purple Donut Punch", "gstands_hermit_purple_donut_punch") 
+		box:SetValue(52.5)
+	end
+	function gStandsHeal(panel)
+		panel:SetName( "#gstands.general.options.heal.disp" )
+		box = panel:TextEntry( "Anubis Heal", "gstands_anubis_heal") 
+		box:SetValue(1000)
+		box = panel:TextEntry( "Atum Heal", "gstands_atum_heal") 
+		box:SetValue(1000)
+		box = panel:TextEntry( "Bastet Heal", "gstands_bastet_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Cream Heal", "gstands_cream_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Dark Blue Moon Heal", "gstands_dark_blue_moon_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Death 13 Heal", "gstands_death_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Ebony Devil Heal", "gstands_ebony_devil_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Emperor Heal", "gstands_emperor_heal") 
+		box:SetValue(800)
+		box = panel:TextEntry( "Empress Heal", "gstands_empress_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Geb Heal", "gstands_geb_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Hanged Man Heal", "gstands_hanged_man_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Hermit Purple Heal", "gstands_hermit_purple_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Hermit Purple 2 Heal", "gstands_hermit_purple_two_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Hierophant Green Heal", "gstands_hierophant_heal") 
+		box:SetValue(1000)
+		box = panel:TextEntry( "High Priestess Heal", "gstands_high_priestess_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Horus Heal", "gstands_high_priestess_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Judgement Heal", "gstands_judgement_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Justice Heal", "gstands_justice_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Khnum Heal", "gstands_khnum_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Kiss From a Rose Heal", "gstands_kiss_from_a_rose_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Lovers Heal", "gstands_lovers_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Magician's Red Heal", "gstands_magicians_red_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Osiris Heal", "gstands_osiris_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Sethan Heal", "gstands_sethan_heal") 
+		box:SetValue(800)
+		box = panel:TextEntry( "Silver Chariot Heal", "gstands_silver_chariot_heal") 
+		box:SetValue(1000)
+		box = panel:TextEntry( "Star Platinum Heal", "gstands_star_platinum_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Strength Heal", "gstands_strength_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Tenore Sax Heal", "gstands_tenore_sax_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "The Fool Heal", "gstands_the_fool_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "The Sun Heal", "gstands_the_sun_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "The World Heal", "gstands_the_world_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Tohth Heal", "gstands_thoth_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Tower of Gray Heal", "gstands_tower_of_gray_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Wheel of Fortune Heal", "gstands_wheel_of_fortune_heal") 
+		box:SetValue(1500)
+		box = panel:TextEntry( "Yellow Temperence Heal", "gstands_yellow_temperence_heal") 
+		box:SetValue(1500)
+	end
 	local BdygrpTable = {
 		["models/player/slc/slc.mdl"] = Vector(2,1),
 		["models/player/heg.mdl"] = Vector(0,1),
@@ -1721,6 +1983,8 @@ if CLIENT then
 		spawnmenu.AddToolMenuOption("Options", "gStands", "gStandsSkins", "#gstands.general.options.skins", "", "", gStandsSkins)
 		spawnmenu.AddToolMenuOption("Options", "gStands", "gStandsPerformance", "#gstands.general.options.performance", "", "", gStandsPerformance)
 		spawnmenu.AddToolMenuOption("Options", "gStands", "gStandsControls", "#gstands.general.options.controls", "", "", gStandsControls)
+		spawnmenu.AddToolMenuOption("Options", "gStands", "gStandsDamage", "#gstands.general.options.damage", "", "", gStandsDamage)
+		spawnmenu.AddToolMenuOption("Options", "gStands", "gStandsHeal", "#gstands.general.options.heal", "", "", gStandsHeal)
 	end
 	
 	hook.Add("PopulateToolMenu", "gStandsMenu", gStandsMenu)

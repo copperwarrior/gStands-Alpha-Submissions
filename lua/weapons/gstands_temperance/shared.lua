@@ -33,6 +33,12 @@ SWEP.WorldModel = "models/yellowtemperance/yellowtemperance.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
 
+SWEP.StandModel 				= "models/yellowtemperance/yellowtemperance.mdl"
+SWEP.StandModelP 				= "models/yellowtemperance/yellowtemperance.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/yellowtemperance/yellowtemperance.mdl"
+end
+
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true

@@ -29,8 +29,13 @@ if CLIENT then
 end
 SWEP.SlotPos            = 2
 SWEP.DrawCrosshair      = true
+SWEP.StandModel 				= "models/empress/empress.mdl"
+SWEP.StandModelP 				= "models/empress/empress.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/empress/empress.mdl"
+end
 
-SWEP.WorldModel = ""
+SWEP.WorldModel = "models/empress/empress.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
 

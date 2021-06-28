@@ -117,7 +117,7 @@ if SERVER then
 			if not(Ent:IsPlayer() or Ent:IsNPC() or Ent:GetClass() == "prop_ragdoll") and Ent != self.Owner then 
 				dmgInfo = DamageInfo()
 				dmgInfo:SetAttacker(damager)
-				dmgInfo:SetDamage(45)
+				dmgInfo:SetDamage(GetConVar("gstands_cfhurricane_damage"):GetInt())
 				dmgInfo:SetInflictor( self )
 				Ent:TakeDamageInfo(dmgInfo)
 			end
@@ -125,7 +125,7 @@ if SERVER then
 			if (Ent:IsPlayer() or Ent:IsNPC() or Ent:GetClass() == "prop_ragdoll") and Ent != self.Owner then 
 				dmgInfo = DamageInfo()
 				dmgInfo:SetAttacker(damager)
-				dmgInfo:SetDamage(45)
+				dmgInfo:SetDamage(GetConVar("gstands_cfhurricane_damage"):GetInt())
 				dmgInfo:SetDamageType(DMG_BURN)
 				dmgInfo:SetInflictor( self )
 				Ent:TakeDamageInfo(dmgInfo)

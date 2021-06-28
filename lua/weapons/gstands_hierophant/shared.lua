@@ -58,7 +58,7 @@ SWEP.Range = 2500
 SWEP.StandModel = "models/player/heg/heg.mdl"
 SWEP.StandModelP = "models/player/heg/heg.mdl"
 if CLIENT then
-	SWEP.StandModel = "models/player/heg.mdl"
+	SWEP.StandModel = "models/player/heg/heg.mdl"
 end
 SWEP.gStands_IsThirdPerson = true
 

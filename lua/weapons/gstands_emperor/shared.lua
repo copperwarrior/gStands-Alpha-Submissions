@@ -52,7 +52,7 @@ SWEP.StandModel = "models/emperor/models/emperor.mdl"
 SWEP.StandModelP = "models/emperor/models/emperor.mdl"
 
 game.AddParticles("particles/emperor.pcf")
-SWEP.RenderGroup = RENDERGROUP_TRANSLUCENT
+SWEP.RenderGroup = RENDERGROUP_BOTH
 PrecacheParticleSystem("emperor_muzzleflash")
 local thirdperson_offset = GetConVar("gstands_thirdperson_offset")
 function SWEP:CalcView( ply, pos, ang, fov )

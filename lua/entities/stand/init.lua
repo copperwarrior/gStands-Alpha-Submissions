@@ -14,6 +14,7 @@ ENT.Animated = true
 ENT.Color = Color(150,150,150,1)
 ENT.ForceOnce = false
 ready = false
+ENT.RenderGroup	= RENDERGROUP_BOTH
 ENT.ImageID = 1
 ENT.Rate = 0
 ENT.Health = 1
@@ -97,7 +98,6 @@ end
 function ENT:Initialize()
 	self:SetLagCompensated(true)
 	self.Wep = self.Owner:GetActiveWeapon()
-	self:SetRenderMode(RENDERMODE_TRANSALPHA)
 	self.OwnerPos = self.Owner:GetPos()
 	self.OwnerCenterPos = self.Owner:WorldSpaceCenter()
 	self.CenterPos = self:WorldSpaceCenter()
@@ -128,8 +128,17 @@ function ENT:Initialize()
 	if self.StandId == GSTANDS_JST then
 		self:ResetSequence(self:LookupSequence("float"))
 	end
+	if SERVER and !table.HasValue(NonStandard, self.Model) then
+		--self:ResetSequence( self.Owner:GetSequence() )
+		
+		elseif SERVER and (self.StandId == GSTANDS_JUDGEMENT or self.StandId == GSTANDS_OSIRIS or self.StandId == GSTANDS_HORUS) then
+		self:ResetSequence(self:LookupSequence("Standidle"))
+		if self.StandId == GSTANDS_JUDGEMENT then
+			self:ResetSequence(self:LookupSequence("Standidle"))
+		end
+	end
 	if SERVER and ( self.StandId == GSTANDS_OSIRIS or self.StandId == GSTANDS_HORUS) then
-		self:ResetSequence(self:LookupSequence("idle"))
+		self:ResetSequence(self:LookupSequence("Standidle"))
 	end
 	self.Rate = math.random(0,5)
 	if self:GetImageID() == 1 then
@@ -333,51 +342,30 @@ function ENT:DoAnimations()
 					if self:LookupSequence("standidle") != -1 and self:GetSequence() != self:LookupSequence("standidle") then
 						self:ResetSequence( self:LookupSequence("standidle"))
 					elseif self:LookupSequence("standidle") == -1 then
-						self:ResetSequence( self:LookupSequence(self.Owner:GetSequenceName(self.Owner:GetSequence())))
+						self:ResetSequence( self:LookupSequence("swimming_fist"))
+						self:SetPlaybackRate(0.3)
+						if self.StandId == GSTANDS_CREAM then
+							self:ResetSequence(self:LookupSequence("swimming_all"))
+							self:SetPlaybackRate(0.3)
+						end
+						if self.StandId == GSTANDS_ATUM then
+							self:ResetSequence(self:LookupSequence("swimming_all"))
+							self:SetPlaybackRate(0.3)
+						end
+						if self.StandId == GSTANDS_HORUS then
+							self:ResetSequence(self:LookupSequence("idle"))
+							self:SetPlaybackRate(1)
+						end
 					end
-					elseif SERVER and (self.StandId != GSTANDS_TGRAY ) and self.StandId == GSTANDS_HORUS and !self.Throwing then
-					self:SetPlaybackRate(1)
-			end
-		elseif self:GetSequence() != self:SelectWeightedSequence(self.TauntACT) then
-			self:ResetSequence(self:SelectWeightedSequence(self.TauntACT))
-			self:RemoveAllGestures()
-			self:SetCycle(0)
-			timer.Simple(self:SequenceDuration(self:SelectWeightedSequence(self.TauntACT)), function() self.TauntACT = nil end)
-		end
-		if !self.TauntACT and self.ReadytoAnimate and SERVER and (self.Owner:GetActiveWeapon():IsValid() and self.Owner:GetActiveWeapon():GetHoldType() != "pistol" and !self.Owner:IsFlagSet(FL_FROZEN) and self:LookupSequence("standidle") == -1) then
-			self.anim1 = self:AddGestureSequence( self:LookupSequence(self.AnimSet[1]) , false )
-			-- SWIMMING_FIST self.AnimSet[1]
-			self:SetLayerWeight(self.anim1, self.AnimSet[2])
-			self:SetLayerPlaybackRate(self.anim1, 0.3)
-			self:SetLayerBlendOut(self.anim1, 0)
-			if isstring(self.AnimSet[3]) and !self.anim3 then
-			self.anim3 = self:AddGestureSequence( self:LookupSequence(self.AnimSet[3]) , false )
-				elseif !isstring(self.AnimSet[3]) then
-				self.anim3 = self:AddGestureSequence( self.AnimSet[3] , false )
-			end
-			-- GMOD_BREATH_LAYER self.AnimSet[2]
-			self:SetLayerWeight(self.anim3, self.AnimSet[4])
-			self:SetLayerBlendOut(self.anim3, 0)
-			if self.ItemPickedUp != self and !self.Throwing and !self.anim2 then
-			self.anim2 = self:AddGestureSequence(  self:LookupSequence(self.AnimSet[5]), false)
-				-- AIMLAYER_CAMERA self.AnimSet[3]
-				self:SetLayerWeight(self.anim2, self.AnimSet[6])
-				self:SetLayerBlendOut(self.anim2, 0)
-				elseif !self.Throwing and !self.Blocking and !self.anim2 then
-			self.anim2 = self:AddGestureSequence(  self:LookupSequence(self.AnimSet[7] ) , false)
-				-- JUMP_FIST self.AnimSet[4]
-				self:SetLayerWeight(self.anim2, self.AnimSet[8])
-				self:SetLayerBlendOut(self.anim2, 0)
-			end
-			if self.Blocking and !self.anim4 then
-			self.anim4 = self:AddGestureSequence(  self:LookupSequence(self.AnimSet[9]), false )
-				-- FIST_BLOCK self.AnimSet[5]
-				self:SetLayerWeight(self.anim4, self.AnimSet[10])
-				self:SetLayerPlaybackRate(self.anim4, 1)
+				elseif SERVER and (self.StandId != GSTANDS_TGRAY ) and self.StandId == GSTANDS_HORUS and !self.Throwing then
+				self:SetPlaybackRate(1)
 			end
 		end
 		elseif SERVER and table.HasValue(NonStandard, self.Model) and self.StandId != GSTANDS_JST and (self.Owner:GetActiveWeapon():GetHoldType() != "pistol") then
-		self:ResetSequence(self:LookupSequence("idle"))
+		self:ResetSequence(self:LookupSequence("standidle"))
+		if self.StandId == GSTANDS_JUDGEMENT then
+			self:ResetSequence( self:LookupSequence("standidle"))
+		end
 	end
 end
 
@@ -430,8 +418,10 @@ function ENT:DoMovement()
 	end
 	local flMin, flMax = self:GetPoseParameterRange( 6 )
 	self:SetPoseParameter("head_yaw", ang.y)
+	self:SetPoseParameter("aim_yaw", ang.y)
 	flMin, flMax = self:GetPoseParameterRange( 7 )
 	self:SetPoseParameter("head_pitch", ang.p)
+	self:SetPoseParameter("aim_pitch", ang.p)
 
 	if self:GetParent() != nil and !self:GetParent():IsValid() then
 		if (self:GetSequence() != self:LookupSequence("IDLE_PISTOL")) and (!self.InStill and !self:GetInDoDoDo()) then

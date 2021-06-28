@@ -47,7 +47,7 @@ function ENT:Think()
 			self:Remove()
 		end
 		self.DelayDmg = self.DelayDmg or CurTime()
-		if targ:Health() and SERVER and self.DelayDmg <= CurTime() then
+		if targ:Health() and SERVER and self.DelayDmg <= CurTime() and 	IsValid(self.wep) then
 			local dmg = DamageInfo()
 			dmg:SetAttacker(self.Owner)
 			dmg:SetInflictor(self.wep)

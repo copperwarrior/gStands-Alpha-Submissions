@@ -439,7 +439,7 @@ function SWEP:Think()
 			util.Effect("menacing", effectdata)
 		end
 	end
-	if !self.Owner:gStandsKeyDown("dododo") and self.ClimbState != 5 then
+	if !self.Owner:gStandsKeyDown("dododo") and self.ClimbState != 5 and IsValid(self.Stand) then
 		
 			self.ClimbState = 5
 			local phys = self:GetStand():GetPhysicsObject()

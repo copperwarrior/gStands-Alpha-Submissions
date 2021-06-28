@@ -32,7 +32,9 @@ SWEP.DrawCrosshair      = true
 SWEP.WorldModel = "models/kfar/kfar.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
-
+if CLIENT then
+	SWEP.StandModel = "models/player/heg/heg.mdl"
+end
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true

@@ -91,7 +91,7 @@ if not IsValid(self) then return end
 				mult = 3
 			end
 			dmginfo:SetInflictor( self.wep )
-			dmginfo:SetDamage( 5 * mult )
+			dmginfo:SetDamage((GetConVar("gstands_hermit_purple_slash"):GetInt()) * mult )
 			
 			tr2.Entity:TakeDamageInfo( dmginfo )
 		end

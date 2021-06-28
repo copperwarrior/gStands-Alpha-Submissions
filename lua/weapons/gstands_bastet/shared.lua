@@ -29,6 +29,11 @@ end
 SWEP.SlotPos            = 2
 SWEP.DrawCrosshair      = true
 
+SWEP.StandModel 				= "models/props_lab/tpplugholder_single.mdl"
+SWEP.StandModelP 				= "models/props_lab/tpplugholder_single.mdl"
+if CLIENT then
+	SWEP.StandModel = "models/empress/empress.mdl"
+end
 SWEP.WorldModel = "models/player/whitesnake/disc.mdl"
 SWEP.ViewModelFOV = 54
 SWEP.UseHands = true
