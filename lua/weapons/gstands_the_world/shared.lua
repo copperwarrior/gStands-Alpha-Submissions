@@ -217,7 +217,7 @@ if CLIENT then
 					font = "gStandsFont",
 					pos = {width - 1550 * mult, height - 235 * mult},
 					color = Color(255,0,0, 255),
-				}, 2 * mult, 250
+				}, 2 * mult, 250)
 
 				draw.TextShadow({
 					text = self:Clip1().."/"..self:GetMaxClip1(),
@@ -706,7 +706,7 @@ function SWEP:SecondaryAttack()
 			if SERVER and !self.Owner:gStandsKeyDown("modifierkey1") and self.Stand:GetSequence() != self.Stand:LookupSequence("donut") then
 				for i = 0, 14 do
 					self.Stand:SetLayerBlendOut(i, 0)
-				en
+				end
 				if IsValid(self.Stand) and self:GetOwner():Alive() then
 					self.Stand:RemoveAllGestures()
 					

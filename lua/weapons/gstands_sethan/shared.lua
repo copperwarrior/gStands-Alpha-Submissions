@@ -172,7 +172,7 @@ function SWEP:DrawHUD()
 			font = "gStandsFont",
 			pos = {width - 1550 * mult, height - 235 * mult},
 			color = Color(255,0,0, 255),
-		}, 2 * mult, 250
+		}, 2 * mult, 250)
 	end
 end
 hook.Add( "HUDShouldDraw", "SethanHud", function(elem)
